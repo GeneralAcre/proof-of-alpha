@@ -187,7 +187,7 @@ function LobbyContent() {
               {isSolo ? (
                 <button
                   className="flex-1 border-2 border-[#EEF083] bg-[#EEF083] px-6 py-4 text-lg font-black uppercase text-[#241F19] shadow-[4px_4px_0_#91897C] transition hover:bg-transparent hover:text-[#EEF083]"
-                  onClick={() => router.push(`/game?mode=${mode}&archetype=${archetypeId}&round=1`)}
+                  onClick={() => router.push(`/game?mode=${mode}&archetype=${archetypeId}&round=1&room=${roomCode}`)}
                   type="button"
                 >
                   Start Game →

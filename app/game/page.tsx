@@ -3,8 +3,11 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
+import { PublicKey } from "@solana/web3.js";
 import { useWallet } from "../components/WalletProvider";
 import { ARCHETYPES, getCurrentRank } from "../lib/archetypes";
+import { createOnchainGame, commitRoundMoves, revealAndResolve, type OnchainGame } from "../lib/game-program";
+import { MOVE_ID } from "../lib/solana-client";
 
 /* ─── Types & Constants ─────────────────────────────── */
 
@@ -160,6 +163,12 @@ function botDecide(bot: PlayerState, allPlayers: PlayerState[], modifier: Modifi
   return { moveId, targetId: finalTarget.id };
 }
 
+function toOnchainTargetIdx(targetId: string): number {
+  if (targetId === "you") return 0;
+  const m = targetId.match(/^bot(\d)$/);
+  return m ? parseInt(m[1]) + 1 : 0;
+}
+
 /* ─── Sub-components ─────────────────────────────────── */
 
 function TestBar({ value, delta }: { value: number; delta: number }) {
@@ -285,7 +294,7 @@ function PlayerSlot({
 function GameContent() {
   const params             = useSearchParams();
   const router             = useRouter();
-  const { truncatedAddress } = useWallet();
+  const { truncatedAddress, selectedWallet, account } = useWallet();
 
   const archetypeId  = params.get("archetype") ?? "npc";
   const mode         = params.get("mode")      ?? "multiplayer";
@@ -293,6 +302,7 @@ function GameContent() {
   const myArchetype  = ARCHETYPES.find((a) => a.id === archetypeId) ?? ARCHETYPES[0];
   const modifierRef  = useRef<Modifier>(MODIFIERS[Math.floor(Math.random() * MODIFIERS.length)]);
   const modifier     = modifierRef.current;
+  const roomCode     = params.get("room") ?? "POA-SOLO";
 
   const [round,       setRound]      = useState(roundParam);
   const [phase,       setPhase]      = useState<Phase>("select");
@@ -301,6 +311,8 @@ function GameContent() {
   const [targetId,    setTargetId]   = useState<string | null>(null);
   const [elimBanners, setElimBanners] = useState<string[]>([]);
   const [history,     setHistory]    = useState<string[]>([]);
+  const [onchain,     setOnchain]    = useState<OnchainGame | null>(null);
+  const [txStatus,    setTxStatus]   = useState<string | null>(null);
 
   const initPlayers = useCallback((): PlayerState[] => {
     if (roundParam > 1) {
@@ -342,6 +354,31 @@ function GameContent() {
   }, [myArchetype, truncatedAddress, roundParam]);
 
   const [players, setPlayers] = useState<PlayerState[]>(initPlayers);
+
+  /* ── On-chain game setup ── */
+  useEffect(() => {
+    if (!selectedWallet || !account) return;
+    if (round > 1) {
+      const savedPda = sessionStorage.getItem("poa_onchain_pda");
+      if (savedPda) {
+        setOnchain({ gamePDA: new PublicKey(savedPda), roomCode, botKeypairs: [], pendingSalts: new Map() });
+      }
+      return;
+    }
+    const modifierNum = Array.from(MODIFIERS).indexOf(modifier);
+    setTxStatus("Creating game on-chain…");
+    createOnchainGame(selectedWallet, account, roomCode, modifierNum, archetypeId)
+      .then((og) => {
+        setOnchain(og);
+        sessionStorage.setItem("poa_onchain_pda", og.gamePDA.toBase58());
+        setTxStatus(null);
+      })
+      .catch((err) => {
+        console.warn("[PoA] on-chain game creation failed:", err);
+        setTxStatus(null);
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const myPlayer    = players.find((p) => p.isYou)!;
   const myEliminated = myPlayer?.isEliminated ?? false;
@@ -396,6 +433,34 @@ function GameContent() {
       decisions[bot.id] = d;
     }
 
+    // On-chain: fire commit → reveal pipeline in background (doesn't block UI)
+    let cancelled = false;
+    if (onchain && selectedWallet && account) {
+      const playerMoveNum = MOVE_ID[playerMove] ?? 6;
+      const playerTargNum = toOnchainTargetIdx(playerTarget);
+      const onchainBots   = BOT_NAMES.map((_, i) => {
+        const d = decisions[`bot${i}`] as Decision | undefined;
+        return { moveId: MOVE_ID[d?.moveId ?? "fold"] ?? 6, targetIdx: toOnchainTargetIdx(d?.targetId ?? "bot0") };
+      });
+      void (async () => {
+        try {
+          if (!cancelled) setTxStatus("Committing moves…");
+          const salts = await commitRoundMoves(
+            selectedWallet, account, onchain, playerMoveNum, playerTargNum, onchainBots,
+          );
+          if (cancelled) return;
+          setTxStatus("Revealing on-chain…");
+          await revealAndResolve(
+            selectedWallet, account, onchain, playerMoveNum, playerTargNum, onchainBots, salts,
+          );
+          if (!cancelled) setTxStatus(null);
+        } catch (err) {
+          console.warn("[PoA] on-chain round failed:", err);
+          if (!cancelled) setTxStatus(null);
+        }
+      })();
+    }
+
     let innerTimer: ReturnType<typeof setTimeout>;
 
     const outerTimer = setTimeout(() => {
@@ -429,6 +494,7 @@ function GameContent() {
     }, 1200);
 
     return () => {
+      cancelled = true;
       clearTimeout(outerTimer);
       clearTimeout(innerTimer);
     };
@@ -528,6 +594,9 @@ function GameContent() {
             >
               {phase === "select" ? String(timer).padStart(2, "0") : "—"}
             </div>
+          )}
+          {txStatus && (
+            <span className="animate-pulse font-mono text-[10px] text-[#91897C]">{txStatus}</span>
           )}
           <Link
             className="border border-[#91897C] px-3 py-1.5 font-mono text-xs uppercase text-[#91897C] transition hover:text-[#EEF083]"
