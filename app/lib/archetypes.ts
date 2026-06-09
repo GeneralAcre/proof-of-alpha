@@ -27,7 +27,7 @@ export const ARCHETYPES: readonly Archetype[] = [
     stat: "AGG 85 · GRD 75",
     unlockCost: 0,
     initials: "AL",
-    image: "/archetypes/alpha.png",
+    image: "/charecter/alpha-charecter.png",
     stats: { aggression: 85, defense: 60, bluff: 55, greed: 75 },
     passive: "Alpha Presence — opponents targeting you deal 10% less this round",
     uniqueMove: "Intimidate — force one opponent to reveal their chosen move before confirm",
