@@ -5,7 +5,7 @@ import { Nav } from "../components/Nav";
 import { useWallet } from "../components/WalletProvider";
 import { ARCHETYPES, getCurrentRank, getNextRank, getRankProgress } from "../lib/archetypes";
 
-const UNLOCKED = new Set(["npc", "wojak"]);
+const UNLOCKED = new Set(["alpha", "beta"]);
 
 const BADGES = [
   { name: "First Win",        desc: "Win your first match" },

@@ -1,12 +1,12 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import Link from "next/link";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Nav } from "../components/Nav";
 import { ARCHETYPES, type Archetype } from "../lib/archetypes";
 
-const MOCK_UNLOCKED = new Set(["npc", "wojak"]);
+const MOCK_UNLOCKED = new Set(["alpha", "beta"]);
 const LAST_PICKED_KEY = "poa_last_archetype";
 
 function StatBar({ label, value }: { label: string; value: number }) {
@@ -114,7 +114,26 @@ function CharacterSelectContent() {
           </div>
 
           {/* ── DETAIL PANEL ── */}
-          <div className="border border-[#91897C] bg-[#2f2922] p-5 shadow-[6px_6px_0_#91897C] lg:sticky lg:top-20 lg:self-start">
+          <div className="border border-[#91897C] bg-[#2f2922] shadow-[6px_6px_0_#91897C] lg:sticky lg:top-20 lg:self-start">
+
+            {/* Character art */}
+            {display.image ? (
+              <div className="relative h-56 w-full overflow-hidden border-b border-[#91897C] bg-[#241F19]">
+                <Image
+                  alt={display.name}
+                  className="object-cover object-top grayscale"
+                  fill
+                  src={display.image}
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#2f2922]" />
+              </div>
+            ) : (
+              <div className="flex h-32 w-full items-center justify-center border-b border-[#91897C] bg-[#241F19]/60">
+                <span className="font-mono text-6xl font-black text-[#EEF083]/20">{display.initials}</span>
+              </div>
+            )}
+
+            <div className="p-5">
             <div className="mb-4 flex items-start justify-between gap-3">
               <div>
                 <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#91897C]">
@@ -123,11 +142,12 @@ function CharacterSelectContent() {
                 <p className="mt-0.5 text-2xl font-black uppercase">{display.name}</p>
                 <p className="text-sm text-[#91897C]">{display.role}</p>
               </div>
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center border border-[#EEF083] bg-[#EEF083]/10 font-mono text-xl font-black text-[#EEF083]">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-[#EEF083] bg-[#EEF083]/10 font-mono text-sm font-black text-[#EEF083]">
                 {display.initials}
               </div>
             </div>
 
+            <p className="mb-3 text-xs leading-5 text-[#91897C]">{display.description}</p>
             <p className="mb-4 italic text-sm text-[#d8d4a1]">&ldquo;{display.tagline}&rdquo;</p>
 
             {/* Stat bars */}
@@ -190,6 +210,7 @@ function CharacterSelectContent() {
                 ))}
               </div>
             </div>
+            </div>{/* end p-5 */}
           </div>
         </div>
 

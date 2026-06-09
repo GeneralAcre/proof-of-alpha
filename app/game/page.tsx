@@ -23,9 +23,9 @@ type MoveId = (typeof MOVES)[number]["id"];
 const MODIFIERS = ["Standard", "Greed Mode", "Chaos Mode", "Scarcity", "Final Stand"] as const;
 type Modifier = (typeof MODIFIERS)[number];
 
-const BOT_NAMES  = ["Doomer", "Wojak", "NPC",  "Sigma", "Gigachad"] as const;
-const BOT_INITS  = ["DM",     "WJ",    "NP",   "SG",    "GC"]       as const;
-const BOT_ADDRS  = ["7xKm",   "B2Qs",  "Vn4L", "P8Hj",  "F3Dz"]    as const;
+const BOT_NAMES  = ["Beta",  "Gamma", "Delta", "Omega", "Sigma"] as const;
+const BOT_INITS  = ["BT",    "GM",    "DL",    "OM",    "SG"]    as const;
+const BOT_ADDRS  = ["7xKm",  "B2Qs",  "Vn4L",  "P8Hj",  "F3Dz"] as const;
 
 type Phase = "select" | "locked" | "reveal" | "round_end";
 
