@@ -1,0 +1,182 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.alpha-card {
+  background:
+    linear-gradient(135deg, rgba(36, 31, 25, 0.14) 25%, transparent 25%) 0 0 / 28px 28px,
+    linear-gradient(315deg, rgba(36, 31, 25, 0.14) 25%, transparent 25%) 0 0 / 28px 28px,
+    #eef083;
+}
+
+.alpha-figure {
+  position: relative;
+  width: min(68%, 340px);
+  height: 72%;
+  margin-bottom: 92px;
+  background:
+    radial-gradient(ellipse at 50% 12%, #241f19 0 14%, transparent 14.4%),
+    radial-gradient(ellipse at 39% 16%, #241f19 0 6%, transparent 6.4%),
+    radial-gradient(ellipse at 61% 16%, #241f19 0 6%, transparent 6.4%),
+    radial-gradient(ellipse at 50% 30%, #241f19 0 22%, transparent 22.4%),
+    radial-gradient(ellipse at 50% 60%, #241f19 0 39%, transparent 39.4%);
+  filter: drop-shadow(20px 10px 0 rgba(145, 137, 124, 0.78));
+}
+
+.alpha-figure::before {
+  content: "";
+  position: absolute;
+  left: -19%;
+  right: -19%;
+  bottom: 2%;
+  height: 43%;
+  border-radius: 48% 48% 10% 10%;
+  background:
+    linear-gradient(90deg, transparent 0 17%, #241f19 17% 27%, transparent 27% 73%, #241f19 73% 83%, transparent 83%),
+    radial-gradient(ellipse at 50% 42%, #241f19 0 54%, transparent 54.5%);
+}
+
+.alpha-figure::after {
+  content: "";
+  position: absolute;
+  left: 29%;
+  top: 10%;
+  width: 42%;
+  height: 46%;
+  border-radius: 42% 42% 38% 38%;
+  background:
+    linear-gradient(180deg, transparent 0 56%, #eef083 56% 59%, transparent 59%),
+    radial-gradient(ellipse at 36% 42%, #eef083 0 5%, transparent 5.4%),
+    radial-gradient(ellipse at 64% 42%, #eef083 0 5%, transparent 5.4%),
+    radial-gradient(ellipse at 50% 66%, #eef083 0 8%, transparent 8.5%);
+  opacity: 0.95;
+}
+
+.cover-face {
+  background:
+    radial-gradient(ellipse at 57% 46%, #eef083 0 5%, transparent 5.4%),
+    radial-gradient(ellipse at 34% 45%, #eef083 0 4.5%, transparent 4.9%),
+    radial-gradient(ellipse at 45% 68%, #241f19 0 7%, transparent 7.4%),
+    radial-gradient(ellipse at 50% 48%, #91897c 0 31%, transparent 31.5%),
+    radial-gradient(ellipse at 50% 46%, #eef083 0 43%, transparent 43.5%),
+    radial-gradient(ellipse at 49% 57%, #241f19 0 46%, transparent 46.5%),
+    linear-gradient(128deg, transparent 0 18%, #eef083 18% 22%, transparent 22% 100%),
+    repeating-radial-gradient(circle at 50% 50%, rgba(238, 240, 131, 0.92) 0 1px, rgba(36, 31, 25, 0.98) 1px 4px);
+  filter: contrast(1.75) grayscale(1);
+  mix-blend-mode: screen;
+  opacity: 0.95;
+}
+
+.cover-face::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 49% 8%, #241f19 0 22%, transparent 22.5%),
+    radial-gradient(ellipse at 61% 20%, #241f19 0 18%, transparent 18.5%),
+    radial-gradient(ellipse at 36% 24%, #241f19 0 13%, transparent 13.5%),
+    linear-gradient(90deg, transparent 0 18%, rgba(36, 31, 25, 0.82) 18% 22%, transparent 22% 100%);
+  mix-blend-mode: multiply;
+}
+
+.cover-face::after {
+  content: "";
+  position: absolute;
+  inset: 9% 23% 4%;
+  border-radius: 46% 49% 42% 44%;
+  border: 18px solid rgba(238, 240, 131, 0.16);
+  box-shadow:
+    inset 28px -18px 0 rgba(36, 31, 25, 0.92),
+    inset -22px 0 0 rgba(238, 240, 131, 0.18);
+}
+
+/* ── Glitch animation for hero text ── */
+@keyframes glitch {
+  0%, 88%, 100% { transform: translate(0); text-shadow: none; }
+  89%  { transform: translate(-4px, 1px);  text-shadow:  3px 0 rgba(145,137,124,0.8); }
+  90%  { transform: translate( 4px,-1px);  text-shadow: -3px 0 rgba(238,240,131,0.6); }
+  91%  { transform: translate(-2px, 2px);  text-shadow:  3px 0 rgba(145,137,124,0.8); }
+  92%  { transform: translate(0);          text-shadow: none; }
+  94%  { transform: translate( 6px,-2px);  text-shadow: -5px 0 rgba(145,137,124,0.5); }
+  95%  { transform: translate(-4px, 0);    text-shadow:  4px 0 rgba(238,240,131,0.4); }
+  96%  { transform: translate(0);          text-shadow: none; }
+}
+.glitch { animation: glitch 8s infinite; }
+
+/* ── Horizontal stats ticker ── */
+@keyframes ticker { to { transform: translateX(-50%); } }
+.ticker-track {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: ticker 28s linear infinite;
+}
+
+/* ── Scanline overlay ── */
+.scanlines {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(238,240,131,0.013) 3px,
+    rgba(238,240,131,0.013) 4px
+  );
+}
+
+/* ── Live pulse dot ── */
+@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+.live-dot { animation: pulse-dot 1.4s ease-in-out infinite; }
+
+/* ── Countdown warning flash ── */
+@keyframes timer-flash { 0%, 100% { color: #EEF083; } 50% { color: #ff8080; } }
+.timer-warn { animation: timer-flash 0.5s ease-in-out infinite; }
+
+/* ── Move card flip reveal ── */
+@keyframes flip-in {
+  0%   { transform: rotateY(90deg) scaleX(0.7); opacity: 0; }
+  100% { transform: rotateY(0deg)  scaleX(1);   opacity: 1; }
+}
+.flip-in { animation: flip-in 0.35s ease-out forwards; }
+
+/* ── Elimination stamp ── */
+@keyframes stamp-in {
+  0%   { transform: rotate(-12deg) scale(2.4); opacity: 0; }
+  60%  { transform: rotate(-12deg) scale(0.88); opacity: 1; }
+  100% { transform: rotate(-12deg) scale(1);    opacity: 1; }
+}
+.stamp-in { animation: stamp-in 0.45s cubic-bezier(0.22,1,0.36,1) forwards; }
+
+/* ── Rank-up flash ── */
+@keyframes rank-flash {
+  0%, 100% { background: transparent; }
+  50%       { background: rgba(238,240,131,0.18); }
+}
+.rank-flash { animation: rank-flash 0.6s ease-in-out 3; }
+
+/* ── $TEST bar change pulse ── */
+@keyframes balance-gain { 0%,100% { filter:none; } 50% { filter:brightness(1.6); } }
+@keyframes balance-loss { 0%,100% { filter:none; } 50% { filter:brightness(0.4) sepia(1); } }
+.bal-gain { animation: balance-gain 0.5s ease-in-out 2; }
+.bal-loss { animation: balance-loss 0.5s ease-in-out 2; }
