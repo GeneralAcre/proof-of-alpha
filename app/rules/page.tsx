@@ -44,7 +44,7 @@ export default function RulesPage() {
         <header className="rounded-lg border border-[#91897C] bg-[#2f2922] p-5 sm:p-7">
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#91897C]">Rulebook</p>
           <h1 className="mt-3 max-w-4xl text-4xl font-black uppercase leading-none text-[#EEF083] sm:text-6xl">
-            First to 3 round wins becomes the match alpha.
+            First to 5 round wins becomes the match alpha.
           </h1>
         </header>
 
@@ -128,7 +128,7 @@ export default function RulesPage() {
               ))}
             </div>
             <p className="mt-5 rounded-lg border border-[#EEF083] bg-[#EEF083]/10 p-4 text-sm text-[#EEF083]">
-              First player to 3 round wins takes the match payout.
+              First player to 5 round wins takes the match payout.
             </p>
           </article>
 

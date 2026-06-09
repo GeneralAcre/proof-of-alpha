@@ -235,7 +235,7 @@ function PlayerSlot({
       <TestBar value={player.balance} delta={player.balanceDelta} />
 
       <div className="mt-1.5 flex gap-1">
-        {[0, 1, 2].map((i) => (
+        {[0, 1, 2, 3, 4].map((i) => (
           <div
             key={i}
             className={`h-1.5 w-1.5 border ${
@@ -462,7 +462,7 @@ function GameContent() {
     }));
 
     const stillAlive  = updated.filter((p) => !p.isEliminated);
-    const matchWinner = updated.find((p) => p.roundWins >= 3);
+    const matchWinner = updated.find((p) => p.roundWins >= 5);
     const matchOver   = !!matchWinner || stillAlive.length <= 1;
 
     sessionStorage.setItem(
@@ -775,7 +775,7 @@ function GameContent() {
             )}
             <p className="mt-0.5 font-mono text-xs text-[#91897C]">{myArchetype.name}</p>
             <div className="mt-2 flex gap-1">
-              {[0, 1, 2].map((i) => (
+              {[0, 1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
                   className={`h-2 w-2 border ${

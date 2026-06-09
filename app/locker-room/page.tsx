@@ -122,7 +122,7 @@ function LockerRoomContent() {
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="flex gap-1">
-                      {[0,1,2].map((i) => (
+                      {[0,1,2,3,4].map((i) => (
                         <div key={i} className={`h-2 w-2 border ${i < p.roundWins ? "border-[#EEF083] bg-[#EEF083]" : "border-[#91897C]"}`} />
                       ))}
                     </div>
