@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Nav } from "../components/Nav";
 import { useWallet } from "../components/WalletProvider";
 import { ARCHETYPES, getCurrentRank } from "../lib/archetypes";
@@ -27,18 +27,20 @@ function generateRoomCode() {
 type ChatMsg = { from: string; text: string; ts: number };
 
 function LobbyContent() {
-  const params = useSearchParams();
+  const params  = useSearchParams();
+  const router  = useRouter();
   const { account, truncatedAddress } = useWallet();
 
-  const mode       = params.get("mode") ?? "multiplayer";
+  const mode        = params.get("mode") ?? "multiplayer";
   const archetypeId = params.get("archetype") ?? "npc";
-  const roomParam  = params.get("room");
-  const archetype  = ARCHETYPES.find((a) => a.id === archetypeId) ?? ARCHETYPES[0];
-  const myRank     = getCurrentRank(420);
+  const roomParam   = params.get("room");
+  const archetype   = ARCHETYPES.find((a) => a.id === archetypeId) ?? ARCHETYPES[0];
+  const myRank      = getCurrentRank(420);
+  const isSolo      = mode === "solo";
 
-  const [roomCode]      = useState(() => roomParam ?? generateRoomCode());
-  const [timeLeft, setTimeLeft] = useState(60);
-  const [isReady, setIsReady]   = useState(false);
+  const [roomCode]                    = useState(() => roomParam ?? generateRoomCode());
+  const [timeLeft, setTimeLeft]       = useState(60);
+  const [isReady, setIsReady]         = useState(false);
   const [messages, setMessages] = useState<ChatMsg[]>([
     { from: "System", text: "Lobby opened. Waiting for players...", ts: Date.now() },
   ]);
@@ -48,10 +50,10 @@ function LobbyContent() {
   const modifier = ROUND_MODIFIERS[Math.floor(roomCode.charCodeAt(4) % ROUND_MODIFIERS.length)];
 
   useEffect(() => {
-    if (timeLeft <= 0 || isReady) return;
+    if (isSolo || timeLeft <= 0 || isReady) return;
     const id = setTimeout(() => setTimeLeft((t) => t - 1), 1000);
     return () => clearTimeout(id);
-  }, [timeLeft, isReady]);
+  }, [isSolo, timeLeft, isReady]);
 
   useEffect(() => {
     if (chatRef.current) {
@@ -104,18 +106,20 @@ function LobbyContent() {
               {mode === "solo" ? "Solo · 0.5x points" : "Multiplayer · Full points"}
             </p>
           </div>
-          <div className="text-right">
-            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#91897C]">
-              Starts in
-            </p>
-            <p
-              className={`mt-1 font-mono text-5xl font-black ${
-                timeLeft <= 10 ? "timer-warn" : "text-[#EEF083]"
-              }`}
-            >
-              {String(timeLeft).padStart(2, "0")}
-            </p>
-          </div>
+          {!isSolo && (
+            <div className="text-right">
+              <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#91897C]">
+                Starts in
+              </p>
+              <p
+                className={`mt-1 font-mono text-5xl font-black ${
+                  timeLeft <= 10 ? "timer-warn" : "text-[#EEF083]"
+                }`}
+              >
+                {String(timeLeft).padStart(2, "0")}
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
@@ -180,18 +184,28 @@ function LobbyContent() {
 
             {/* ── ACTION BUTTONS ── */}
             <div className="flex flex-wrap gap-3">
-              <button
-                className={`flex-1 border-2 px-6 py-4 font-black uppercase text-lg transition ${
-                  isReady
-                    ? "border-[#91897C] bg-[#241F19] text-[#91897C] cursor-default"
-                    : "border-[#EEF083] bg-[#EEF083] text-[#241F19] shadow-[4px_4px_0_#91897C] hover:bg-transparent hover:text-[#EEF083]"
-                }`}
-                disabled={isReady}
-                onClick={() => setIsReady(true)}
-                type="button"
-              >
-                {isReady ? "Ready — waiting for others" : "Ready"}
-              </button>
+              {isSolo ? (
+                <button
+                  className="flex-1 border-2 border-[#EEF083] bg-[#EEF083] px-6 py-4 text-lg font-black uppercase text-[#241F19] shadow-[4px_4px_0_#91897C] transition hover:bg-transparent hover:text-[#EEF083]"
+                  onClick={() => router.push(`/game?mode=${mode}&archetype=${archetypeId}&round=1`)}
+                  type="button"
+                >
+                  Start Game →
+                </button>
+              ) : (
+                <button
+                  className={`flex-1 border-2 px-6 py-4 font-black uppercase text-lg transition ${
+                    isReady
+                      ? "cursor-default border-[#91897C] bg-[#241F19] text-[#91897C]"
+                      : "border-[#EEF083] bg-[#EEF083] text-[#241F19] shadow-[4px_4px_0_#91897C] hover:bg-transparent hover:text-[#EEF083]"
+                  }`}
+                  disabled={isReady}
+                  onClick={() => setIsReady(true)}
+                  type="button"
+                >
+                  {isReady ? "Ready — waiting for others" : "Ready"}
+                </button>
+              )}
               <Link
                 className="border-2 border-[#91897C] px-6 py-4 font-black uppercase text-[#91897C] transition hover:border-[#ffb1a1] hover:text-[#ffb1a1]"
                 href="/mode-select"
