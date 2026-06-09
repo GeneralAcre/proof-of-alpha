@@ -9,42 +9,45 @@ import { ARCHETYPES, type Archetype } from "../lib/archetypes";
 const MOCK_UNLOCKED = new Set(["alpha", "beta"]);
 const LAST_PICKED_KEY = "poa_last_archetype";
 
-function StatBar({ label, value }: { label: string; value: number }) {
+function MiniBar({ label, value }: { label: string; value: number }) {
   return (
-    <div>
-      <div className="mb-1 flex justify-between font-mono text-xs uppercase tracking-[0.12em]">
-        <span className="text-[#91897C]">{label}</span>
-        <span className="font-black text-[#EEF083]">{value}</span>
+    <div className="flex items-center gap-1.5">
+      <span className="w-6 shrink-0 font-mono text-[9px] uppercase text-[#91897C]">{label}</span>
+      <div className="h-1 flex-1 border border-[#91897C]/40 bg-[#241F19]">
+        <div className="h-full bg-[#EEF083]" style={{ width: `${value}%` }} />
       </div>
-      <div className="h-1.5 w-full border border-[#91897C] bg-[#241F19]">
-        <div className="h-full bg-[#EEF083] transition-all duration-300" style={{ width: `${value}%` }} />
-      </div>
+      <span className="w-5 text-right font-mono text-[9px] text-[#EEF083]">{value}</span>
     </div>
   );
 }
 
 function CharacterSelectContent() {
-  const router = useRouter();
-  const params = useSearchParams();
-  const mode = params.get("mode") ?? "multiplayer";
-  const room = params.get("room") ?? "";
+  const router  = useRouter();
+  const params  = useSearchParams();
+  const mode    = params.get("mode") ?? "multiplayer";
+  const room    = params.get("room") ?? "";
 
   const [selectedId, setSelectedId] = useState<string>(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem(LAST_PICKED_KEY) ?? "npc";
+      return localStorage.getItem(LAST_PICKED_KEY) ?? "alpha";
     }
-    return "npc";
+    return "alpha";
   });
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  // which card is currently flipped to its detail side
+  const [flippedId, setFlippedId] = useState<string | null>(null);
 
-  const displayId = hoveredId ?? selectedId;
-  const display = ARCHETYPES.find((a) => a.id === displayId) ?? ARCHETYPES[0];
-  const selected = ARCHETYPES.find((a) => a.id === selectedId) ?? ARCHETYPES[0];
+  const selected  = ARCHETYPES.find((a) => a.id === selectedId) ?? ARCHETYPES[0];
   const isUnlocked = (a: Archetype) => MOCK_UNLOCKED.has(a.id);
 
   useEffect(() => {
     localStorage.setItem(LAST_PICKED_KEY, selectedId);
   }, [selectedId]);
+
+  function handleCardClick(a: Archetype) {
+    if (!isUnlocked(a)) return;
+    setSelectedId(a.id);
+    setFlippedId((prev) => (prev === a.id ? null : a.id));
+  }
 
   function confirm() {
     const href = room
@@ -56,162 +59,153 @@ function CharacterSelectContent() {
   return (
     <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
       <Nav />
-      <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
 
         <p className="mb-2 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91897C]">
           Step 2 of 3
         </p>
         <h1 className="mb-8 text-4xl font-black uppercase sm:text-5xl">Choose Archetype</h1>
 
-        <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
+        {/* ── 6-card flip grid ── */}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {ARCHETYPES.map((a) => {
+            const unlocked  = isUnlocked(a);
+            const isFlipped = flippedId === a.id;
+            const isSelected = selectedId === a.id;
 
-          {/* ── CARD GRID ── */}
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {ARCHETYPES.map((a) => {
-              const unlocked = isUnlocked(a);
-              const isSelected = selectedId === a.id;
-              return (
-                <button
-                  key={a.id}
-                  className={`border p-4 text-left transition ${
-                    isSelected
-                      ? "border-[#EEF083] bg-[#EEF083] text-[#241F19] shadow-[6px_6px_0_#91897C]"
-                      : unlocked
-                      ? "border-[#91897C] bg-[#2f2922] text-[#EEF083] hover:border-[#EEF083]"
-                      : "border-[#91897C] bg-[#2f2922] text-[#91897C] opacity-50 cursor-not-allowed"
+            return (
+              <div
+                key={a.id}
+                className="relative h-64 [perspective:900px] sm:h-72"
+              >
+                {/* rotating inner */}
+                <div
+                  className={`relative h-full w-full transition-transform duration-500 [transform-style:preserve-3d] ${
+                    isFlipped ? "[transform:rotateY(180deg)]" : ""
                   }`}
-                  disabled={!unlocked}
-                  onClick={() => unlocked && setSelectedId(a.id)}
-                  onMouseEnter={() => setHoveredId(a.id)}
-                  onMouseLeave={() => setHoveredId(null)}
-                  type="button"
                 >
+
+                  {/* ── FRONT ── image + name */}
+                  <button
+                    className={`absolute inset-0 flex flex-col overflow-hidden border [backface-visibility:hidden] transition ${
+                      isSelected && !isFlipped
+                        ? "border-[#EEF083] shadow-[4px_4px_0_#91897C]"
+                        : unlocked
+                        ? "border-[#91897C] hover:border-[#EEF083]"
+                        : "border-[#91897C] opacity-40 cursor-not-allowed"
+                    } bg-[#2f2922]`}
+                    disabled={!unlocked}
+                    onClick={() => handleCardClick(a)}
+                    type="button"
+                    aria-label={`View ${a.name}`}
+                  >
+                    {/* character image */}
+                    <div className="relative flex-1 overflow-hidden bg-[#1a1710]">
+                      {a.image ? (
+                        <Image
+                          alt={a.name}
+                          className="object-cover object-top grayscale"
+                          fill
+                          sizes="(max-width: 640px) 50vw, 33vw"
+                          src={a.image}
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center">
+                          <span className="font-mono text-5xl font-black text-[#EEF083]/10">
+                            {a.initials}
+                          </span>
+                        </div>
+                      )}
+                      {/* locked overlay */}
+                      {!unlocked && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-[#241F19]/70">
+                          <span className="font-mono text-xs text-[#91897C]">
+                            {a.unlockCost.toLocaleString()} σ
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* name strip */}
+                    <div className={`shrink-0 border-t px-3 py-2 text-left ${
+                      isSelected && !isFlipped
+                        ? "border-[#EEF083] bg-[#EEF083]/10"
+                        : "border-[#91897C]"
+                    }`}>
+                      <p className="text-sm font-black uppercase leading-none text-[#EEF083]">
+                        {a.name}
+                      </p>
+                      <p className="mt-0.5 text-[11px] text-[#91897C]">{a.role}</p>
+                    </div>
+                  </button>
+
+                  {/* ── BACK ── detail */}
                   <div
-                    className={`mb-3 flex h-12 w-12 items-center justify-center border font-mono text-xl font-black ${
-                      isSelected
-                        ? "border-[#241F19] bg-[#241F19] text-[#EEF083]"
-                        : "border-current bg-current/10"
-                    }`}
+                    className="absolute inset-0 flex flex-col overflow-hidden border border-[#EEF083] bg-[#2f2922] shadow-[4px_4px_0_#91897C] [backface-visibility:hidden] [transform:rotateY(180deg)]"
                   >
-                    {a.initials}
+                    {/* close strip */}
+                    <button
+                      className="flex shrink-0 items-center gap-2 border-b border-[#91897C] px-3 py-2 text-left transition hover:bg-[#EEF083]/5"
+                      onClick={() => setFlippedId(null)}
+                      type="button"
+                      aria-label="Flip back"
+                    >
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center bg-[#EEF083] font-mono text-[10px] font-black text-[#241F19]">
+                        {a.initials}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-black uppercase leading-none text-[#EEF083]">
+                          {a.name}
+                        </p>
+                        <p className="text-[10px] text-[#91897C]">{a.role}</p>
+                      </div>
+                      <span className="ml-auto font-mono text-[10px] text-[#91897C]">✕</span>
+                    </button>
+
+                    {/* scrollable detail */}
+                    <div className="flex-1 overflow-y-auto p-3 space-y-2">
+                      <p className="text-[10px] leading-[1.45] text-[#91897C]">
+                        {a.description}
+                      </p>
+
+                      {/* stats */}
+                      <div className="space-y-1 pt-1">
+                        <MiniBar label="AGG" value={a.stats.aggression} />
+                        <MiniBar label="DEF" value={a.stats.defense} />
+                        <MiniBar label="BLF" value={a.stats.bluff} />
+                        <MiniBar label="GRD" value={a.stats.greed} />
+                      </div>
+
+                      {/* passive */}
+                      <div className="border-t border-[#91897C]/30 pt-2">
+                        <p className="mb-0.5 font-mono text-[9px] uppercase text-[#91897C]">
+                          Passive
+                        </p>
+                        <p className="text-[10px] leading-[1.4] text-[#d8d4a1]">
+                          {a.passive}
+                        </p>
+                      </div>
+
+                      {/* unique move */}
+                      <div className="border-t border-[#91897C]/30 pt-2">
+                        <p className="mb-0.5 font-mono text-[9px] uppercase text-[#91897C]">
+                          Unique Move
+                        </p>
+                        <p className="text-[10px] leading-[1.4] text-[#d8d4a1]">
+                          {a.uniqueMove}
+                        </p>
+                      </div>
+
+                      <p className="pt-1 font-mono text-[9px] italic text-[#EEF083]/40">
+                        &ldquo;{a.tagline}&rdquo;
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-base font-black uppercase">{a.name}</p>
-                  <p
-                    className={`mt-0.5 text-xs ${
-                      isSelected ? "text-[#241F19]/70" : "text-[#91897C]"
-                    }`}
-                  >
-                    {a.role}
-                  </p>
-                  {!unlocked && (
-                    <p className="mt-2 font-mono text-xs text-[#91897C]">
-                      {a.unlockCost.toLocaleString()} σ
-                    </p>
-                  )}
-                </button>
-              );
-            })}
-          </div>
 
-          {/* ── DETAIL PANEL ── */}
-          <div className="border border-[#91897C] bg-[#2f2922] shadow-[6px_6px_0_#91897C] lg:sticky lg:top-20 lg:self-start">
-
-            {/* Character art */}
-            {display.image ? (
-              <div className="relative h-56 w-full overflow-hidden border-b border-[#91897C] bg-[#241F19]">
-                <Image
-                  alt={display.name}
-                  className="object-cover object-top grayscale"
-                  fill
-                  src={display.image}
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#2f2922]" />
+                </div>
               </div>
-            ) : (
-              <div className="flex h-32 w-full items-center justify-center border-b border-[#91897C] bg-[#241F19]/60">
-                <span className="font-mono text-6xl font-black text-[#EEF083]/20">{display.initials}</span>
-              </div>
-            )}
-
-            <div className="p-5">
-            <div className="mb-4 flex items-start justify-between gap-3">
-              <div>
-                <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#91897C]">
-                  {hoveredId ? "Previewing" : "Selected"}
-                </p>
-                <p className="mt-0.5 text-2xl font-black uppercase">{display.name}</p>
-                <p className="text-sm text-[#91897C]">{display.role}</p>
-              </div>
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-[#EEF083] bg-[#EEF083]/10 font-mono text-sm font-black text-[#EEF083]">
-                {display.initials}
-              </div>
-            </div>
-
-            <p className="mb-3 text-xs leading-5 text-[#91897C]">{display.description}</p>
-            <p className="mb-4 italic text-sm text-[#d8d4a1]">&ldquo;{display.tagline}&rdquo;</p>
-
-            {/* Stat bars */}
-            <div className="mb-4 space-y-2.5">
-              <StatBar label="Aggression" value={display.stats.aggression} />
-              <StatBar label="Defense"    value={display.stats.defense} />
-              <StatBar label="Bluff"      value={display.stats.bluff} />
-              <StatBar label="Greed"      value={display.stats.greed} />
-            </div>
-
-            <div className="mb-3 border-t border-[#91897C] pt-3">
-              <p className="mb-1 font-mono text-xs font-black uppercase tracking-[0.14em] text-[#91897C]">
-                Passive
-              </p>
-              <p className="text-sm leading-5 text-[#d8d4a1]">{display.passive}</p>
-            </div>
-
-            <div className="mb-3 border-t border-[#91897C] pt-3">
-              <p className="mb-1 font-mono text-xs font-black uppercase tracking-[0.14em] text-[#91897C]">
-                Unique Move
-              </p>
-              <p className="text-sm leading-5 text-[#d8d4a1]">{display.uniqueMove}</p>
-            </div>
-
-            <div className="mb-3 grid grid-cols-2 gap-3 border-t border-[#91897C] pt-3">
-              <div>
-                <p className="mb-1 font-mono text-xs font-black uppercase tracking-[0.12em] text-[#91897C]">
-                  Strengths
-                </p>
-                {display.strengths.map((s) => (
-                  <p key={s} className="text-xs text-[#EEF083]">+ {s}</p>
-                ))}
-              </div>
-              <div>
-                <p className="mb-1 font-mono text-xs font-black uppercase tracking-[0.12em] text-[#91897C]">
-                  Weaknesses
-                </p>
-                {display.weaknesses.map((w) => (
-                  <p key={w} className="text-xs text-[#d8d4a1]">- {w}</p>
-                ))}
-              </div>
-            </div>
-
-            {/* Matchup chart */}
-            <div className="grid grid-cols-2 gap-3 border-t border-[#91897C] pt-3">
-              <div>
-                <p className="mb-1 font-mono text-xs font-black uppercase tracking-[0.12em] text-[#EEF083]">
-                  Beats
-                </p>
-                {display.beats.map((b) => (
-                  <p key={b} className="text-xs text-[#EEF083]">{b}</p>
-                ))}
-              </div>
-              <div>
-                <p className="mb-1 font-mono text-xs font-black uppercase tracking-[0.12em] text-[#91897C]">
-                  Fears
-                </p>
-                {display.fears.map((f) => (
-                  <p key={f} className="text-xs text-[#d8d4a1]">{f}</p>
-                ))}
-              </div>
-            </div>
-            </div>{/* end p-5 */}
-          </div>
+            );
+          })}
         </div>
 
         {/* ── CONFIRM ── */}
@@ -237,6 +231,7 @@ function CharacterSelectContent() {
             Confirm &amp; Enter Lobby
           </button>
         </div>
+
       </main>
     </div>
   );
