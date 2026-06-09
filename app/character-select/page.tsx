@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Nav } from "../components/Nav";
@@ -9,23 +9,92 @@ import { ARCHETYPES, type Archetype } from "../lib/archetypes";
 const MOCK_UNLOCKED = new Set(["alpha", "beta"]);
 const LAST_PICKED_KEY = "poa_last_archetype";
 
-function MiniBar({ label, value }: { label: string; value: number }) {
+function StatBar({ label, value, big }: { label: string; value: number; big?: boolean }) {
   return (
-    <div className="flex items-center gap-1.5">
-      <span className="w-6 shrink-0 font-mono text-[9px] uppercase text-[#91897C]">{label}</span>
-      <div className="h-1 flex-1 border border-[#91897C]/40 bg-[#241F19]">
-        <div className="h-full bg-[#EEF083]" style={{ width: `${value}%` }} />
+    <div className="flex items-center gap-2">
+      <span className={`shrink-0 font-mono uppercase text-[#91897C] ${big ? "w-7 text-[11px]" : "w-6 text-[9px]"}`}>
+        {label}
+      </span>
+      <div className={`flex-1 border border-[#91897C]/40 bg-[#241F19] ${big ? "h-1.5" : "h-1"}`}>
+        <div className="h-full bg-[#EEF083] transition-all" style={{ width: `${value}%` }} />
       </div>
-      <span className="w-5 text-right font-mono text-[9px] text-[#EEF083]">{value}</span>
+      <span className={`shrink-0 text-right font-mono text-[#EEF083] ${big ? "w-6 text-[11px]" : "w-5 text-[9px]"}`}>
+        {value}
+      </span>
     </div>
   );
 }
 
+/* ── Hover popup (desktop) ───────────────────────────────────────────────── */
+type PopupPos = { x: number; y: number; side: "right" | "left" };
+
+function HoverPopup({ archetype, pos }: { archetype: Archetype; pos: PopupPos }) {
+  const a = archetype;
+  const style: React.CSSProperties = {
+    position: "fixed",
+    top: pos.y,
+    ...(pos.side === "right" ? { left: pos.x } : { right: pos.x }),
+    width: 288,
+    zIndex: 200,
+    pointerEvents: "none",
+  };
+
+  return (
+    <div style={style} className="border border-[#EEF083] bg-[#2f2922] shadow-[8px_8px_0_#91897C]">
+      {/* image */}
+      {a.image && (
+        <div className="relative h-44 w-full overflow-hidden bg-[#1a1710]">
+          <Image
+            alt={a.name}
+            className="object-cover object-top grayscale"
+            fill
+            sizes="288px"
+            src={a.image}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#2f2922] via-transparent to-transparent" />
+        </div>
+      )}
+
+      <div className="p-4 space-y-3">
+        {/* name */}
+        <div>
+          <p className="text-xl font-black uppercase leading-none text-[#EEF083]">{a.name}</p>
+          <p className="mt-0.5 text-sm text-[#91897C]">{a.role}</p>
+          <p className="mt-1 text-xs leading-5 text-[#91897C]">{a.description}</p>
+        </div>
+
+        {/* stats */}
+        <div className="space-y-1.5">
+          <StatBar big label="AGG" value={a.stats.aggression} />
+          <StatBar big label="DEF" value={a.stats.defense} />
+          <StatBar big label="BLF" value={a.stats.bluff} />
+          <StatBar big label="GRD" value={a.stats.greed} />
+        </div>
+
+        {/* passive */}
+        <div className="border-t border-[#91897C]/30 pt-2">
+          <p className="mb-1 font-mono text-[10px] uppercase text-[#91897C]">Passive</p>
+          <p className="text-xs leading-5 text-[#d8d4a1]">{a.passive}</p>
+        </div>
+
+        {/* unique */}
+        <div className="border-t border-[#91897C]/30 pt-2">
+          <p className="mb-1 font-mono text-[10px] uppercase text-[#91897C]">Unique Move</p>
+          <p className="text-xs leading-5 text-[#d8d4a1]">{a.uniqueMove}</p>
+        </div>
+
+        <p className="font-mono text-[10px] italic text-[#EEF083]/40">&ldquo;{a.tagline}&rdquo;</p>
+      </div>
+    </div>
+  );
+}
+
+/* ── Main page ───────────────────────────────────────────────────────────── */
 function CharacterSelectContent() {
-  const router  = useRouter();
-  const params  = useSearchParams();
-  const mode    = params.get("mode") ?? "multiplayer";
-  const room    = params.get("room") ?? "";
+  const router = useRouter();
+  const params = useSearchParams();
+  const mode   = params.get("mode") ?? "multiplayer";
+  const room   = params.get("room") ?? "";
 
   const [selectedId, setSelectedId] = useState<string>(() => {
     if (typeof window !== "undefined") {
@@ -33,15 +102,33 @@ function CharacterSelectContent() {
     }
     return "alpha";
   });
-  // which card is currently flipped to its detail side
-  const [flippedId, setFlippedId] = useState<string | null>(null);
+  const [flippedId,  setFlippedId]  = useState<string | null>(null);
+  const [hoveredId,  setHoveredId]  = useState<string | null>(null);
+  const [popupPos,   setPopupPos]   = useState<PopupPos | null>(null);
 
-  const selected  = ARCHETYPES.find((a) => a.id === selectedId) ?? ARCHETYPES[0];
+  const selected   = ARCHETYPES.find((a) => a.id === selectedId) ?? ARCHETYPES[0];
   const isUnlocked = (a: Archetype) => MOCK_UNLOCKED.has(a.id);
 
-  useEffect(() => {
-    localStorage.setItem(LAST_PICKED_KEY, selectedId);
-  }, [selectedId]);
+  useEffect(() => { localStorage.setItem(LAST_PICKED_KEY, selectedId); }, [selectedId]);
+
+  function handleMouseEnter(a: Archetype, e: React.MouseEvent<HTMLDivElement>) {
+    if (!isUnlocked(a)) return;
+    const rect    = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const PW      = 296; // popup width + gap
+    const spaceR  = window.innerWidth - rect.right;
+    const side    = spaceR >= PW ? "right" : "left";
+    // clamp vertically so popup never goes off-screen
+    const maxY    = window.innerHeight - 500;
+    const y       = Math.min(Math.max(rect.top, 8), maxY > 8 ? maxY : 8);
+    const x       = side === "right" ? rect.right + 8 : window.innerWidth - rect.left + 8;
+    setHoveredId(a.id);
+    setPopupPos({ x, y, side });
+  }
+
+  function handleMouseLeave() {
+    setHoveredId(null);
+    setPopupPos(null);
+  }
 
   function handleCardClick(a: Archetype) {
     if (!isUnlocked(a)) return;
@@ -56,6 +143,8 @@ function CharacterSelectContent() {
     router.push(href);
   }
 
+  const hoveredArchetype = ARCHETYPES.find((a) => a.id === hoveredId);
+
   return (
     <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
       <Nav />
@@ -66,17 +155,19 @@ function CharacterSelectContent() {
         </p>
         <h1 className="mb-8 text-4xl font-black uppercase sm:text-5xl">Choose Archetype</h1>
 
-        {/* ── 6-card flip grid ── */}
+        {/* ── 6-card grid ── */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {ARCHETYPES.map((a) => {
-            const unlocked  = isUnlocked(a);
-            const isFlipped = flippedId === a.id;
+            const unlocked   = isUnlocked(a);
+            const isFlipped  = flippedId === a.id;
             const isSelected = selectedId === a.id;
 
             return (
               <div
                 key={a.id}
-                className="relative h-64 [perspective:900px] sm:h-72"
+                className="relative h-72 [perspective:900px] sm:h-80"
+                onMouseEnter={(e) => handleMouseEnter(a, e)}
+                onMouseLeave={handleMouseLeave}
               >
                 {/* rotating inner */}
                 <div
@@ -85,7 +176,7 @@ function CharacterSelectContent() {
                   }`}
                 >
 
-                  {/* ── FRONT ── image + name */}
+                  {/* ── FRONT ── */}
                   <button
                     className={`absolute inset-0 flex flex-col overflow-hidden border [backface-visibility:hidden] transition ${
                       isSelected && !isFlipped
@@ -99,7 +190,7 @@ function CharacterSelectContent() {
                     type="button"
                     aria-label={`View ${a.name}`}
                   >
-                    {/* character image */}
+                    {/* image */}
                     <div className="relative flex-1 overflow-hidden bg-[#1a1710]">
                       {a.image ? (
                         <Image
@@ -116,7 +207,6 @@ function CharacterSelectContent() {
                           </span>
                         </div>
                       )}
-                      {/* locked overlay */}
                       {!unlocked && (
                         <div className="absolute inset-0 flex items-center justify-center bg-[#241F19]/70">
                           <span className="font-mono text-xs text-[#91897C]">
@@ -127,7 +217,7 @@ function CharacterSelectContent() {
                     </div>
 
                     {/* name strip */}
-                    <div className={`shrink-0 border-t px-3 py-2 text-left ${
+                    <div className={`shrink-0 border-t px-3 py-2.5 text-left ${
                       isSelected && !isFlipped
                         ? "border-[#EEF083] bg-[#EEF083]/10"
                         : "border-[#91897C]"
@@ -135,68 +225,53 @@ function CharacterSelectContent() {
                       <p className="text-sm font-black uppercase leading-none text-[#EEF083]">
                         {a.name}
                       </p>
-                      <p className="mt-0.5 text-[11px] text-[#91897C]">{a.role}</p>
+                      <p className="mt-0.5 text-xs text-[#91897C]">{a.role}</p>
                     </div>
                   </button>
 
-                  {/* ── BACK ── detail */}
-                  <div
-                    className="absolute inset-0 flex flex-col overflow-hidden border border-[#EEF083] bg-[#2f2922] shadow-[4px_4px_0_#91897C] [backface-visibility:hidden] [transform:rotateY(180deg)]"
-                  >
-                    {/* close strip */}
+                  {/* ── BACK (mobile tap detail) ── */}
+                  <div className="absolute inset-0 flex flex-col overflow-hidden border border-[#EEF083] bg-[#2f2922] shadow-[4px_4px_0_#91897C] [backface-visibility:hidden] [transform:rotateY(180deg)]">
+                    {/* header / close */}
                     <button
-                      className="flex shrink-0 items-center gap-2 border-b border-[#91897C] px-3 py-2 text-left transition hover:bg-[#EEF083]/5"
+                      className="flex shrink-0 items-center gap-2 border-b border-[#91897C] px-3 py-2.5 text-left transition hover:bg-[#EEF083]/5"
                       onClick={() => setFlippedId(null)}
                       type="button"
                       aria-label="Flip back"
                     >
-                      <div className="flex h-7 w-7 shrink-0 items-center justify-center bg-[#EEF083] font-mono text-[10px] font-black text-[#241F19]">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center bg-[#EEF083] font-mono text-xs font-black text-[#241F19]">
                         {a.initials}
                       </div>
-                      <div className="min-w-0">
-                        <p className="text-xs font-black uppercase leading-none text-[#EEF083]">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-black uppercase leading-none text-[#EEF083]">
                           {a.name}
                         </p>
-                        <p className="text-[10px] text-[#91897C]">{a.role}</p>
+                        <p className="text-xs text-[#91897C]">{a.role}</p>
                       </div>
-                      <span className="ml-auto font-mono text-[10px] text-[#91897C]">✕</span>
+                      <span className="font-mono text-xs text-[#91897C]">✕</span>
                     </button>
 
-                    {/* scrollable detail */}
-                    <div className="flex-1 overflow-y-auto p-3 space-y-2">
-                      <p className="text-[10px] leading-[1.45] text-[#91897C]">
-                        {a.description}
-                      </p>
+                    {/* scrollable detail — bigger text than before */}
+                    <div className="flex-1 overflow-y-auto p-3 space-y-2.5">
+                      <p className="text-xs leading-5 text-[#91897C]">{a.description}</p>
 
-                      {/* stats */}
-                      <div className="space-y-1 pt-1">
-                        <MiniBar label="AGG" value={a.stats.aggression} />
-                        <MiniBar label="DEF" value={a.stats.defense} />
-                        <MiniBar label="BLF" value={a.stats.bluff} />
-                        <MiniBar label="GRD" value={a.stats.greed} />
+                      <div className="space-y-1.5">
+                        <StatBar label="AGG" value={a.stats.aggression} />
+                        <StatBar label="DEF" value={a.stats.defense} />
+                        <StatBar label="BLF" value={a.stats.bluff} />
+                        <StatBar label="GRD" value={a.stats.greed} />
                       </div>
 
-                      {/* passive */}
                       <div className="border-t border-[#91897C]/30 pt-2">
-                        <p className="mb-0.5 font-mono text-[9px] uppercase text-[#91897C]">
-                          Passive
-                        </p>
-                        <p className="text-[10px] leading-[1.4] text-[#d8d4a1]">
-                          {a.passive}
-                        </p>
+                        <p className="mb-1 font-mono text-[10px] uppercase text-[#91897C]">Passive</p>
+                        <p className="text-xs leading-5 text-[#d8d4a1]">{a.passive}</p>
                       </div>
 
-                      {/* unique move */}
                       <div className="border-t border-[#91897C]/30 pt-2">
-                        <p className="mb-0.5 font-mono text-[9px] uppercase text-[#91897C]">
-                          Unique Move
-                        </p>
-                        <p className="text-[10px] leading-[1.4] text-[#d8d4a1]">
-                          {a.uniqueMove}
-                        </p>
+                        <p className="mb-1 font-mono text-[10px] uppercase text-[#91897C]">Unique Move</p>
+                        <p className="text-xs leading-5 text-[#d8d4a1]">{a.uniqueMove}</p>
                       </div>
 
-                      <p className="pt-1 font-mono text-[9px] italic text-[#EEF083]/40">
+                      <p className="pt-1 font-mono text-[10px] italic text-[#EEF083]/40">
                         &ldquo;{a.tagline}&rdquo;
                       </p>
                     </div>
@@ -233,6 +308,11 @@ function CharacterSelectContent() {
         </div>
 
       </main>
+
+      {/* ── fixed hover popup ── */}
+      {hoveredArchetype && popupPos && (
+        <HoverPopup archetype={hoveredArchetype} pos={popupPos} />
+      )}
     </div>
   );
 }
