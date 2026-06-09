@@ -6,8 +6,9 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { PublicKey } from "@solana/web3.js";
 import { useWallet } from "../components/WalletProvider";
 import { ARCHETYPES, getCurrentRank } from "../lib/archetypes";
-import { createOnchainGame, commitRoundMoves, revealAndResolve, type OnchainGame } from "../lib/game-program";
-import { MOVE_ID } from "../lib/solana-client";
+import { createOnchainGame, commitRoundMoves, revealAndResolve, fetchGameState, type OnchainGame } from "../lib/game-program";
+import { MOVE_ID, parseGameRoom } from "../lib/solana-client";
+import { sfx, initSounds } from "../lib/sounds";
 
 /* ─── Types & Constants ─────────────────────────────── */
 
@@ -63,20 +64,41 @@ function resolveMoves(
 
   const greed = modifier === "Greed Mode" ? 2 : 1;
 
+  // CHAOS_MODE: shuffle targets for alive players before resolution
+  let effective = { ...decisions };
+  if (modifier === "Chaos Mode") {
+    const alive = players.filter((p) => !p.isEliminated);
+    const ids   = alive.map((p) => p.id);
+    // Fisher-Yates shuffle of target ids
+    const shuffled = [...ids];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    effective = { ...decisions };
+    ids.forEach((id, idx) => {
+      if (effective[id]) {
+        let tgt = shuffled[idx];
+        if (tgt === id) tgt = shuffled[(idx + 1) % ids.length];
+        effective[id] = { ...effective[id], targetId: tgt };
+      }
+    });
+  }
+
   function isCountering(defenderId: string, attackerId: string): boolean {
-    const d = decisions[defenderId];
+    const d = effective[defenderId];
     return !!d && d.moveId === "counter" && d.targetId === attackerId;
   }
 
-  // Resolve Tax / Steal / Rob
-  for (const [actorId, { moveId, targetId }] of Object.entries(decisions)) {
+  // Tax / Steal / Rob
+  for (const [actorId, { moveId, targetId }] of Object.entries(effective)) {
     if (!["tax", "steal", "rob"].includes(moveId)) continue;
     const actor  = players.find((p) => p.id === actorId);
     const target = players.find((p) => p.id === targetId);
     if (!actor || !target || actor.isEliminated || target.isEliminated) continue;
 
     const base: Record<string, number> = { tax: 5, steal: 10, rob: 20 };
-    const amount = (base[moveId] ?? 0) * greed;
+    const amount   = (base[moveId] ?? 0) * greed;
     const countered = isCountering(targetId, actorId);
 
     if (countered) {
@@ -88,18 +110,29 @@ function resolveMoves(
     }
   }
 
-  // Counter penalty — fired counter but nobody attacked with tax/steal/rob
-  for (const [actorId, { moveId }] of Object.entries(decisions)) {
+  // Bluff: +5 if target wasted a Counter on the bluffer
+  for (const [actorId, { moveId, targetId }] of Object.entries(effective)) {
+    if (moveId !== "bluff") continue;
+    const actor  = players.find((p) => p.id === actorId);
+    const target = players.find((p) => p.id === targetId);
+    if (!actor || !target || actor.isEliminated || target.isEliminated) continue;
+    if (effective[targetId]?.moveId === "counter" && effective[targetId]?.targetId === actorId) {
+      deltas[actorId] += 5;
+    }
+  }
+
+  // Counter penalty — fired but no attacker came
+  for (const [actorId, { moveId }] of Object.entries(effective)) {
     if (moveId !== "counter") continue;
-    const wasAttacked = Object.entries(decisions).some(
+    const wasAttacked = Object.entries(effective).some(
       ([oid, { moveId: om, targetId: ot }]) =>
         oid !== actorId && ot === actorId && ["tax", "steal", "rob"].includes(om),
     );
     if (!wasAttacked) deltas[actorId] -= 5;
   }
 
-  // Resolve NUKE
-  for (const [actorId, { moveId, targetId }] of Object.entries(decisions)) {
+  // NUKE
+  for (const [actorId, { moveId, targetId }] of Object.entries(effective)) {
     if (moveId !== "nuke") continue;
     const actor  = players.find((p) => p.id === actorId);
     const target = players.find((p) => p.id === targetId);
@@ -110,17 +143,22 @@ function resolveMoves(
   }
 
   return players.map((p) => {
-    const delta      = deltas[p.id] ?? 0;
-    const newBal     = Math.max(0, p.balance + delta);
-    const brokeOut   = !p.isYou && newBal <= 0;
-    const nuked      = nukeElim.has(p.id);
+    const delta    = deltas[p.id] ?? 0;
+    const newBal   = Math.max(0, p.balance + delta);
+    const broke    = newBal === 0;
+    const nuked    = nukeElim.has(p.id);
+
+    // FINAL_STAND: first time going broke (not nuked, had >1 balance) → survive at 1
+    const savedByStand =
+      modifier === "Final Stand" && broke && !nuked && p.balance > 1;
+
     return {
       ...p,
-      revealedMove:   decisions[p.id]?.moveId   ?? "fold",
-      revealedTarget: decisions[p.id]?.targetId ?? null,
+      revealedMove:   effective[p.id]?.moveId   ?? "fold",
+      revealedTarget: effective[p.id]?.targetId ?? null,
       balanceDelta:   delta,
-      balance:        newBal,
-      isEliminated:   p.isEliminated || brokeOut || nuked,
+      balance:        savedByStand ? 1 : newBal,
+      isEliminated:   p.isEliminated || nuked || (broke && !savedByStand),
     };
   });
 }
@@ -309,10 +347,11 @@ function GameContent() {
   const [timer,       setTimer]      = useState(10);
   const [move,        setMove]       = useState<MoveId | null>(null);
   const [targetId,    setTargetId]   = useState<string | null>(null);
-  const [elimBanners, setElimBanners] = useState<string[]>([]);
-  const [history,     setHistory]    = useState<string[]>([]);
-  const [onchain,     setOnchain]    = useState<OnchainGame | null>(null);
-  const [txStatus,    setTxStatus]   = useState<string | null>(null);
+  const [elimBanners,  setElimBanners]  = useState<string[]>([]);
+  const [history,      setHistory]     = useState<string[]>([]);
+  const [onchain,      setOnchain]     = useState<OnchainGame | null>(null);
+  const [txStatus,     setTxStatus]    = useState<string | null>(null);
+  const [onchainError, setOnchainError] = useState<string | null>(null);
 
   const initPlayers = useCallback((): PlayerState[] => {
     if (roundParam > 1) {
@@ -355,13 +394,15 @@ function GameContent() {
 
   const [players, setPlayers] = useState<PlayerState[]>(initPlayers);
 
+  useEffect(() => { initSounds(); }, []);
+
   /* ── On-chain game setup ── */
   useEffect(() => {
     if (!selectedWallet || !account) return;
     if (round > 1) {
       const savedPda = sessionStorage.getItem("poa_onchain_pda");
       if (savedPda) {
-        setOnchain({ gamePDA: new PublicKey(savedPda), roomCode, botKeypairs: [], pendingSalts: new Map() });
+        setOnchain({ gamePDA: new PublicKey(savedPda), roomCode, pendingSalts: new Map() });
       }
       return;
     }
@@ -376,6 +417,7 @@ function GameContent() {
       .catch((err) => {
         console.warn("[PoA] on-chain game creation failed:", err);
         setTxStatus(null);
+        setOnchainError("Game setup failed — playing offline. Sigma points still count.");
       });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -453,15 +495,37 @@ function GameContent() {
           await revealAndResolve(
             selectedWallet, account, onchain, playerMoveNum, playerTargNum, onchainBots, salts,
           );
+          if (cancelled) return;
+
+          // Sync balances from chain — makes on-chain state authoritative
+          const raw = await fetchGameState(onchain.gamePDA);
+          if (raw && !cancelled) {
+            const chainState = parseGameRoom(raw);
+            setPlayers((prev) =>
+              prev.map((p) => {
+                // player is index 0; bots are 1-5
+                const chainIdx = p.isYou ? 0 : (parseInt(p.id.replace("bot", "")) + 1);
+                const cp = chainState.players[chainIdx];
+                if (!cp) return p;
+                return {
+                  ...p,
+                  balance: cp.balance,
+                  roundWins: cp.roundWins,
+                  isEliminated: cp.isEliminated,
+                };
+              }),
+            );
+          }
           if (!cancelled) setTxStatus(null);
         } catch (err) {
           console.warn("[PoA] on-chain round failed:", err);
-          if (!cancelled) setTxStatus(null);
+          if (!cancelled) {
+            setTxStatus(null);
+            setOnchainError("Round tx failed — result recorded locally only.");
+          }
         }
       })();
     }
-
-    let innerTimer: ReturnType<typeof setTimeout>;
 
     const outerTimer = setTimeout(() => {
       const resolved = resolveMoves(players, decisions, modifier);
@@ -488,21 +552,27 @@ function GameContent() {
       if (newElims.length > 0) {
         setElimBanners(newElims);
         setTimeout(() => setElimBanners([]), 3000);
+        sfx.elimination();
       }
-
-      innerTimer = setTimeout(() => setPhase("round_end"), 3200);
     }, 1200);
 
     return () => {
       cancelled = true;
       clearTimeout(outerTimer);
-      clearTimeout(innerTimer);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
 
+  /* ── reveal → round_end auto-advance (separate effect to avoid cleanup race) ── */
+  useEffect(() => {
+    if (phase !== "reveal") return;
+    const id = setTimeout(() => setPhase("round_end"), 3200);
+    return () => clearTimeout(id);
+  }, [phase]);
+
   function handleConfirm() {
     if (!move || !targetId) return;
+    sfx.moveConfirm();
     setPhase("locked");
   }
 
@@ -549,10 +619,12 @@ function GameContent() {
       earned      += elims * 8;
       if (won)          earned += 10;
       if (mode === "solo") earned -= 5;
+      won ? sfx.matchWin() : sfx.matchLoss();
       router.push(`/end?won=${won}&archetype=${archetypeId}&earned=${earned}&elims=${elims}&mode=${mode}`);
       return;
     }
 
+    sfx.roundWin();
     router.push(`/locker-room?round=${round}&archetype=${archetypeId}&mode=${mode}`);
   }
 
@@ -564,44 +636,61 @@ function GameContent() {
   return (
     <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
 
+      {/* ── ON-CHAIN ERROR BANNER ── */}
+      {onchainError && (
+        <div className="flex items-center justify-between gap-3 bg-[#3a1a1a] px-4 py-2 text-[#ffb1a1]">
+          <p className="font-mono text-[11px]">{onchainError}</p>
+          <button
+            className="shrink-0 font-mono text-[11px] uppercase hover:text-white"
+            onClick={() => setOnchainError(null)}
+            type="button"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* ── TX STATUS (mobile-visible) ── */}
+      {txStatus && (
+        <div className="bg-[#241F19] px-4 py-1.5 text-center">
+          <p className="animate-pulse font-mono text-[10px] uppercase tracking-widest text-[#91897C]">
+            {txStatus}
+          </p>
+        </div>
+      )}
+
       {/* ── TOP BAR ── */}
-      <div className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 border-b border-[#91897C] bg-[#241F19] px-4 py-3 sm:px-6">
-        <div className="flex items-center gap-4">
-          <span className="font-mono text-xs font-black uppercase tracking-[0.16em] text-[#91897C]">
-            Round {round}
-          </span>
-          <span className="border border-[#EEF083] bg-[#EEF083]/10 px-2 py-0.5 font-mono text-xs uppercase text-[#EEF083]">
+      <div className="sticky top-0 z-20 flex items-center justify-between gap-2 border-b border-[#91897C] bg-[#241F19] px-4 py-3">
+        {/* Left: round + modifier */}
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="shrink-0 font-mono text-xs font-bold uppercase text-[#91897C]">R{round}</span>
+          <span className="border border-[#EEF083]/60 px-2 py-0.5 font-mono text-[10px] uppercase text-[#EEF083] truncate">
             {modifier}
-          </span>
-          <span className="hidden font-mono text-xs text-[#91897C] sm:block">
-            {modifier === "Greed Mode"  && "All gains ×2"}
-            {modifier === "Chaos Mode"  && "Targets randomised"}
-            {modifier === "Scarcity"    && "No Rob or NUKE"}
-            {modifier === "Final Stand" && "Eliminated can last-bet"}
-            {modifier === "Standard"    && "Normal rules"}
           </span>
         </div>
 
-        <div className="flex items-center gap-4">
-          <span className="font-mono text-lg font-black text-[#EEF083]">{score}</span>
+        {/* Center: your balance + round wins */}
+        <div className="flex flex-col items-center">
+          <span className={`font-mono text-sm font-bold leading-none ${myEliminated ? "text-[#ffb1a1]" : "text-[#EEF083]"}`}>
+            {myPlayer?.balance ?? 0} $T
+          </span>
+          <div className="mt-1 flex gap-0.5">
+            {[0,1,2,3,4].map((i) => (
+              <div key={i} className={`h-1 w-1 border ${i < myWins ? "border-[#EEF083] bg-[#EEF083]" : "border-[#91897C]"}`} />
+            ))}
+          </div>
+        </div>
+
+        {/* Right: timer + exit */}
+        <div className="flex items-center gap-2">
           {mode !== "solo" && (
-            <div
-              className={`flex h-9 w-9 items-center justify-center border font-mono text-xl font-black transition ${
-                phase === "select" && timer <= 3
-                  ? "animate-pulse border-[#ff8080] text-[#ff8080]"
-                  : "border-[#91897C] text-[#EEF083]"
-              }`}
-            >
-              {phase === "select" ? String(timer).padStart(2, "0") : "—"}
+            <div className={`flex h-8 w-8 shrink-0 items-center justify-center border font-mono text-sm font-bold transition ${
+              phase === "select" && timer <= 3 ? "animate-pulse border-[#ff8080] text-[#ff8080]" : "border-[#91897C] text-[#EEF083]"
+            }`}>
+              {phase === "select" ? String(timer).padStart(2,"0") : "—"}
             </div>
           )}
-          {txStatus && (
-            <span className="animate-pulse font-mono text-[10px] text-[#91897C]">{txStatus}</span>
-          )}
-          <Link
-            className="border border-[#91897C] px-3 py-1.5 font-mono text-xs uppercase text-[#91897C] transition hover:text-[#EEF083]"
-            href="/mode-select"
-          >
+          <Link className="border border-[#91897C] px-2.5 py-1.5 font-mono text-[10px] uppercase text-[#91897C] transition hover:text-[#EEF083]" href="/mode-select">
             Exit
           </Link>
         </div>
@@ -609,270 +698,123 @@ function GameContent() {
 
       {/* ── ELIMINATION BANNERS ── */}
       {elimBanners.map((addr) => (
-        <div
-          key={addr}
-          className="fixed inset-x-0 top-14 z-30 mx-auto max-w-lg border-2 border-[#ffb1a1] bg-[#241F19] px-6 py-4 text-center shadow-[8px_8px_0_#ffb1a1]"
-        >
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#91897C]">Elimination</p>
-          <p className="mt-1 text-2xl font-black uppercase text-[#ffb1a1]">
-            IT&apos;S JOEVER FOR {addr}
-          </p>
-          <p className="mt-0.5 font-mono text-xs text-[#91897C]">Balance hit zero</p>
+        <div key={addr} className="fixed inset-x-0 top-14 z-30 mx-4 border-2 border-[#ffb1a1] bg-[#241F19] px-5 py-3 text-center shadow-[6px_6px_0_#ffb1a1]">
+          <p className="text-lg font-black uppercase text-[#ffb1a1]">IT&apos;S JOEVER FOR {addr}</p>
         </div>
       ))}
 
-      <div className="mx-auto grid max-w-7xl gap-4 px-4 py-5 sm:px-6 lg:grid-cols-[1fr_260px]">
+      <div className="mx-auto max-w-2xl px-4 py-5 space-y-4">
 
-        {/* ── LEFT: ARENA + MOVE PANEL ── */}
-        <div className="space-y-4">
+        {/* ── ARENA ── */}
+        <section>
+          <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#91897C]">
+            {activePlayers.length} / 6 active — {phase === "select" && !myEliminated ? (targetId ? `targeting ${players.find(p=>p.id===targetId)?.addr}` : "tap a player to target") : phase === "locked" ? "bots deciding…" : phase === "reveal" ? "moves revealed" : "round over"}
+          </p>
 
-          {/* ARENA */}
-          <section>
-            <p className="mb-2 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91897C]">
-              Arena — {activePlayers.length} active
-            </p>
-            <div className="grid grid-cols-3 gap-3">
-              {players.map((p) => (
-                <PlayerSlot
-                  key={p.id}
-                  isTargeted={targetId === p.id}
-                  onTarget={() => {
-                    if (!p.isYou && !p.isEliminated && phase === "select" && !myEliminated)
-                      setTargetId(p.id);
-                  }}
-                  phase={phase}
-                  player={p}
-                />
-              ))}
-            </div>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {players.map((p) => (
+              <PlayerSlot
+                key={p.id}
+                isTargeted={targetId === p.id}
+                onTarget={() => {
+                  if (!p.isYou && !p.isEliminated && phase === "select" && !myEliminated)
+                    setTargetId(p.id);
+                }}
+                phase={phase}
+                player={p}
+              />
+            ))}
+          </div>
+        </section>
 
-            {phase === "select" && !myEliminated && (
-              <p className="mt-2 font-mono text-xs text-[#91897C]">
-                {targetId
-                  ? `Target: ${players.find((p) => p.id === targetId)?.addr} — pick a move below`
-                  : "Click a player to target, then pick your move"}
-              </p>
-            )}
-          </section>
+        {/* ── ACTION PANEL ── */}
+        <section className="border border-[#91897C] bg-[#2f2922] p-4">
 
-          {/* MOVE PANEL */}
-          <section className="border border-[#91897C] bg-[#2f2922] p-4 shadow-[4px_4px_0_#91897C]">
-            <p className="mb-3 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91897C]">
-              {myEliminated
-                ? "Eliminated — spectating"
-                : phase === "select"
-                ? "Choose Move"
-                : phase === "locked"
-                ? "Locked — bots deciding..."
-                : phase === "reveal"
-                ? "Reveal"
-                : "Round Over"}
-            </p>
+          {myEliminated ? (
+            <p className="text-sm text-[#91897C]">You&apos;ve been eliminated. Spectating.</p>
 
-            {myEliminated ? (
-              <p className="text-sm text-[#91897C]">
-                You have been eliminated. Watch the remaining players finish.
-              </p>
-
-            ) : (phase === "select" || phase === "locked") ? (
-              <>
-                <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
-                  {MOVES.map((m) => {
-                    const blocked    = modifier === "Scarcity" && (m.id === "rob" || m.id === "nuke");
-                    const canAfford  = myPlayer.balance >= m.cost && !blocked;
-                    const isSelected = move === m.id;
-                    return (
-                      <button
-                        key={m.id}
-                        className={`border p-2 text-left text-xs transition ${
-                          !canAfford
-                            ? "cursor-not-allowed border-[#91897C]/30 opacity-30"
-                            : isSelected
-                            ? "border-[#EEF083] bg-[#EEF083] text-[#241F19] shadow-[3px_3px_0_#91897C]"
-                            : "border-[#91897C] bg-[#241F19] text-[#EEF083] hover:border-[#EEF083]"
-                        }`}
-                        disabled={!canAfford || phase !== "select"}
-                        onClick={() => setMove(m.id)}
-                        title={m.desc}
-                        type="button"
-                      >
-                        <p className="font-black uppercase">{m.name}</p>
-                        <p className={`mt-0.5 font-mono text-[10px] ${isSelected ? "text-[#241F19]/70" : "text-[#91897C]"}`}>
-                          {m.cost === 0 ? "Free" : `${m.cost} $T`}
-                        </p>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <div className="mt-3 flex flex-wrap items-center gap-3">
-                  <button
-                    className="border-2 border-[#EEF083] bg-[#EEF083] px-6 py-2.5 font-black uppercase text-[#241F19] shadow-[4px_4px_0_#91897C] transition hover:bg-transparent hover:text-[#EEF083] disabled:cursor-not-allowed disabled:border-[#91897C] disabled:bg-transparent disabled:text-[#91897C] disabled:shadow-none"
-                    disabled={!move || !targetId || phase !== "select"}
-                    onClick={handleConfirm}
-                    type="button"
-                  >
-                    {phase === "locked" ? "Locked In" : "Confirm Move"}
-                  </button>
-
-                  {phase === "select" && move && targetId && (
-                    <span className="font-mono text-xs text-[#91897C]">
-                      {move.toUpperCase()} on {players.find((p) => p.id === targetId)?.addr}
-                    </span>
-                  )}
-                  {phase === "select" && (!move || !targetId) && (
-                    <span className="font-mono text-xs text-[#91897C]">
-                      {!targetId ? "Pick a target first" : "Pick a move"}
-                      {mode !== "solo" && " — auto-folds at 0"}
-                    </span>
-                  )}
-                </div>
-              </>
-
-            ) : phase === "reveal" ? (
-              <div className="space-y-2">
-                {players.filter((p) => !p.isEliminated || p.revealedMove).map((p) => {
-                  const tgt = players.find((t) => t.id === p.revealedTarget);
+          ) : (phase === "select" || phase === "locked") ? (
+            <>
+              <div className="grid grid-cols-4 gap-2">
+                {MOVES.map((m) => {
+                  const blocked   = modifier === "Scarcity" && (m.id === "rob" || m.id === "nuke");
+                  const canAfford = myPlayer.balance >= m.cost && !blocked;
+                  const selected  = move === m.id;
                   return (
-                    <div key={p.id} className="flex items-center gap-3 font-mono text-xs">
-                      <span className={`w-16 truncate font-black ${p.isYou ? "text-[#EEF083]" : "text-[#d8d4a1]"}`}>
-                        {p.isYou ? "You" : p.addr.slice(0, 8)}
-                      </span>
-                      <span className="border border-[#EEF083] bg-[#EEF083]/10 px-2 py-0.5 uppercase text-[#EEF083]">
-                        {p.revealedMove ?? "—"}
-                      </span>
-                      {tgt && p.revealedMove !== "fold" && p.revealedMove !== "bluff" && (
-                        <span className="text-[#91897C]">→ {tgt.isYou ? "you" : tgt.addr.slice(0, 8)}</span>
-                      )}
-                      {p.balanceDelta !== 0 && (
-                        <span className={p.balanceDelta > 0 ? "text-[#a8e6a3]" : "text-[#ffb1a1]"}>
-                          {p.balanceDelta > 0 ? "+" : ""}{p.balanceDelta}
-                        </span>
-                      )}
-                    </div>
+                    <button
+                      key={m.id}
+                      className={`border py-3 text-center transition touch-manipulation ${
+                        !canAfford
+                          ? "cursor-not-allowed border-[#91897C]/30 opacity-30"
+                          : selected
+                          ? "border-[#EEF083] bg-[#EEF083] text-[#241F19]"
+                          : "border-[#91897C] hover:border-[#EEF083]"
+                      }`}
+                      disabled={!canAfford || phase !== "select"}
+                      onClick={() => { sfx.moveSelect(); setMove(m.id); }}
+                      title={m.desc}
+                      type="button"
+                    >
+                      <p className="text-xs font-bold uppercase">{m.name}</p>
+                      <p className={`mt-0.5 font-mono text-[10px] ${selected ? "text-[#241F19]/60" : "text-[#91897C]"}`}>
+                        {m.cost === 0 ? "Free" : `${m.cost} $T`}
+                      </p>
+                    </button>
                   );
                 })}
               </div>
 
-            ) : phase === "round_end" ? (
-              <button
-                className="border-2 border-[#EEF083] bg-[#EEF083] px-8 py-3 font-black uppercase text-[#241F19] shadow-[4px_4px_0_#91897C] transition hover:bg-transparent hover:text-[#EEF083]"
-                onClick={nextRound}
-                type="button"
-              >
-                Next Round →
-              </button>
-            ) : null}
-          </section>
-        </div>
+              <div className="mt-3 flex items-center gap-3">
+                <button
+                  className="border-2 border-[#EEF083] bg-[#EEF083] px-6 py-3 text-sm font-bold uppercase text-[#241F19] shadow-[4px_4px_0_#91897C] transition touch-manipulation hover:bg-transparent hover:text-[#EEF083] disabled:cursor-not-allowed disabled:border-[#91897C] disabled:bg-transparent disabled:text-[#91897C] disabled:shadow-none"
+                  disabled={!move || !targetId || phase !== "select"}
+                  onClick={handleConfirm}
+                  type="button"
+                >
+                  {phase === "locked" ? "Locked In" : "Confirm Move"}
+                </button>
+                <span className="font-mono text-xs text-[#91897C]">
+                  {phase === "locked" ? "waiting for bots…" : !targetId ? "pick a target first" : !move ? "pick a move" : `${move.toUpperCase()} → ${players.find(p=>p.id===targetId)?.addr}`}
+                </span>
+              </div>
+            </>
 
-        {/* ── SIDE PANEL ── */}
-        <div className="space-y-4">
-
-          {/* Live $TEST */}
-          <section className="border border-[#91897C] bg-[#2f2922] p-4 shadow-[4px_4px_0_#91897C]">
-            <p className="mb-3 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91897C]">
-              Live $TEST
-            </p>
-            {players.map((p) => (
-              <div key={p.id} className="mb-2.5 last:mb-0">
-                <div className="flex justify-between font-mono text-xs">
-                  <span className={p.isYou ? "font-black text-[#EEF083]" : "text-[#d8d4a1]"}>
-                    {p.isYou ? "You" : p.addr.slice(0, 10)}
-                  </span>
-                  <span
-                    className={
-                      p.isEliminated
-                        ? "text-[#91897C]/50 line-through"
-                        : phase === "reveal" && p.balanceDelta > 0
-                        ? "text-[#a8e6a3]"
-                        : phase === "reveal" && p.balanceDelta < 0
-                        ? "text-[#ffb1a1]"
-                        : "text-[#EEF083]"
-                    }
-                  >
-                    {p.balance} $T
-                    {phase === "reveal" && p.balanceDelta !== 0 && (
-                      <span> ({p.balanceDelta > 0 ? "+" : ""}{p.balanceDelta})</span>
+          ) : phase === "reveal" ? (
+            <div className="space-y-2">
+              {players.filter((p) => !p.isEliminated || p.revealedMove).map((p) => {
+                const tgt = players.find((t) => t.id === p.revealedTarget);
+                return (
+                  <div key={p.id} className="flex items-center gap-2 font-mono text-xs">
+                    <span className={`w-14 truncate font-bold ${p.isYou ? "text-[#EEF083]" : "text-[#d8d4a1]"}`}>
+                      {p.isYou ? "You" : p.addr.slice(0,8)}
+                    </span>
+                    <span className="border border-[#EEF083]/50 bg-[#EEF083]/10 px-1.5 py-0.5 uppercase text-[#EEF083]">
+                      {p.revealedMove ?? "—"}
+                    </span>
+                    {tgt && p.revealedMove !== "fold" && p.revealedMove !== "bluff" && (
+                      <span className="text-[#91897C]">→ {tgt.isYou ? "you" : tgt.addr.slice(0,8)}</span>
                     )}
-                  </span>
-                </div>
-                <TestBar value={p.balance} delta={p.balanceDelta} />
-              </div>
-            ))}
-          </section>
-
-          {/* Round Log */}
-          <section className="border border-[#91897C] bg-[#2f2922] p-4 shadow-[4px_4px_0_#91897C]">
-            <p className="mb-3 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91897C]">
-              Round Log
-            </p>
-            {history.length === 0 ? (
-              <p className="text-xs text-[#91897C]">No moves yet.</p>
-            ) : (
-              <div className="max-h-52 space-y-0.5 overflow-y-auto">
-                {history.map((h, i) => (
-                  <p
-                    key={i}
-                    className={`text-xs leading-5 ${
-                      h.startsWith("──")
-                        ? "mt-2 font-black uppercase tracking-[0.1em] text-[#EEF083]/40 first:mt-0"
-                        : "text-[#d8d4a1]"
-                    }`}
-                  >
-                    {h}
-                  </p>
-                ))}
-              </div>
-            )}
-          </section>
-
-          {/* Your status */}
-          <section
-            className={`border p-4 ${
-              myEliminated ? "border-[#ffb1a1] bg-[#ffb1a1]/5" : "border-[#EEF083] bg-[#EEF083]/5"
-            }`}
-          >
-            <p className="mb-2 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91897C]">
-              You
-            </p>
-            <p className={`text-2xl font-black ${myEliminated ? "text-[#ffb1a1]" : ""}`}>
-              {myPlayer?.balance ?? 0} $TEST
-            </p>
-            {myEliminated && (
-              <p className="mt-0.5 font-mono text-xs uppercase text-[#ffb1a1]">Eliminated</p>
-            )}
-            <p className="mt-0.5 font-mono text-xs text-[#91897C]">{myArchetype.name}</p>
-            <div className="mt-2 flex gap-1">
-              {[0, 1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  className={`h-2 w-2 border ${
-                    i < (myPlayer?.roundWins ?? 0)
-                      ? "border-[#EEF083] bg-[#EEF083]"
-                      : "border-[#91897C]"
-                  }`}
-                />
-              ))}
+                    {p.balanceDelta !== 0 && (
+                      <span className={`ml-auto font-bold ${p.balanceDelta > 0 ? "text-[#a8e6a3]" : "text-[#ffb1a1]"}`}>
+                        {p.balanceDelta > 0 ? "+" : ""}{p.balanceDelta}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-            <p className="mt-1 font-mono text-xs text-[#91897C]">round wins</p>
-          </section>
 
-          {/* Move guide */}
-          <section className="border border-[#91897C] bg-[#2f2922] p-4 shadow-[4px_4px_0_#91897C]">
-            <p className="mb-2 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91897C]">
-              Move Guide
-            </p>
-            <div className="space-y-1.5">
-              {MOVES.map((m) => (
-                <div key={m.id} className="flex gap-2 font-mono text-[10px]">
-                  <span className="w-12 shrink-0 font-black uppercase text-[#EEF083]">{m.name}</span>
-                  <span className="text-[#91897C]">{m.desc}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-        </div>
+          ) : phase === "round_end" ? (
+            <button
+              className="w-full border-2 border-[#EEF083] bg-[#EEF083] py-4 text-sm font-bold uppercase text-[#241F19] shadow-[4px_4px_0_#91897C] transition touch-manipulation hover:bg-transparent hover:text-[#EEF083]"
+              onClick={nextRound}
+              type="button"
+            >
+              Next Round →
+            </button>
+          ) : null}
+        </section>
+
       </div>
     </div>
   );

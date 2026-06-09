@@ -354,15 +354,53 @@ pub mod proof_of_alpha {
         let mut deltas = [0i64; MAX_PLAYERS];
         let mut nuke_elim = [false; MAX_PLAYERS];
 
+        // ── CHAOS_MODE: shuffle targets before resolution ─────────────────────
+        if game.modifier == modifier::CHAOS_MODE {
+            let slot = Clock::get()?.slot;
+
+            // Collect alive indices into fixed-size array
+            let mut orig  = [0usize; MAX_PLAYERS];
+            let mut pool  = [0usize; MAX_PLAYERS];
+            let mut n     = 0usize;
+            for i in 0..count {
+                if !game.players[i].is_eliminated {
+                    orig[n] = i;
+                    pool[n] = i;
+                    n += 1;
+                }
+            }
+
+            if n > 1 {
+                // Fisher-Yates with LCG seeded by slot
+                let mut rng = slot ^ 0xdeadbeef_cafe_u64;
+                for i in (1..n).rev() {
+                    rng = rng.wrapping_mul(6364136223846793005)
+                             .wrapping_add(1442695040888963407);
+                    let j = (rng >> 33) as usize % (i + 1);
+                    pool.swap(i, j);
+                }
+
+                // Assign shuffled targets, skipping self
+                for j in 0..n {
+                    let player = orig[j];
+                    let mut tgt = pool[j];
+                    if tgt == player {
+                        tgt = pool[(j + 1) % n];
+                    }
+                    game.players[player].target_revealed = tgt as u8;
+                }
+            }
+        }
+
         // ── Tax / Steal / Rob ─────────────────────────────────────────────────
         for i in 0..count {
             let actor = game.players[i];
             if actor.is_eliminated { continue; }
 
             let base: i64 = match actor.move_revealed {
-                m if m == move_id::TAX => 5,
+                m if m == move_id::TAX   => 5,
                 m if m == move_id::STEAL => 10,
-                m if m == move_id::ROB => 20,
+                m if m == move_id::ROB   => 20,
                 _ => continue,
             };
 
@@ -371,8 +409,7 @@ pub mod proof_of_alpha {
 
             let amount = base * greed;
 
-            // Target countering this actor?
-            let target = game.players[t];
+            let target    = game.players[t];
             let countered = target.move_revealed == move_id::COUNTER
                 && target.target_revealed == i as u8;
 
@@ -382,6 +419,22 @@ pub mod proof_of_alpha {
             } else {
                 deltas[i] += amount;
                 deltas[t] -= amount;
+            }
+        }
+
+        // ── Bluff ─────────────────────────────────────────────────────────────
+        // Bluffer gains +5 if their target wasted a Counter targeting them.
+        // (The -5 counter penalty is handled separately below.)
+        for i in 0..count {
+            let actor = game.players[i];
+            if actor.is_eliminated || actor.move_revealed != move_id::BLUFF { continue; }
+
+            let t = actor.target_revealed as usize;
+            if t >= count || game.players[t].is_eliminated { continue; }
+
+            let target = game.players[t];
+            if target.move_revealed == move_id::COUNTER && target.target_revealed == i as u8 {
+                deltas[i] += 5;
             }
         }
 
@@ -420,6 +473,7 @@ pub mod proof_of_alpha {
         }
 
         // ── Apply deltas, find round winner ───────────────────────────────────
+        let is_final_stand = game.modifier == modifier::FINAL_STAND;
         let mut best_delta = i64::MIN;
         let mut round_winner: Option<usize> = None;
 
@@ -427,9 +481,20 @@ pub mod proof_of_alpha {
             let p = &mut game.players[i];
             if p.is_eliminated { continue; }
 
-            let new_bal = (p.balance as i64 + deltas[i]).max(0) as u32;
-            p.balance = new_bal;
-            p.is_eliminated = p.is_eliminated || nuke_elim[i] || (new_bal == 0);
+            let pre_bal  = p.balance;
+            let new_bal  = (p.balance as i64 + deltas[i]).max(0) as u32;
+            let broke    = new_bal == 0;
+
+            // FINAL_STAND: first-time elimination from balance loss (not NUKE) gives 1 $T buffer.
+            // Only saved if they had >1 $T before (pre_bal > 1), so a player already at the
+            // minimum doesn't loop indefinitely.
+            let saved_by_stand = is_final_stand
+                && broke
+                && !nuke_elim[i]
+                && pre_bal > 1;
+
+            p.balance = if saved_by_stand { 1 } else { new_bal };
+            p.is_eliminated = p.is_eliminated || nuke_elim[i] || (broke && !saved_by_stand);
 
             if deltas[i] > best_delta {
                 best_delta = deltas[i];
@@ -444,19 +509,19 @@ pub mod proof_of_alpha {
         }
 
         // ── Check match over ──────────────────────────────────────────────────
-        let alive = game.players[..count].iter().filter(|p| !p.is_eliminated).count();
+        let alive      = game.players[..count].iter().filter(|p| !p.is_eliminated).count();
         let has_winner = game.players[..count].iter().any(|p| p.round_wins >= WINNING_ROUNDS);
 
         if has_winner || alive <= 1 {
             game.phase = phase::FINISHED;
         } else {
             game.round += 1;
-            game.phase = phase::COMMIT;
+            game.phase  = phase::COMMIT;
             for p in game.players[..count].iter_mut() {
-                p.has_committed = false;
-                p.has_revealed = false;
-                p.move_hash = [0u8; 32];
-                p.move_revealed = move_id::FOLD;
+                p.has_committed  = false;
+                p.has_revealed   = false;
+                p.move_hash      = [0u8; 32];
+                p.move_revealed  = move_id::FOLD;
                 p.target_revealed = 0;
             }
         }
@@ -465,8 +530,10 @@ pub mod proof_of_alpha {
     }
 
     /// Close the game account and return lamports to creator.
-    pub fn close_game(_ctx: Context<CloseGame>) -> Result<()> {
-        // The `close = creator` constraint on the account handles the lamport transfer.
+    /// Only callable once the match is finished.
+    pub fn close_game(ctx: Context<CloseGame>) -> Result<()> {
+        require!(ctx.accounts.game.phase == phase::FINISHED, GameError::GameNotFinished);
+        // The `close = creator` constraint handles the lamport transfer.
         Ok(())
     }
 }

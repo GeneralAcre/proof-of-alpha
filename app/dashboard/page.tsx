@@ -5,16 +5,40 @@ import Link from "next/link";
 import { Nav } from "../components/Nav";
 import { useWallet } from "../components/WalletProvider";
 import { ARCHETYPES, getCurrentRank, getNextRank, getRankProgress } from "../lib/archetypes";
-
-const UNLOCKED = new Set(["npc", "wojak"]);
+import { getUnlocked } from "../lib/unlocks";
 
 export default function Dashboard() {
   const { account, truncatedAddress } = useWallet();
   const [sigma, setSigma] = useState(0);
+  const [stats, setStats] = useState({ matches: 0, winRate: "—", elims: 0, bestStreak: 0 });
+  const [unlockedSet, setUnlocked] = useState<Set<string>>(new Set(["alpha", "beta"]));
+
+  const walletAddr = account ? String(account.address) : null;
 
   useEffect(() => {
-    try { setSigma(Number(localStorage.getItem("poa_sigma") ?? "0") || 0); } catch {}
-  }, []);
+    const sigmaKey = walletAddr ? `poa_sigma_${walletAddr}` : "poa_sigma_anonymous";
+    const matchKey = walletAddr ? `poa_matches_${walletAddr}` : "poa_matches_anonymous";
+    try { setSigma(Number(localStorage.getItem(sigmaKey) ?? "0") || 0); } catch {}
+    setUnlocked(getUnlocked(walletAddr));
+    try {
+      const raw = localStorage.getItem(matchKey);
+      if (raw) {
+        const records = JSON.parse(raw) as Array<{ won: boolean; elims: number }>;
+        const wins = records.filter((r) => r.won).length;
+        const elims = records.reduce((s, r) => s + r.elims, 0);
+        let streak = 0, best = 0;
+        for (const r of records) {
+          if (r.won) { streak++; best = Math.max(best, streak); } else streak = 0;
+        }
+        setStats({
+          matches: records.length,
+          winRate: records.length ? `${Math.round((wins / records.length) * 100)}%` : "—",
+          elims,
+          bestStreak: best,
+        });
+      }
+    } catch {}
+  }, [walletAddr]);
 
   if (!account) {
     return (
@@ -87,10 +111,10 @@ export default function Dashboard() {
         {/* ── QUICK STATS ── */}
         <section className="mb-6 grid gap-3 sm:grid-cols-4">
           {[
-            { label: "Matches Played", value: "—" },
-            { label: "Win Rate",       value: "—" },
-            { label: "Eliminations",   value: "—" },
-            { label: "Best Streak",    value: "—" },
+            { label: "Matches Played", value: stats.matches || "—" },
+            { label: "Win Rate",       value: stats.winRate },
+            { label: "Eliminations",   value: stats.elims || "—" },
+            { label: "Best Streak",    value: stats.bestStreak || "—" },
           ].map(({ label, value }) => (
             <div key={label} className="border border-[#91897C] bg-[#2f2922] p-4 shadow-[4px_4px_0_#91897C]">
               <p className="font-mono text-xs uppercase tracking-[0.16em] text-[#91897C]">{label}</p>
@@ -106,17 +130,17 @@ export default function Dashboard() {
           </p>
           <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-6">
             {ARCHETYPES.map((a) => {
-              const unlocked = UNLOCKED.has(a.id);
+              const isOwned = unlockedSet.has(a.id);
               return (
                 <div
                   key={a.id}
                   className={`border p-3 transition ${
-                    unlocked ? "border-[#EEF083] bg-[#EEF083]/5" : "border-[#91897C] opacity-50"
+                    isOwned ? "border-[#EEF083] bg-[#EEF083]/5" : "border-[#91897C] opacity-50"
                   }`}
                 >
                   <div
                     className={`mb-2 flex h-10 w-10 items-center justify-center border font-mono text-sm font-black ${
-                      unlocked
+                      isOwned
                         ? "border-[#EEF083] bg-[#EEF083]/10 text-[#EEF083]"
                         : "border-[#91897C] bg-[#241F19] text-[#91897C]"
                     }`}
@@ -125,7 +149,7 @@ export default function Dashboard() {
                   </div>
                   <p className="text-sm font-black uppercase">{a.name}</p>
                   <p className="mt-0.5 font-mono text-[10px] uppercase text-[#91897C]">
-                    {unlocked ? "Unlocked" : `${a.unlockCost.toLocaleString()} σ`}
+                    {isOwned ? "Unlocked" : `${a.unlockCost.toLocaleString()} σ`}
                   </p>
                 </div>
               );

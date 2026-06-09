@@ -22,6 +22,7 @@ export function SolanaMobileWalletProvider() {
       appIdentity: {
         name: "Proof of Alpha",
         uri: window.location.origin,
+        icon: `${window.location.origin}/charecter/alpha-charecter.png`,
       },
       authorizationCache: createDefaultAuthorizationCache(),
       chains: [SOLANA_DEVNET_CHAIN],

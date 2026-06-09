@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Nav } from "../components/Nav";
 import { useWallet } from "../components/WalletProvider";
+import { setSoundEnabled, isSoundEnabled } from "../lib/sounds";
 
 type AnimSpeed = "normal" | "fast" | "off";
 
@@ -12,6 +13,8 @@ export default function SettingsPage() {
   const { account, truncatedAddress, disconnect } = useWallet();
 
   const [sound, setSound] = useState(true);
+
+  useEffect(() => { setSound(isSoundEnabled()); }, []);
   const [animSpeed, setAnimSpeed] = useState<AnimSpeed>("normal");
   const [notifyWin, setNotifyWin]     = useState(true);
   const [notifyRankUp, setNotifyRankUp] = useState(true);
@@ -100,7 +103,7 @@ export default function SettingsPage() {
               </div>
               <button
                 className={`h-7 w-14 border transition ${sound ? "border-[#EEF083] bg-[#EEF083]" : "border-[#91897C] bg-transparent"}`}
-                onClick={() => setSound((s) => !s)}
+                onClick={() => setSound((s) => { setSoundEnabled(!s); return !s; })}
                 type="button"
               >
                 <span className={`block h-5 w-5 border transition-transform ${sound ? "translate-x-8 border-[#241F19] bg-[#241F19]" : "translate-x-1 border-[#91897C] bg-[#91897C]"}`} />

@@ -1,9 +1,41 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Nav } from "./components/Nav";
 
 export default function Home() {
+  const [started, setStarted] = useState(false);
+
+  if (!started) {
+    return (
+      <div
+        className="relative flex h-svh items-end justify-center overflow-hidden"
+        style={{
+          backgroundImage: "url('/background.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center center",
+        }}
+      >
+        <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#241F19]/80 via-transparent to-transparent" />
+
+        <div className="relative z-10 w-full px-6 pb-16 text-center sm:pb-24">
+          <h1 className="mb-6 text-[clamp(3.5rem,14vw,9rem)] font-black uppercase leading-[0.82] tracking-tight text-[#EEF083] drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]">
+            Proof of Alpha
+          </h1>
+          <p className="mx-auto mb-10 max-w-md font-mono text-sm text-[#d8d4a1]/90">
+            Pick your meme archetype, enter with 100&nbsp;$TEST, bluff your target in 10 seconds.
+          </p>
+          <button
+            onClick={() => setStarted(true)}
+            className="border-2 border-[#EEF083] bg-[#EEF083] px-12 py-4 text-lg font-black uppercase tracking-[0.18em] text-[#241F19] shadow-[6px_6px_0_#91897C] transition hover:bg-transparent hover:text-[#EEF083] touch-manipulation"
+          >
+            Start
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#241F19] text-[#EEF083]">

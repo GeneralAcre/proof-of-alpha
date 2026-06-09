@@ -3,9 +3,12 @@
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { PublicKey } from "@solana/web3.js";
 import { Nav } from "../components/Nav";
 import { useWallet } from "../components/WalletProvider";
 import { ARCHETYPES, getCurrentRank, getNextRank, getRankProgress } from "../lib/archetypes";
+import { closeOnchainGame } from "../lib/game-program";
+import { sfx, initSounds } from "../lib/sounds";
 
 function buildBreakdown(won: boolean, elims: number, mode: string) {
   const rows: { reason: string; points: number }[] = [];
@@ -17,17 +20,41 @@ function buildBreakdown(won: boolean, elims: number, mode: string) {
   return rows;
 }
 
-function readPrevSigma(): number {
-  try { return Number(localStorage.getItem("poa_sigma") ?? "0") || 0; } catch { return 0; }
+export type MatchRecord = {
+  ts: number;         // unix ms
+  won: boolean;
+  archetype: string;
+  elims: number;
+  earned: number;
+  mode: string;
+};
+
+function matchKey(address: string | null | undefined) {
+  return address ? `poa_matches_${address}` : "poa_matches_anonymous";
+}
+function saveMatchRecord(address: string | null | undefined, record: MatchRecord) {
+  try {
+    const raw = localStorage.getItem(matchKey(address));
+    const prev: MatchRecord[] = raw ? JSON.parse(raw) : [];
+    prev.unshift(record);          // newest first
+    localStorage.setItem(matchKey(address), JSON.stringify(prev.slice(0, 50)));
+  } catch {}
 }
 
-function saveSigma(next: number) {
-  try { localStorage.setItem("poa_sigma", String(next)); } catch {}
+function sigmaKey(address: string | null | undefined) {
+  return address ? `poa_sigma_${address}` : "poa_sigma_anonymous";
+}
+function readPrevSigma(address: string | null | undefined): number {
+  try { return Number(localStorage.getItem(sigmaKey(address)) ?? "0") || 0; } catch { return 0; }
+}
+function saveSigma(address: string | null | undefined, next: number) {
+  try { localStorage.setItem(sigmaKey(address), String(next)); } catch {}
 }
 
 function EndContent() {
   const params      = useSearchParams();
-  const { truncatedAddress } = useWallet();
+  const { truncatedAddress, account } = useWallet();
+  const walletAddr  = account ? String(account.address) : null;
 
   const archetypeId = params.get("archetype") ?? "npc";
   const won         = (params.get("won") ?? "false") === "true";
@@ -41,10 +68,32 @@ function EndContent() {
   const [prevSigma, setPrevSigma] = useState(0);
   const [showRankUp, setShowRankUp] = useState(false);
 
+  const { selectedWallet, account: walletAccount } = useWallet();
+
+  useEffect(() => { initSounds(); }, []);
+
   useEffect(() => {
-    const prev = readPrevSigma();
+    const prev = readPrevSigma(walletAddr);
     setPrevSigma(prev);
-    saveSigma(Math.max(0, prev + totalEarned));
+    saveSigma(walletAddr, Math.max(0, prev + totalEarned));
+    saveMatchRecord(walletAddr, {
+      ts: Date.now(), won, archetype: archetypeId, elims, earned: totalEarned, mode,
+    });
+
+    // Close the on-chain game account to reclaim the creator's entry lamports
+    const pdaStr = sessionStorage.getItem("poa_onchain_pda");
+    if (pdaStr && selectedWallet && walletAccount) {
+      closeOnchainGame(selectedWallet, walletAccount, {
+        gamePDA: new PublicKey(pdaStr),
+        roomCode: "",
+        pendingSalts: new Map(),
+      }).then(() => {
+        sessionStorage.removeItem("poa_onchain_pda");
+      }).catch(() => {
+        // Non-fatal — account may already be closed or transaction failed
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalEarned]);
 
   const newSigma  = Math.max(0, prevSigma + totalEarned);
@@ -55,7 +104,7 @@ function EndContent() {
 
   useEffect(() => {
     if (rankedUp) {
-      const id = setTimeout(() => setShowRankUp(true), 1200);
+      const id = setTimeout(() => { setShowRankUp(true); sfx.rankUp(); }, 1200);
       return () => clearTimeout(id);
     }
   }, [rankedUp]);

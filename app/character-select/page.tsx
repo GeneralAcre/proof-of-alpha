@@ -1,12 +1,13 @@
 "use client";
 
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Nav } from "../components/Nav";
 import { ARCHETYPES, type Archetype } from "../lib/archetypes";
+import { getUnlocked } from "../lib/unlocks";
+import { useWallet } from "../components/WalletProvider";
 
-const MOCK_UNLOCKED = new Set(["alpha", "beta"]);
 const LAST_PICKED_KEY = "poa_last_archetype";
 
 function StatBar({ label, value, big }: { label: string; value: number; big?: boolean }) {
@@ -25,7 +26,7 @@ function StatBar({ label, value, big }: { label: string; value: number; big?: bo
   );
 }
 
-/* ── Hover popup (desktop) ───────────────────────────────────────────────── */
+/* ── Hover popup (desktop/mouse only) ───────────────────────────────────── */
 type PopupPos = { x: number; y: number; side: "right" | "left" };
 
 function HoverPopup({ archetype, pos }: { archetype: Archetype; pos: PopupPos }) {
@@ -41,7 +42,6 @@ function HoverPopup({ archetype, pos }: { archetype: Archetype; pos: PopupPos })
 
   return (
     <div style={style} className="border border-[#EEF083] bg-[#2f2922] shadow-[8px_8px_0_#91897C]">
-      {/* image */}
       {a.image && (
         <div className="relative h-44 w-full overflow-hidden bg-[#1a1710]">
           <Image
@@ -51,38 +51,29 @@ function HoverPopup({ archetype, pos }: { archetype: Archetype; pos: PopupPos })
             sizes="288px"
             src={a.image}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#2f2922] via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-[#2f2922] via-transparent to-transparent" />
         </div>
       )}
-
       <div className="p-4 space-y-3">
-        {/* name */}
         <div>
           <p className="text-xl font-black uppercase leading-none text-[#EEF083]">{a.name}</p>
           <p className="mt-0.5 text-sm text-[#91897C]">{a.role}</p>
           <p className="mt-1 text-xs leading-5 text-[#91897C]">{a.description}</p>
         </div>
-
-        {/* stats */}
         <div className="space-y-1.5">
           <StatBar big label="AGG" value={a.stats.aggression} />
           <StatBar big label="DEF" value={a.stats.defense} />
           <StatBar big label="BLF" value={a.stats.bluff} />
           <StatBar big label="GRD" value={a.stats.greed} />
         </div>
-
-        {/* passive */}
         <div className="border-t border-[#91897C]/30 pt-2">
           <p className="mb-1 font-mono text-[10px] uppercase text-[#91897C]">Passive</p>
           <p className="text-xs leading-5 text-[#d8d4a1]">{a.passive}</p>
         </div>
-
-        {/* unique */}
         <div className="border-t border-[#91897C]/30 pt-2">
           <p className="mb-1 font-mono text-[10px] uppercase text-[#91897C]">Unique Move</p>
           <p className="text-xs leading-5 text-[#d8d4a1]">{a.uniqueMove}</p>
         </div>
-
         <p className="font-mono text-[10px] italic text-[#EEF083]/40">&ldquo;{a.tagline}&rdquo;</p>
       </div>
     </div>
@@ -93,8 +84,16 @@ function HoverPopup({ archetype, pos }: { archetype: Archetype; pos: PopupPos })
 function CharacterSelectContent() {
   const router = useRouter();
   const params = useSearchParams();
+  const { account } = useWallet();
   const mode   = params.get("mode") ?? "multiplayer";
   const room   = params.get("room") ?? "";
+
+  const walletAddr = account ? String(account.address) : null;
+  const [unlocked, setUnlocked] = useState<Set<string>>(new Set(["alpha", "beta"]));
+
+  useEffect(() => {
+    setUnlocked(getUnlocked(walletAddr));
+  }, [walletAddr]);
 
   const [selectedId, setSelectedId] = useState<string>(() => {
     if (typeof window !== "undefined") {
@@ -107,25 +106,26 @@ function CharacterSelectContent() {
   const [popupPos,   setPopupPos]   = useState<PopupPos | null>(null);
 
   const selected   = ARCHETYPES.find((a) => a.id === selectedId) ?? ARCHETYPES[0];
-  const isUnlocked = (a: Archetype) => MOCK_UNLOCKED.has(a.id);
+  const isUnlocked = (a: Archetype) => unlocked.has(a.id);
 
   useEffect(() => { localStorage.setItem(LAST_PICKED_KEY, selectedId); }, [selectedId]);
 
-  function handleMouseEnter(a: Archetype, e: React.MouseEvent<HTMLDivElement>) {
+  function handlePointerEnter(a: Archetype, e: React.PointerEvent<HTMLDivElement>) {
+    if (e.pointerType !== "mouse") return;
     if (!isUnlocked(a)) return;
-    const rect    = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    const PW      = 296; // popup width + gap
-    const spaceR  = window.innerWidth - rect.right;
-    const side    = spaceR >= PW ? "right" : "left";
-    // clamp vertically so popup never goes off-screen
-    const maxY    = window.innerHeight - 500;
-    const y       = Math.min(Math.max(rect.top, 8), maxY > 8 ? maxY : 8);
-    const x       = side === "right" ? rect.right + 8 : window.innerWidth - rect.left + 8;
+    const rect   = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const PW     = 296;
+    const spaceR = window.innerWidth - rect.right;
+    const side   = spaceR >= PW ? "right" : "left";
+    const maxY   = window.innerHeight - 500;
+    const y      = Math.min(Math.max(rect.top, 8), maxY > 8 ? maxY : 8);
+    const x      = side === "right" ? rect.right + 8 : window.innerWidth - rect.left + 8;
     setHoveredId(a.id);
     setPopupPos({ x, y, side });
   }
 
-  function handleMouseLeave() {
+  function handlePointerLeave(e: React.PointerEvent<HTMLDivElement>) {
+    if (e.pointerType !== "mouse") return;
     setHoveredId(null);
     setPopupPos(null);
   }
@@ -148,12 +148,12 @@ function CharacterSelectContent() {
   return (
     <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
       <Nav />
-      <main className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
 
-        <p className="mb-2 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91897C]">
+        <p className="mb-1 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91897C]">
           Step 2 of 3
         </p>
-        <h1 className="mb-8 text-4xl font-black uppercase sm:text-5xl">Choose Archetype</h1>
+        <h1 className="mb-6 text-3xl font-black uppercase sm:mb-8 sm:text-5xl">Choose Archetype</h1>
 
         {/* ── 6-card grid ── */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -165,20 +165,20 @@ function CharacterSelectContent() {
             return (
               <div
                 key={a.id}
-                className="relative h-72 [perspective:900px] sm:h-80"
-                onMouseEnter={(e) => handleMouseEnter(a, e)}
-                onMouseLeave={handleMouseLeave}
+                className="relative h-64 perspective-[900px] sm:h-80"
+                onPointerEnter={(e) => handlePointerEnter(a, e)}
+                onPointerLeave={(e) => handlePointerLeave(e)}
               >
                 {/* rotating inner */}
                 <div
-                  className={`relative h-full w-full transition-transform duration-500 [transform-style:preserve-3d] ${
-                    isFlipped ? "[transform:rotateY(180deg)]" : ""
+                  className={`relative h-full w-full will-change-transform transition-transform duration-500 transform-3d ${
+                    isFlipped ? "transform-[rotateY(180deg)]" : ""
                   }`}
                 >
 
                   {/* ── FRONT ── */}
                   <button
-                    className={`absolute inset-0 flex flex-col overflow-hidden border [backface-visibility:hidden] transition ${
+                    className={`absolute inset-0 flex flex-col overflow-hidden border backface-hidden transition touch-manipulation ${
                       isSelected && !isFlipped
                         ? "border-[#EEF083] shadow-[4px_4px_0_#91897C]"
                         : unlocked
@@ -217,7 +217,7 @@ function CharacterSelectContent() {
                     </div>
 
                     {/* name strip */}
-                    <div className={`shrink-0 border-t px-3 py-2.5 text-left ${
+                    <div className={`shrink-0 border-t px-3 py-2 text-left ${
                       isSelected && !isFlipped
                         ? "border-[#EEF083] bg-[#EEF083]/10"
                         : "border-[#91897C]"
@@ -225,15 +225,15 @@ function CharacterSelectContent() {
                       <p className="text-sm font-black uppercase leading-none text-[#EEF083]">
                         {a.name}
                       </p>
-                      <p className="mt-0.5 text-xs text-[#91897C]">{a.role}</p>
+                      <p className="mt-0.5 text-[11px] text-[#91897C]">{a.role}</p>
                     </div>
                   </button>
 
-                  {/* ── BACK (mobile tap detail) ── */}
-                  <div className="absolute inset-0 flex flex-col overflow-hidden border border-[#EEF083] bg-[#2f2922] shadow-[4px_4px_0_#91897C] [backface-visibility:hidden] [transform:rotateY(180deg)]">
+                  {/* ── BACK (tap detail) ── */}
+                  <div className="absolute inset-0 flex flex-col overflow-hidden border border-[#EEF083] bg-[#2f2922] shadow-[4px_4px_0_#91897C] backface-hidden transform-[rotateY(180deg)]">
                     {/* header / close */}
                     <button
-                      className="flex shrink-0 items-center gap-2 border-b border-[#91897C] px-3 py-2.5 text-left transition hover:bg-[#EEF083]/5"
+                      className="flex shrink-0 items-center gap-2 border-b border-[#91897C] px-3 py-2.5 text-left transition hover:bg-[#EEF083]/5 touch-manipulation"
                       onClick={() => setFlippedId(null)}
                       type="button"
                       aria-label="Flip back"
@@ -245,13 +245,13 @@ function CharacterSelectContent() {
                         <p className="text-sm font-black uppercase leading-none text-[#EEF083]">
                           {a.name}
                         </p>
-                        <p className="text-xs text-[#91897C]">{a.role}</p>
+                        <p className="text-[11px] text-[#91897C]">{a.role}</p>
                       </div>
-                      <span className="font-mono text-xs text-[#91897C]">✕</span>
+                      <span className="font-mono text-sm text-[#91897C]">✕</span>
                     </button>
 
-                    {/* scrollable detail — bigger text than before */}
-                    <div className="flex-1 overflow-y-auto p-3 space-y-2.5">
+                    {/* scrollable detail */}
+                    <div className="flex-1 overflow-y-auto overscroll-contain p-3 space-y-2.5">
                       <p className="text-xs leading-5 text-[#91897C]">{a.description}</p>
 
                       <div className="space-y-1.5">
@@ -283,13 +283,18 @@ function CharacterSelectContent() {
           })}
         </div>
 
+        {/* tap hint — mobile only */}
+        <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[0.12em] text-[#91897C] sm:hidden">
+          Tap a card to see details
+        </p>
+
         {/* ── CONFIRM ── */}
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-[#91897C] pt-6">
+        <div className="mt-6 flex flex-col gap-3 border-t border-[#91897C] pt-5 sm:mt-8 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4 sm:pt-6">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.16em] text-[#91897C]">
               Entering as
             </p>
-            <p className="text-xl font-black uppercase text-[#EEF083]">
+            <p className="text-lg font-black uppercase text-[#EEF083] sm:text-xl">
               {selected.name}{" "}
               <span className="text-sm font-normal text-[#91897C]">— {selected.role}</span>
             </p>
@@ -299,7 +304,7 @@ function CharacterSelectContent() {
             </p>
           </div>
           <button
-            className="border-2 border-[#EEF083] bg-[#EEF083] px-8 py-4 font-black uppercase text-[#241F19] shadow-[6px_6px_0_#91897C] transition hover:bg-transparent hover:text-[#EEF083]"
+            className="w-full border-2 border-[#EEF083] bg-[#EEF083] px-8 py-4 font-black uppercase text-[#241F19] shadow-[6px_6px_0_#91897C] transition hover:bg-transparent hover:text-[#EEF083] touch-manipulation sm:w-auto"
             onClick={confirm}
             type="button"
           >
@@ -309,7 +314,7 @@ function CharacterSelectContent() {
 
       </main>
 
-      {/* ── fixed hover popup ── */}
+      {/* ── fixed hover popup (mouse/desktop only — never renders on touch) ── */}
       {hoveredArchetype && popupPos && (
         <HoverPopup archetype={hoveredArchetype} pos={popupPos} />
       )}

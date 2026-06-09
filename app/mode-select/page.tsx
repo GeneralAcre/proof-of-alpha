@@ -1,17 +1,18 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Nav } from "../components/Nav";
+import { fetchOpenRooms, type GameRoomState, PHASE } from "../lib/solana-client";
 
-const OPEN_ROOMS = [
-  { code: "CHAD-7X2K", waiting: 3, modifier: "Standard",  mode: "Multi" },
-  { code: "SIG-2MQR",  waiting: 1, modifier: "Chaos Mode", mode: "Multi" },
-  { code: "WJAK-3RX",  waiting: 2, modifier: "Scarcity",   mode: "Multi" },
-  { code: "NPC-8KQT",  waiting: 4, modifier: "Standard",   mode: "Multi" },
-  { code: "DM-6YBP",   waiting: 0, modifier: "Greed Mode", mode: "Multi" },
-];
+const MODIFIER_NAMES = ["Standard", "Greed Mode", "Chaos Mode", "Scarcity", "Final Stand"];
+const PHASE_LABELS: Record<number, string> = {
+  [PHASE.LOBBY]:   "Waiting",
+  [PHASE.COMMIT]:  "In Round",
+  [PHASE.REVEAL]:  "Revealing",
+  [PHASE.RESOLVE]: "Resolving",
+};
 
 function generateCode() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -28,6 +29,16 @@ function ModeSelectContent() {
   const [privateCode, setPrivateCode] = useState<string | null>(null);
   const [joinInput, setJoinInput] = useState("");
   const [joinError, setJoinError] = useState("");
+  const [liveRooms, setLiveRooms] = useState<GameRoomState[]>([]);
+  const [roomsLoading, setRoomsLoading] = useState(false);
+
+  useEffect(() => {
+    if (mode !== "multiplayer") return;
+    setRoomsLoading(true);
+    fetchOpenRooms()
+      .then(setLiveRooms)
+      .finally(() => setRoomsLoading(false));
+  }, [mode]);
 
   function handleCreateRoom() {
     setPrivateCode(generateCode());
@@ -188,32 +199,44 @@ function ModeSelectContent() {
           <div className="border border-[#91897C] bg-[#2f2922] shadow-[6px_6px_0_#91897C]">
             <div className="flex items-center justify-between border-b border-[#91897C] px-5 py-3">
               <p className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91897C]">
-                Open Public Rooms
+                Active Games On-chain
               </p>
               <span className="live-dot inline-block h-1.5 w-1.5 bg-[#EEF083]" />
             </div>
-            {OPEN_ROOMS.map((room) => (
-              <div
-                key={room.code}
-                className="flex flex-wrap items-center justify-between gap-3 border-b border-[#91897C] px-5 py-4 last:border-b-0"
-              >
-                <div className="flex items-center gap-4">
-                  <span className="font-mono text-sm font-black text-[#EEF083]">{room.code}</span>
-                  <span className="font-mono text-xs text-[#91897C]">{room.waiting}/6 waiting</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="border border-[#91897C] px-2 py-0.5 font-mono text-xs uppercase text-[#91897C]">
-                    {room.modifier}
-                  </span>
-                  <Link
-                    className="border border-[#EEF083] px-3 py-1.5 font-mono text-xs font-black uppercase text-[#EEF083] transition hover:bg-[#EEF083] hover:text-[#241F19]"
-                    href={`/character-select?mode=multiplayer&room=${room.code}`}
-                  >
-                    Join
-                  </Link>
-                </div>
+            {roomsLoading ? (
+              <div className="px-5 py-8 text-center">
+                <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#91897C] animate-pulse">
+                  Querying chain…
+                </p>
               </div>
-            ))}
+            ) : liveRooms.length === 0 ? (
+              <div className="px-5 py-8 text-center">
+                <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#91897C]">No active games found</p>
+                <p className="mt-1 text-sm text-[#d8d4a1]">Create a room above to be the first.</p>
+              </div>
+            ) : (
+              liveRooms.map((room) => (
+                <div
+                  key={room.roomCode}
+                  className="flex flex-wrap items-center justify-between gap-3 border-b border-[#91897C] px-5 py-4 last:border-b-0"
+                >
+                  <div className="flex items-center gap-4">
+                    <span className="font-mono text-sm font-black text-[#EEF083]">{room.roomCode}</span>
+                    <span className="font-mono text-xs text-[#91897C]">
+                      Round {room.round} · {room.playerCount}/6 players
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="border border-[#91897C] px-2 py-0.5 font-mono text-xs uppercase text-[#91897C]">
+                      {MODIFIER_NAMES[room.modifier] ?? "Standard"}
+                    </span>
+                    <span className="font-mono text-xs text-[#91897C]">
+                      {PHASE_LABELS[room.phase] ?? "Active"}
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         )}
       </main>

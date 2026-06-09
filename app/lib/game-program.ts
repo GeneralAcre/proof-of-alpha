@@ -1,13 +1,11 @@
 "use client";
 
 import {
-  Connection,
   Keypair,
   PublicKey,
   Transaction,
   TransactionInstruction,
   SystemProgram,
-  sendAndConfirmTransaction,
 } from "@solana/web3.js";
 import type { WalletAccount } from "@wallet-standard/base";
 import type { Wallet } from "@wallet-standard/base";
@@ -18,6 +16,7 @@ import {
 import {
   PROGRAM_ID,
   connection,
+  erConnection,
   MOVE_ID,
   hashMove,
   randomSalt,
@@ -38,17 +37,24 @@ const DISC: Record<string, Buffer> = {
 
 // ─── Wallet-standard signing bridge ──────────────────────────────────────────
 
+type SignedTxBundle = {
+  tx: Transaction;
+  blockhash: string;
+  lastValidBlockHeight: number;
+};
+
 async function signWithWallet(
   wallet: Wallet,
   account: WalletAccount,
   tx: Transaction,
-): Promise<Transaction> {
+  conn = connection,
+): Promise<SignedTxBundle> {
   const feature = (wallet.features as Partial<SolanaSignTransactionFeature>)[
     SolanaSignTransaction
   ];
   if (!feature) throw new Error("Wallet does not support SolanaSignTransaction");
 
-  const { blockhash } = await connection.getLatestBlockhash();
+  const { blockhash, lastValidBlockHeight } = await conn.getLatestBlockhash("confirmed");
   tx.recentBlockhash = blockhash;
   tx.feePayer = new PublicKey(account.address);
 
@@ -58,12 +64,27 @@ async function signWithWallet(
     account,
     chain: "solana:devnet",
   });
-  return Transaction.from(result.signedTransaction as Buffer);
+  return {
+    tx: Transaction.from(result[0].signedTransaction as Buffer),
+    blockhash,
+    lastValidBlockHeight,
+  };
 }
 
-async function sendTx(tx: Transaction): Promise<string> {
-  const raw = tx.serialize();
-  return connection.sendRawTransaction(raw, { skipPreflight: false });
+/** Send a signed transaction and wait for confirmation. */
+async function sendAndConfirm(bundle: SignedTxBundle, conn = connection): Promise<string> {
+  const raw = bundle.tx.serialize();
+  let sig: string;
+  try {
+    sig = await conn.sendRawTransaction(raw, { skipPreflight: false, maxRetries: 3 });
+  } catch (err) {
+    throw new Error(`Send failed: ${String(err)}`);
+  }
+  await conn.confirmTransaction(
+    { signature: sig, blockhash: bundle.blockhash, lastValidBlockHeight: bundle.lastValidBlockHeight },
+    "confirmed",
+  );
+  return sig;
 }
 
 // ─── Instruction builders ─────────────────────────────────────────────────────
@@ -209,8 +230,6 @@ const ARCHETYPE_ID: Record<string, number> = {
 export type OnchainGame = {
   gamePDA: PublicKey;
   roomCode: string;
-  botKeypairs: Keypair[];
-  // Pending salts for current round (player idx -> salt)
   pendingSalts: Map<number, Uint8Array>;
 };
 
@@ -228,25 +247,21 @@ export async function createOnchainGame(
   const creator = new PublicKey(account.address);
   const [gamePDA] = deriveGamePDA(roomCode);
 
-  // Generate ephemeral keypairs for the 5 bots
-  const botKeypairs = Array.from({ length: 5 }, () => Keypair.generate());
-
-  // Build all setup instructions in one transaction to save fees
-  const { blockhash } = await connection.getLatestBlockhash();
-  const tx = new Transaction({ recentBlockhash: blockhash, feePayer: creator });
-
-  tx.add(await ix_createGame(creator, roomCode, modifier, ARCHETYPE_ID[archetypeId] ?? 0));
-
-  for (let i = 0; i < 5; i++) {
-    tx.add(ix_addBot(creator, gamePDA, BOT_ARCHETYPES[i], botKeypairs[i].publicKey));
+  // If the PDA already exists (e.g. same room code reused), skip creation
+  const existing = await connection.getAccountInfo(gamePDA);
+  if (!existing) {
+    const botPubkeys = Array.from({ length: 5 }, () => Keypair.generate().publicKey);
+    const tx = new Transaction();
+    tx.add(await ix_createGame(creator, roomCode, modifier, ARCHETYPE_ID[archetypeId] ?? 0));
+    for (let i = 0; i < 5; i++) {
+      tx.add(ix_addBot(creator, gamePDA, BOT_ARCHETYPES[i], botPubkeys[i]));
+    }
+    tx.add(ix_startGame(creator, gamePDA));
+    const bundle = await signWithWallet(wallet, account, tx);
+    await sendAndConfirm(bundle);
   }
 
-  tx.add(ix_startGame(creator, gamePDA));
-
-  const signed = await signWithWallet(wallet, account, tx);
-  await sendTx(signed);
-
-  return { gamePDA, roomCode, botKeypairs, pendingSalts: new Map() };
+  return { gamePDA, roomCode, pendingSalts: new Map() };
 }
 
 /**
@@ -262,8 +277,7 @@ export async function commitRoundMoves(
   botDecisions: Array<{ moveId: number; targetIdx: number }>,
 ): Promise<Map<number, Uint8Array>> {
   const creator = new PublicKey(account.address);
-  const { blockhash } = await connection.getLatestBlockhash();
-  const tx = new Transaction({ recentBlockhash: blockhash, feePayer: creator });
+  const tx = new Transaction();
 
   const salts = new Map<number, Uint8Array>();
 
@@ -282,8 +296,8 @@ export async function commitRoundMoves(
     tx.add(ix_commitMove(creator, onchain.gamePDA, i + 1, hash));
   }
 
-  const signed = await signWithWallet(wallet, account, tx);
-  await sendTx(signed);
+  const bundle = await signWithWallet(wallet, account, tx, erConnection);
+  await sendAndConfirm(bundle, erConnection);
 
   return salts;
 }
@@ -301,8 +315,7 @@ export async function revealAndResolve(
   salts: Map<number, Uint8Array>,
 ): Promise<void> {
   const creator = new PublicKey(account.address);
-  const { blockhash } = await connection.getLatestBlockhash();
-  const tx = new Transaction({ recentBlockhash: blockhash, feePayer: creator });
+  const tx = new Transaction();
 
   // Player reveal (index 0)
   const playerSalt = salts.get(0)!;
@@ -318,13 +331,41 @@ export async function revealAndResolve(
   // Resolve
   tx.add(ix_resolveRound(creator, onchain.gamePDA));
 
-  const signed = await signWithWallet(wallet, account, tx);
-  await sendTx(signed);
+  const bundle = await signWithWallet(wallet, account, tx, erConnection);
+  await sendAndConfirm(bundle, erConnection);
 }
 
-/** Fetch raw game account data from chain */
+/** Fetch raw game account data — reads from ER (live state during a match) */
 export async function fetchGameState(gamePDA: PublicKey): Promise<Uint8Array | null> {
-  const info = await connection.getAccountInfo(gamePDA);
+  const info = await erConnection.getAccountInfo(gamePDA);
   if (!info) return null;
   return info.data;
+}
+
+/**
+ * Close the finished game account and reclaim the creator's entry lamports.
+ * Silently skips if the account no longer exists (already closed or never created).
+ */
+export async function closeOnchainGame(
+  wallet: Wallet,
+  account: WalletAccount,
+  onchain: OnchainGame,
+): Promise<void> {
+  const creator = new PublicKey(account.address);
+  const existing = await connection.getAccountInfo(onchain.gamePDA);
+  if (!existing) return;
+
+  const tx = new Transaction();
+  tx.add(
+    new TransactionInstruction({
+      programId: PROGRAM_ID,
+      keys: [
+        { pubkey: onchain.gamePDA, isSigner: false, isWritable: true },
+        { pubkey: creator,         isSigner: true,  isWritable: true },
+      ],
+      data: DISC.close_game,
+    }),
+  );
+  const bundle = await signWithWallet(wallet, account, tx);
+  await sendAndConfirm(bundle);
 }

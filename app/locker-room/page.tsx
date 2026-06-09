@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Nav } from "../components/Nav";
 import { ARCHETYPES } from "../lib/archetypes";
+import { getUnlocked } from "../lib/unlocks";
+import { useWallet } from "../components/WalletProvider";
 
 const MODIFIERS = ["Standard", "Greed Mode", "Chaos Mode", "Scarcity", "Final Stand"];
 const MODIFIER_DESC: Record<string, string> = {
@@ -33,6 +35,7 @@ function loadResults(): PlayerResult[] {
 
 function LockerRoomContent() {
   const params   = useSearchParams();
+  const { account } = useWallet();
   const round    = Number(params.get("round") ?? 1);
   const archetypeId = params.get("archetype") ?? "sigma";
   const mode     = params.get("mode") ?? "multiplayer";
@@ -69,7 +72,8 @@ function LockerRoomContent() {
     ? results.filter((p) => p.alive).reduce((best, p) => p.delta > best.delta ? p : best)
     : null;
 
-  const UNLOCKED = new Set(["npc", "wojak"]);
+  const walletAddr = account ? String(account.address) : null;
+  const UNLOCKED = getUnlocked(walletAddr);
 
   return (
     <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
@@ -213,7 +217,7 @@ function LockerRoomContent() {
                 Chat
               </p>
             </div>
-            <div className="flex-1 space-y-2 overflow-y-auto p-4 min-h-[200px] max-h-[360px]">
+            <div className="flex-1 space-y-2 overflow-y-auto p-4 min-h-50 max-h-90">
               {messages.map((m, i) => (
                 <p key={i} className="text-sm">
                   <span className={`font-mono font-black ${m.from === "System" ? "text-[#91897C]" : "text-[#EEF083]"}`}>

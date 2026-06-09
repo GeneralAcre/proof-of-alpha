@@ -86,6 +86,23 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     };
   }, [walletsApi]);
 
+  // Silent reconnect on page load — restores session without prompting the user
+  useEffect(() => {
+    if (account) return;
+    const w = walletsApi.get().find((wallet) => getConnectFeature(wallet));
+    if (!w) return;
+    const feature = getConnectFeature(w);
+    if (!feature) return;
+    feature.connect({ silent: true }).then((result) => {
+      const next = result.accounts[0];
+      if (!next) return;
+      setSelectedWallet(w);
+      setAccount(next);
+      setStatus("Authorized on devnet.");
+    }).catch(() => { /* no prior session — ignore */ });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (!selectedWallet) return;
     const events = getEventsFeature(selectedWallet);
