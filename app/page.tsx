@@ -1,18 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useWallet } from "./components/WalletProvider";
 import { Nav } from "./components/Nav";
 
 export default function Home() {
-  const router = useRouter();
-  const { account } = useWallet();
-
-  useEffect(() => {
-    if (account) router.push("/dashboard");
-  }, [account, router]);
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#241F19] text-[#EEF083]">
@@ -41,7 +32,7 @@ export default function Home() {
             <div className="flex flex-wrap gap-4">
               <Link
                 className="border-2 border-[#EEF083] bg-[#EEF083] px-8 py-4 text-lg font-black uppercase tracking-[0.14em] text-[#241F19] shadow-[6px_6px_0_#91897C] transition hover:bg-transparent hover:text-[#EEF083]"
-                href="/dashboard"
+                href="/mode-select"
               >
                 Play Now
               </Link>

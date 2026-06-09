@@ -600,7 +600,7 @@ function GameContent() {
           )}
           <Link
             className="border border-[#91897C] px-3 py-1.5 font-mono text-xs uppercase text-[#91897C] transition hover:text-[#EEF083]"
-            href="/dashboard"
+            href="/mode-select"
           >
             Exit
           </Link>

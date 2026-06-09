@@ -25,7 +25,7 @@ export function Nav() {
 
   return (
     <nav className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 border-b border-[#91897C] bg-[#241F19] px-4 py-4 font-mono text-xs font-black uppercase tracking-[0.18em] sm:px-6 lg:px-8">
-      <Link className="text-[#EEF083]" href={account ? "/dashboard" : "/"}>
+      <Link className="text-[#EEF083]" href="/">
         Proof of Alpha
       </Link>
 

@@ -211,9 +211,9 @@ export default function SettingsPage() {
         <div className="pb-8">
           <Link
             className="font-mono text-xs uppercase text-[#91897C] transition hover:text-[#EEF083]"
-            href="/dashboard"
+            href="/"
           >
-            ← Back to Dashboard
+            ← Back
           </Link>
         </div>
 
