@@ -46,8 +46,17 @@ function CharacterSelectContent() {
 
   const walletAddr = account ? String(account.address) : null;
   const [unlocked, setUnlocked] = useState<Set<string>>(new Set(["alpha", "beta", "sigma"]));
+  const [charLevels, setCharLevels] = useState<Record<string, number>>({});
 
   useEffect(() => { setUnlocked(getUnlocked(walletAddr)); }, [walletAddr]);
+
+  useEffect(() => {
+    const levels: Record<string, number> = {};
+    for (const a of ARCHETYPES) {
+      levels[a.id] = getCharacterLevel(walletAddr, a.id);
+    }
+    setCharLevels(levels);
+  }, [walletAddr]);
 
   const [selectedId, setSelectedId] = useState<string>(() =>
     typeof window !== "undefined" ? (localStorage.getItem(LAST_PICKED_KEY) ?? "alpha") : "alpha"
@@ -78,7 +87,7 @@ function CharacterSelectContent() {
   // ── DETAIL VIEW ────────────────────────────────────────────────────────────
   if (view === "detail") {
     const a = selected;
-    const level = getCharacterLevel(walletAddr, a.id);
+    const level = charLevels[a.id] ?? 1;
     const effectiveStats = a.levels[level - 1];
     return (
       <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
