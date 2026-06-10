@@ -11,7 +11,7 @@ const PANELS = [
   {
     label: "I",
     heading: ["PROOF", "OF ALPHA"],
-    quote: "So you think you've got what it takes? Let me break it down for you.",
+    quote: "So you think you've got game? Spend your AURA and prove it.",
     sub: "— an online meme dominance test —",
     duration: 3000,
   },
@@ -220,16 +220,20 @@ export default function Home() {
           <section className="flex min-h-[calc(100vh-64px)] items-center">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <p className="mb-6 inline-block bg-[#EEF083] px-3 py-1.5 font-mono text-xs font-black uppercase tracking-[0.18em] text-[#241F19]">
-                On-chain dominance test · Solana devnet
+                AURA-powered · Solana devnet
               </p>
               <h1 className="glitch mb-8 text-[clamp(3.5rem,12vw,10rem)] font-black uppercase leading-[0.82] tracking-tight">
                 Proof
                 <br />
                 of Alpha.
               </h1>
-              <p className="mb-10 max-w-2xl text-lg font-semibold leading-8 text-[#d8d4a1] sm:text-xl">
-                Pick your meme archetype, enter with 100&nbsp;$TEST, bluff your target in 10 seconds.
-                Every elimination is permanent and on-chain.
+              <p className="mb-4 max-w-2xl text-lg font-semibold leading-8 text-[#d8d4a1] sm:text-xl">
+                Pick your archetype. Spend AURA to approach. Charm her in 4 messages
+                or get shut down on-chain.
+              </p>
+              <p className="mb-10 max-w-lg font-mono text-sm leading-6 text-[#91897C]">
+                Every opener, every flex, every number close — recorded on Solana.
+                Buy AURA in the store. Earn it back by winning.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link
@@ -240,9 +244,9 @@ export default function Home() {
                 </Link>
                 <Link
                   className="border-2 border-[#91897C] px-8 py-4 text-lg font-black uppercase tracking-[0.14em] text-[#EEF083] shadow-[6px_6px_0_#91897C] transition hover:border-[#EEF083] touch-manipulation"
-                  href="/how-to-play"
+                  href="/store"
                 >
-                  How to Play
+                  Buy AURA
                 </Link>
               </div>
             </div>
