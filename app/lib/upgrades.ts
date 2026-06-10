@@ -1,35 +1,35 @@
 export type StatKey = "aggression" | "defense" | "bluff" | "greed";
-export type StatUpgrades = Record<StatKey, number>;
 
-export const UPGRADE_COST = 200;
+export const MAX_LEVEL = 10;
 
-const ZERO: StatUpgrades = { aggression: 0, defense: 0, bluff: 0, greed: 0 };
-
-function storageKey(addr: string | null | undefined, archetypeId: string) {
-  return `poa_upg_${addr ?? "anon"}_${archetypeId}`;
+/** AURA cost to go from `level` → `level + 1`. Scales with level. */
+export function levelUpCost(currentLevel: number): number {
+  return currentLevel * 150;
 }
 
-export function getUpgrades(
+function storageKey(addr: string | null | undefined, archetypeId: string) {
+  return `poa_lvl_${addr ?? "anon"}_${archetypeId}`;
+}
+
+export function getCharacterLevel(
   addr: string | null | undefined,
   archetypeId: string,
-): StatUpgrades {
+): number {
   try {
     const raw = localStorage.getItem(storageKey(addr, archetypeId));
-    return raw ? { ...ZERO, ...JSON.parse(raw) } : { ...ZERO };
+    const n = raw ? parseInt(raw, 10) : 1;
+    return Math.min(Math.max(n, 1), MAX_LEVEL);
   } catch {
-    return { ...ZERO };
+    return 1;
   }
 }
 
-export function saveUpgrade(
+export function saveCharacterLevel(
   addr: string | null | undefined,
   archetypeId: string,
-  stat: StatKey,
-  points: number,
+  level: number,
 ): void {
-  const current = getUpgrades(addr, archetypeId);
-  current[stat] = points;
   try {
-    localStorage.setItem(storageKey(addr, archetypeId), JSON.stringify(current));
+    localStorage.setItem(storageKey(addr, archetypeId), String(level));
   } catch {}
 }

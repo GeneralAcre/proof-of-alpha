@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Nav } from "../components/Nav";
 import { ARCHETYPES, type Archetype } from "../lib/archetypes";
 import { getUnlocked } from "../lib/unlocks";
-import { getUpgrades } from "../lib/upgrades";
+import { getCharacterLevel } from "../lib/upgrades";
 import { useWallet } from "../components/WalletProvider";
 
 const LAST_PICKED_KEY = "poa_last_archetype";
@@ -78,13 +78,8 @@ function CharacterSelectContent() {
   // ── DETAIL VIEW ────────────────────────────────────────────────────────────
   if (view === "detail") {
     const a = selected;
-    const upg = getUpgrades(walletAddr, a.id);
-    const effectiveStats = {
-      aggression: a.stats.aggression + upg.aggression,
-      defense:    a.stats.defense    + upg.defense,
-      bluff:      a.stats.bluff      + upg.bluff,
-      greed:      a.stats.greed      + upg.greed,
-    };
+    const level = getCharacterLevel(walletAddr, a.id);
+    const effectiveStats = a.levels[level - 1];
     return (
       <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
         <Nav />
@@ -133,17 +128,18 @@ function CharacterSelectContent() {
 
               {/* Stats */}
               <div className="space-y-2">
-                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#91897C]">Stats</p>
+                <div className="flex items-baseline justify-between">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#91897C]">Stats</p>
+                  <p className="font-mono text-[10px] text-[#91897C]">
+                    LVL <span className="font-bold text-[#EEF083]">{level}</span>
+                    <span className="text-[#91897C]">/10</span>
+                    {level < 10 && <span className="ml-2 text-[#91897C]/60">· upgrade in profile</span>}
+                  </p>
+                </div>
                 <StatBar label="Aggression" value={effectiveStats.aggression} cap={a.statCaps.aggression} />
                 <StatBar label="Defense"    value={effectiveStats.defense}    cap={a.statCaps.defense} />
                 <StatBar label="Bluff"      value={effectiveStats.bluff}      cap={a.statCaps.bluff} />
                 <StatBar label="Greed"      value={effectiveStats.greed}      cap={a.statCaps.greed} />
-              </div>
-
-              {/* Passive */}
-              <div className="border-t border-[#91897C]/30 pt-4">
-                <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.2em] text-[#91897C]">Passive</p>
-                <p className="text-sm leading-6 text-[#d8d4a1]">{a.passive}</p>
               </div>
 
               {/* Unique move */}

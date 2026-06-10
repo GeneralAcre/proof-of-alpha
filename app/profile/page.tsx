@@ -5,99 +5,116 @@ import { Nav } from "../components/Nav";
 import { useWallet } from "../components/WalletProvider";
 import { ARCHETYPES, getCurrentRank, getNextRank, getRankProgress } from "../lib/archetypes";
 import { getUnlocked, saveUnlock } from "../lib/unlocks";
-import { getUpgrades, saveUpgrade, UPGRADE_COST, type StatKey } from "../lib/upgrades";
+import { getCharacterLevel, saveCharacterLevel, levelUpCost, MAX_LEVEL } from "../lib/upgrades";
+import type { StatKey } from "../lib/upgrades";
 import { sfx, initSounds } from "../lib/sounds";
 import type { MatchRecord } from "../end/page";
 import type { Archetype } from "../lib/archetypes";
 
-const STAT_ROWS: { key: StatKey; label: string }[] = [
-  { key: "aggression", label: "Aggression" },
-  { key: "defense",    label: "Defense"    },
-  { key: "bluff",      label: "Bluff"      },
-  { key: "greed",      label: "Greed"      },
+const STAT_LABELS: { key: StatKey; label: string }[] = [
+  { key: "aggression", label: "AGG" },
+  { key: "defense",    label: "DEF" },
+  { key: "bluff",      label: "BLF" },
+  { key: "greed",      label: "GRD" },
 ];
 
 function UpgradePanel({
-  a, aura, fullAddress, upgradeRev, onUpgrade,
+  a, aura, fullAddress, upgradeRev, onLevelUp,
 }: {
   a: Archetype;
   aura: number;
   fullAddress: string | null;
   upgradeRev: number;
-  onUpgrade: (archetypeId: string, stat: StatKey, bought: number) => void;
+  onLevelUp: (archetypeId: string, currentLevel: number) => void;
 }) {
   void upgradeRev;
-  const upg = getUpgrades(fullAddress, a.id);
-  const canAfford = aura >= UPGRADE_COST;
+  const level   = getCharacterLevel(fullAddress, a.id);
+  const maxed   = level >= MAX_LEVEL;
+  const cost    = levelUpCost(level);
+  const canAfford = aura >= cost;
+  const cur     = a.levels[level - 1];
+  const next    = !maxed ? a.levels[level] : null;
 
   return (
     <div className="mt-3 border border-[#EEF083]/40 bg-[#241F19] p-3">
-      <div className="mb-3 flex items-baseline justify-between">
+      {/* Level header */}
+      <div className="mb-3 flex items-center justify-between">
         <p className="font-mono text-xs font-bold uppercase tracking-[0.15em] text-[#EEF083]">
           {a.name}
         </p>
-        <p className="font-mono text-[10px] text-[#91897C]">{UPGRADE_COST} AURA / pt</p>
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-xs text-[#91897C]">LVL</span>
+          <span className="font-mono text-lg font-black text-[#EEF083] leading-none">{level}</span>
+          <span className="font-mono text-xs text-[#91897C]">/ {MAX_LEVEL}</span>
+        </div>
       </div>
 
-      <div className="space-y-3">
-        {STAT_ROWS.map(({ key, label }) => {
-          const base    = a.stats[key];
-          const cap     = a.statCaps[key];
-          const bought  = upg[key];
-          const current = base + bought;
-          const atCap   = current >= cap;
+      {/* Level progress pips */}
+      <div className="mb-3 flex gap-0.5">
+        {Array.from({ length: MAX_LEVEL }, (_, i) => (
+          <div key={i} className={`h-1.5 flex-1 ${i < level ? "bg-[#EEF083]" : "bg-[#91897C]/20"}`} />
+        ))}
+      </div>
 
+      {/* Current stats + next level diff */}
+      <div className="mb-3 space-y-1.5">
+        {STAT_LABELS.map(({ key, label }) => {
+          const val      = cur[key];
+          const cap      = a.statCaps[key];
+          const nextVal  = next?.[key] ?? val;
+          const gaining  = nextVal > val;
           return (
-            <div key={key}>
-              {/* Label + value */}
-              <div className="mb-1 flex items-center justify-between">
-                <span className="font-mono text-[10px] uppercase tracking-wide text-[#91897C]">
-                  {label}
-                </span>
-                <span className="font-mono text-[10px] text-[#EEF083]">
-                  {current}<span className="text-[#91897C]">/{cap}</span>
-                  {atCap && <span className="ml-1 text-[#EEF083]/50">MAX</span>}
-                </span>
+            <div key={key} className="flex items-center gap-2">
+              <span className="w-7 font-mono text-[9px] uppercase tracking-wide text-[#91897C]">{label}</span>
+              <div className="flex flex-1 gap-0.5">
+                {Array.from({ length: 10 }, (_, i) => (
+                  <div
+                    key={i}
+                    className={`h-2 flex-1 transition-all ${
+                      i < val  ? "bg-[#EEF083]/70"
+                      : i < nextVal && !maxed ? "bg-[#EEF083]/25"
+                      : i < cap ? "bg-[#91897C]/20"
+                      : "bg-transparent"
+                    }`}
+                  />
+                ))}
               </div>
-              {/* Pip track + button */}
-              <div className="flex items-center gap-2">
-                <div className="flex flex-1 gap-0.5">
-                  {Array.from({ length: 10 }, (_, i) => (
-                    <div
-                      key={i}
-                      className={`h-2 flex-1 ${
-                        i < current
-                          ? i < base ? "bg-[#EEF083]/50" : "bg-[#EEF083]"
-                          : i < cap  ? "bg-[#91897C]/30"  : "bg-[#2f2922]"
-                      }`}
-                    />
-                  ))}
-                </div>
-                <button
-                  type="button"
-                  disabled={atCap || !canAfford}
-                  onClick={() => onUpgrade(a.id, key, bought)}
-                  className={`shrink-0 border px-3 py-1.5 font-mono text-xs font-bold uppercase tracking-wide transition touch-manipulation ${
-                    atCap
-                      ? "border-[#91897C]/20 text-[#91897C]/30 cursor-default"
-                      : canAfford
-                      ? "border-[#EEF083] text-[#EEF083] hover:bg-[#EEF083] hover:text-[#241F19]"
-                      : "border-[#91897C]/40 text-[#91897C]/40 cursor-not-allowed"
-                  }`}
-                >
-                  {atCap ? "—" : "+1"}
-                </button>
-              </div>
+              <span className="w-10 text-right font-mono text-[10px] text-[#EEF083]">
+                {val}
+                {gaining && <span className="text-[#EEF083]/50">→{nextVal}</span>}
+                <span className="text-[#91897C]">/{cap}</span>
+              </span>
             </div>
           );
         })}
       </div>
 
-      {!canAfford && (
-        <p className="mt-3 font-mono text-[10px] text-[#91897C]">
-          Need {UPGRADE_COST} AURA →{" "}
-          <a href="/store" className="text-[#EEF083] underline">Buy in Store</a>
-        </p>
+      {/* Level up button */}
+      {maxed ? (
+        <div className="border border-[#EEF083]/30 py-2 text-center font-mono text-xs uppercase tracking-widest text-[#EEF083]/50">
+          Max Level
+        </div>
+      ) : (
+        <>
+          <button
+            type="button"
+            disabled={!canAfford}
+            onClick={() => onLevelUp(a.id, level)}
+            className={`w-full border-2 py-2.5 font-mono text-xs font-bold uppercase tracking-widest transition touch-manipulation ${
+              canAfford
+                ? "border-[#EEF083] bg-[#EEF083] text-[#241F19] hover:bg-transparent hover:text-[#EEF083]"
+                : "border-[#91897C]/40 text-[#91897C]/40 cursor-not-allowed"
+            }`}
+          >
+            Level Up → LVL {level + 1}
+          </button>
+          <p className="mt-1.5 text-center font-mono text-[10px] text-[#91897C]">
+            Cost: <span className={canAfford ? "text-[#EEF083]" : "text-red-400"}>{cost} AURA</span>
+            {!canAfford && (
+              <> · <a href="/store" className="text-[#EEF083] underline">Buy AURA</a></>
+            )}
+          </p>
+        </>
       )}
     </div>
   );
@@ -186,13 +203,14 @@ export default function ProfilePage() {
     sfx.unlock();
   }
 
-  function handleUpgrade(archetypeId: string, stat: StatKey, currentPoints: number) {
-    if (aura < UPGRADE_COST) return;
-    const newAura = aura - UPGRADE_COST;
+  function handleLevelUp(archetypeId: string, currentLevel: number) {
+    const cost = levelUpCost(currentLevel);
+    if (aura < cost) return;
+    const newAura = aura - cost;
     const auraKey = fullAddress ? `poa_aura_${fullAddress}` : "poa_aura_anonymous";
     try { localStorage.setItem(auraKey, String(newAura)); } catch {}
     setAura(newAura);
-    saveUpgrade(fullAddress, archetypeId, stat, currentPoints + 1);
+    saveCharacterLevel(fullAddress, archetypeId, currentLevel + 1);
     setUpgradeRev((r) => r + 1);
     sfx.unlock();
   }
@@ -374,7 +392,7 @@ export default function ProfilePage() {
                 aura={aura}
                 fullAddress={fullAddress}
                 upgradeRev={upgradeRev}
-                onUpgrade={handleUpgrade}
+                onLevelUp={handleLevelUp}
               />}
             </section>
 
