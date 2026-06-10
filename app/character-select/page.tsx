@@ -6,18 +6,33 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Nav } from "../components/Nav";
 import { ARCHETYPES, type Archetype } from "../lib/archetypes";
 import { getUnlocked } from "../lib/unlocks";
+import { getUpgrades } from "../lib/upgrades";
 import { useWallet } from "../components/WalletProvider";
 
 const LAST_PICKED_KEY = "poa_last_archetype";
 
-function StatBar({ label, value }: { label: string; value: number }) {
+function StatBar({ label, value, cap }: { label: string; value: number; cap: number }) {
+  const upgraded = value > cap - (cap - value);
   return (
     <div className="flex items-center gap-3">
       <span className="w-20 shrink-0 font-mono text-[10px] uppercase tracking-[0.12em] text-[#91897C]">{label}</span>
-      <div className="flex-1 border border-[#91897C]/40 bg-[#241F19] h-1.5">
-        <div className="h-full bg-[#EEF083] transition-all" style={{ width: `${value}%` }} />
+      <div className="flex flex-1 gap-0.5">
+        {Array.from({ length: 10 }, (_, i) => (
+          <div
+            key={i}
+            className={`h-2 flex-1 transition-all ${
+              i < value
+                ? "bg-[#EEF083]"
+                : i < cap
+                ? "bg-[#91897C]/30"
+                : "bg-[#91897C]/10"
+            }`}
+          />
+        ))}
       </div>
-      <span className="w-6 shrink-0 text-right font-mono text-xs text-[#EEF083]">{value}</span>
+      <span className="w-10 shrink-0 text-right font-mono text-xs text-[#EEF083]">
+        {value}<span className="text-[#91897C]">/{cap}</span>
+      </span>
     </div>
   );
 }
@@ -63,6 +78,13 @@ function CharacterSelectContent() {
   // ── DETAIL VIEW ────────────────────────────────────────────────────────────
   if (view === "detail") {
     const a = selected;
+    const upg = getUpgrades(walletAddr, a.id);
+    const effectiveStats = {
+      aggression: a.stats.aggression + upg.aggression,
+      defense:    a.stats.defense    + upg.defense,
+      bluff:      a.stats.bluff      + upg.bluff,
+      greed:      a.stats.greed      + upg.greed,
+    };
     return (
       <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
         <Nav />
@@ -112,10 +134,10 @@ function CharacterSelectContent() {
               {/* Stats */}
               <div className="space-y-2">
                 <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#91897C]">Stats</p>
-                <StatBar label="Aggression" value={a.stats.aggression} />
-                <StatBar label="Defense"   value={a.stats.defense} />
-                <StatBar label="Bluff"     value={a.stats.bluff} />
-                <StatBar label="Greed"     value={a.stats.greed} />
+                <StatBar label="Aggression" value={effectiveStats.aggression} cap={a.statCaps.aggression} />
+                <StatBar label="Defense"    value={effectiveStats.defense}    cap={a.statCaps.defense} />
+                <StatBar label="Bluff"      value={effectiveStats.bluff}      cap={a.statCaps.bluff} />
+                <StatBar label="Greed"      value={effectiveStats.greed}      cap={a.statCaps.greed} />
               </div>
 
               {/* Passive */}

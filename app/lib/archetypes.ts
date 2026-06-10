@@ -1,3 +1,5 @@
+export type StatBlock = { aggression: number; defense: number; bluff: number; greed: number };
+
 export type Archetype = {
   id: string;
   name: string;
@@ -8,7 +10,8 @@ export type Archetype = {
   unlockCost: number;
   initials: string;
   image?: string;
-  stats: { aggression: number; defense: number; bluff: number; greed: number };
+  stats: StatBlock;
+  statCaps: StatBlock;
   passive: string;
   uniqueMove: string;
   strengths: string[];
@@ -24,11 +27,12 @@ export const ARCHETYPES: readonly Archetype[] = [
     role: "Charismatic Aggressor",
     tagline: "Born to lead. Built to dominate.",
     description: "Confident, outgoing, a charismatic leader. Enterprising and macho — but aggressive with it. Charges hard and expects the room to move.",
-    stat: "AGG 85 · GRD 75",
+    stat: "AGG 8 · GRD 7",
     unlockCost: 0,
     initials: "AL",
     image: "/charecter/alpha-charecter.png",
-    stats: { aggression: 85, defense: 60, bluff: 55, greed: 75 },
+    stats:    { aggression: 8, defense: 6, bluff: 5, greed: 7 },
+    statCaps: { aggression: 10, defense: 7, bluff: 6, greed: 9 },
     passive: "Alpha Presence — opponents targeting you deal 10% less this round",
     uniqueMove: "Intimidate — force one opponent to reveal their chosen move before confirm",
     strengths: ["Raw aggression", "Natural leadership", "Pressure play"],
@@ -42,11 +46,12 @@ export const ARCHETYPES: readonly Archetype[] = [
     role: "Defensive Loyalist",
     tagline: "At least I tried.",
     description: "Friendly, reserved, loyal, collaborative. The quintessential nice guy nobody wants to be. His default state is submissive — but he outlasts everyone.",
-    stat: "DEF 80 · BLF 60",
+    stat: "DEF 8 · BLF 6",
     unlockCost: 0,
     initials: "BT",
     image: "/charecter/beta-charecter.png",
-    stats: { aggression: 25, defense: 80, bluff: 60, greed: 30 },
+    stats:    { aggression: 2, defense: 8, bluff: 6, greed: 3 },
+    statCaps: { aggression: 4, defense: 10, bluff: 8, greed: 6 },
     passive: "Nice Guy Syndrome — each round you take damage, Counter power +10% next round",
     uniqueMove: "Apologize — reduce the highest-balance opponent's aggression by 20% for 1 round",
     strengths: ["High survivability", "Counter specialist", "Patience wins"],
@@ -60,11 +65,12 @@ export const ARCHETYPES: readonly Archetype[] = [
     role: "Cold Assassin",
     tagline: "You already lost before you played.",
     description: "Likeable and confident, but cunning and calculating. The cold assassin you didn't see coming. Reads patterns, exploits trust, strikes precisely.",
-    stat: "BLF 90 · AGG 75",
+    stat: "BLF 9 · AGG 7",
     unlockCost: 0,
     initials: "SG",
     image: "/charecter/sigma-charecter.png",
-    stats: { aggression: 75, defense: 70, bluff: 90, greed: 70 },
+    stats:    { aggression: 7, defense: 7, bluff: 9, greed: 7 },
+    statCaps: { aggression: 8, defense: 8, bluff: 10, greed: 9 },
     passive: "Information Asymmetry — see a summary of each opponent's last-move tendency",
     uniqueMove: "Cold Read — predict one opponent's next move with 70% accuracy before confirm",
     strengths: ["Elite bluffing", "Pattern exploitation", "Multi-layer strategy"],

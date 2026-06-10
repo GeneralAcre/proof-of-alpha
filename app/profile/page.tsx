@@ -5,6 +5,7 @@ import { Nav } from "../components/Nav";
 import { useWallet } from "../components/WalletProvider";
 import { ARCHETYPES, getCurrentRank, getNextRank, getRankProgress } from "../lib/archetypes";
 import { getUnlocked, saveUnlock } from "../lib/unlocks";
+import { getUpgrades, saveUpgrade, UPGRADE_COST, type StatKey } from "../lib/upgrades";
 import { sfx, initSounds } from "../lib/sounds";
 import type { MatchRecord } from "../end/page";
 
@@ -40,6 +41,8 @@ export default function ProfilePage() {
   const [copied,  setCopied]  = useState(false);
   const [copiedAddr, setCopiedAddr] = useState(false);
   const [unlocked, setUnlocked] = useState<Set<string>>(new Set(["alpha", "beta"]));
+  const [selectedArchId, setSelectedArchId] = useState<string | null>(null);
+  const [upgradeRev, setUpgradeRev] = useState(0);
 
   const fullAddress = account ? String(account.address) : null;
 
@@ -84,9 +87,19 @@ export default function ProfilePage() {
     const auraKey = fullAddress ? `poa_aura_${fullAddress}` : "poa_aura_anonymous";
     try { localStorage.setItem(auraKey, String(newAura)); } catch {}
     setAura(newAura);
-    // save unlock
     saveUnlock(fullAddress, archetypeId);
     setUnlocked(getUnlocked(fullAddress));
+    sfx.unlock();
+  }
+
+  function handleUpgrade(archetypeId: string, stat: StatKey, currentPoints: number) {
+    if (aura < UPGRADE_COST) return;
+    const newAura = aura - UPGRADE_COST;
+    const auraKey = fullAddress ? `poa_aura_${fullAddress}` : "poa_aura_anonymous";
+    try { localStorage.setItem(auraKey, String(newAura)); } catch {}
+    setAura(newAura);
+    saveUpgrade(fullAddress, archetypeId, stat, currentPoints + 1);
+    setUpgradeRev((r) => r + 1);
     sfx.unlock();
   }
 
@@ -216,21 +229,32 @@ export default function ProfilePage() {
             {/* ── ARCHETYPE COLLECTION ── */}
             <section className="border border-[#91897C] bg-[#2f2922] p-4 shadow-[4px_4px_0_#91897C]">
               <p className="mb-3 font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#91897C]">Collection</p>
+
+              {/* Character grid */}
               <div className="grid grid-cols-3 gap-2">
                 {ARCHETYPES.map((a) => {
                   const owned = unlocked.has(a.id);
                   const canAfford = aura >= a.unlockCost;
+                  const isSelected = selectedArchId === a.id;
                   return (
-                    <div
-                      key={a.id}
-                      className={`border p-2 text-center transition ${owned ? "border-[#EEF083] bg-[#EEF083]/5" : "border-[#91897C]"}`}
-                    >
-                      <p className="font-mono text-sm font-bold text-[#EEF083]">{a.initials}</p>
+                    <div key={a.id}>
                       {owned ? (
-                        <p className="mt-0.5 text-[10px] text-[#91897C]">Owned</p>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedArchId(isSelected ? null : a.id)}
+                          className={`w-full border p-2 text-center transition touch-manipulation ${
+                            isSelected
+                              ? "border-[#EEF083] bg-[#EEF083] text-[#241F19]"
+                              : "border-[#EEF083] bg-[#EEF083]/5 text-[#EEF083] hover:bg-[#EEF083]/15"
+                          }`}
+                        >
+                          <p className="font-mono text-sm font-bold">{a.initials}</p>
+                          <p className="mt-0.5 font-mono text-[9px] uppercase tracking-wide">Upgrade</p>
+                        </button>
                       ) : (
-                        <>
-                          <p className="mt-0.5 text-[10px] text-[#91897C]">{a.unlockCost.toLocaleString()} AURA</p>
+                        <div className="border border-[#91897C] p-2 text-center">
+                          <p className="font-mono text-sm font-bold text-[#EEF083]/40">{a.initials}</p>
+                          <p className="mt-0.5 text-[10px] text-[#91897C]">{a.unlockCost.toLocaleString()}</p>
                           <button
                             className={`mt-1.5 w-full border px-1 py-1.5 font-mono text-[10px] uppercase transition touch-manipulation ${
                               canAfford
@@ -243,12 +267,93 @@ export default function ProfilePage() {
                           >
                             {canAfford ? "Unlock" : "Need AURA"}
                           </button>
-                        </>
+                        </div>
                       )}
                     </div>
                   );
                 })}
               </div>
+
+              {/* Upgrade panel — shown when an owned character is selected */}
+              {selectedArchId && (() => {
+                const a = ARCHETYPES.find((x) => x.id === selectedArchId)!;
+                const upg = getUpgrades(fullAddress, a.id);
+                // upgradeRev is read here so React re-renders after an upgrade
+                void upgradeRev;
+                const stats: { key: StatKey; label: string }[] = [
+                  { key: "aggression", label: "Aggression" },
+                  { key: "defense",    label: "Defense"    },
+                  { key: "bluff",      label: "Bluff"      },
+                  { key: "greed",      label: "Greed"      },
+                ];
+                return (
+                  <div className="mt-3 border border-[#EEF083]/30 bg-[#241F19] p-3">
+                    <div className="mb-2 flex items-baseline justify-between">
+                      <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#EEF083]">
+                        {a.name} — Upgrades
+                      </p>
+                      <p className="font-mono text-[10px] text-[#91897C]">{UPGRADE_COST} AURA/pt</p>
+                    </div>
+                    <div className="space-y-2.5">
+                      {stats.map(({ key, label }) => {
+                        const base    = a.stats[key];
+                        const cap     = a.statCaps[key];
+                        const bought  = upg[key];
+                        const current = base + bought;
+                        const atCap   = current >= cap;
+                        const canAffordUpg = aura >= UPGRADE_COST;
+                        return (
+                          <div key={key} className="flex items-center gap-2">
+                            <span className="w-16 shrink-0 font-mono text-[9px] uppercase tracking-wide text-[#91897C]">
+                              {label}
+                            </span>
+                            {/* Pip track */}
+                            <div className="flex flex-1 gap-[2px]">
+                              {Array.from({ length: 10 }, (_, i) => (
+                                <div
+                                  key={i}
+                                  className={`h-2 flex-1 ${
+                                    i < current
+                                      ? i < base
+                                        ? "bg-[#EEF083]/60"
+                                        : "bg-[#EEF083]"
+                                      : i < cap
+                                      ? "bg-[#91897C]/25"
+                                      : "bg-[#91897C]/08"
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <span className="w-8 shrink-0 text-right font-mono text-[10px] text-[#EEF083]">
+                              {current}<span className="text-[#91897C]">/{cap}</span>
+                            </span>
+                            <button
+                              type="button"
+                              disabled={atCap || !canAffordUpg}
+                              onClick={() => handleUpgrade(a.id, key, bought)}
+                              className={`shrink-0 border px-1.5 py-1 font-mono text-[9px] font-bold uppercase tracking-wide transition touch-manipulation ${
+                                atCap
+                                  ? "border-[#91897C]/20 text-[#91897C]/30 cursor-default"
+                                  : canAffordUpg
+                                  ? "border-[#EEF083] text-[#EEF083] hover:bg-[#EEF083] hover:text-[#241F19]"
+                                  : "border-[#91897C]/40 text-[#91897C]/40 cursor-not-allowed"
+                              }`}
+                            >
+                              {atCap ? "MAX" : "+1"}
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {aura < UPGRADE_COST && (
+                      <p className="mt-2 font-mono text-[10px] text-[#91897C]">
+                        Need {UPGRADE_COST} AURA — buy more in the{" "}
+                        <a href="/store" className="text-[#EEF083] underline">Store</a>.
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
             </section>
 
             {/* ── BADGES ── */}
