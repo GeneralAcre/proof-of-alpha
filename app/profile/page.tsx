@@ -8,6 +8,100 @@ import { getUnlocked, saveUnlock } from "../lib/unlocks";
 import { getUpgrades, saveUpgrade, UPGRADE_COST, type StatKey } from "../lib/upgrades";
 import { sfx, initSounds } from "../lib/sounds";
 import type { MatchRecord } from "../end/page";
+import type { Archetype } from "../lib/archetypes";
+
+const STAT_ROWS: { key: StatKey; label: string }[] = [
+  { key: "aggression", label: "Aggression" },
+  { key: "defense",    label: "Defense"    },
+  { key: "bluff",      label: "Bluff"      },
+  { key: "greed",      label: "Greed"      },
+];
+
+function UpgradePanel({
+  a, aura, fullAddress, upgradeRev, onUpgrade,
+}: {
+  a: Archetype;
+  aura: number;
+  fullAddress: string | null;
+  upgradeRev: number;
+  onUpgrade: (archetypeId: string, stat: StatKey, bought: number) => void;
+}) {
+  void upgradeRev;
+  const upg = getUpgrades(fullAddress, a.id);
+  const canAfford = aura >= UPGRADE_COST;
+
+  return (
+    <div className="mt-3 border border-[#EEF083]/40 bg-[#241F19] p-3">
+      <div className="mb-3 flex items-baseline justify-between">
+        <p className="font-mono text-xs font-bold uppercase tracking-[0.15em] text-[#EEF083]">
+          {a.name}
+        </p>
+        <p className="font-mono text-[10px] text-[#91897C]">{UPGRADE_COST} AURA / pt</p>
+      </div>
+
+      <div className="space-y-3">
+        {STAT_ROWS.map(({ key, label }) => {
+          const base    = a.stats[key];
+          const cap     = a.statCaps[key];
+          const bought  = upg[key];
+          const current = base + bought;
+          const atCap   = current >= cap;
+
+          return (
+            <div key={key}>
+              {/* Label + value */}
+              <div className="mb-1 flex items-center justify-between">
+                <span className="font-mono text-[10px] uppercase tracking-wide text-[#91897C]">
+                  {label}
+                </span>
+                <span className="font-mono text-[10px] text-[#EEF083]">
+                  {current}<span className="text-[#91897C]">/{cap}</span>
+                  {atCap && <span className="ml-1 text-[#EEF083]/50">MAX</span>}
+                </span>
+              </div>
+              {/* Pip track + button */}
+              <div className="flex items-center gap-2">
+                <div className="flex flex-1 gap-0.5">
+                  {Array.from({ length: 10 }, (_, i) => (
+                    <div
+                      key={i}
+                      className={`h-2 flex-1 ${
+                        i < current
+                          ? i < base ? "bg-[#EEF083]/50" : "bg-[#EEF083]"
+                          : i < cap  ? "bg-[#91897C]/30"  : "bg-[#2f2922]"
+                      }`}
+                    />
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  disabled={atCap || !canAfford}
+                  onClick={() => onUpgrade(a.id, key, bought)}
+                  className={`shrink-0 border px-3 py-1.5 font-mono text-xs font-bold uppercase tracking-wide transition touch-manipulation ${
+                    atCap
+                      ? "border-[#91897C]/20 text-[#91897C]/30 cursor-default"
+                      : canAfford
+                      ? "border-[#EEF083] text-[#EEF083] hover:bg-[#EEF083] hover:text-[#241F19]"
+                      : "border-[#91897C]/40 text-[#91897C]/40 cursor-not-allowed"
+                  }`}
+                >
+                  {atCap ? "—" : "+1"}
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {!canAfford && (
+        <p className="mt-3 font-mono text-[10px] text-[#91897C]">
+          Need {UPGRADE_COST} AURA →{" "}
+          <a href="/store" className="text-[#EEF083] underline">Buy in Store</a>
+        </p>
+      )}
+    </div>
+  );
+}
 
 const BADGES = [
   { name: "First Win",        desc: "Win your first match" },
@@ -275,85 +369,13 @@ export default function ProfilePage() {
               </div>
 
               {/* Upgrade panel — shown when an owned character is selected */}
-              {selectedArchId && (() => {
-                const a = ARCHETYPES.find((x) => x.id === selectedArchId)!;
-                const upg = getUpgrades(fullAddress, a.id);
-                // upgradeRev is read here so React re-renders after an upgrade
-                void upgradeRev;
-                const stats: { key: StatKey; label: string }[] = [
-                  { key: "aggression", label: "Aggression" },
-                  { key: "defense",    label: "Defense"    },
-                  { key: "bluff",      label: "Bluff"      },
-                  { key: "greed",      label: "Greed"      },
-                ];
-                return (
-                  <div className="mt-3 border border-[#EEF083]/30 bg-[#241F19] p-3">
-                    <div className="mb-2 flex items-baseline justify-between">
-                      <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#EEF083]">
-                        {a.name} — Upgrades
-                      </p>
-                      <p className="font-mono text-[10px] text-[#91897C]">{UPGRADE_COST} AURA/pt</p>
-                    </div>
-                    <div className="space-y-2.5">
-                      {stats.map(({ key, label }) => {
-                        const base    = a.stats[key];
-                        const cap     = a.statCaps[key];
-                        const bought  = upg[key];
-                        const current = base + bought;
-                        const atCap   = current >= cap;
-                        const canAffordUpg = aura >= UPGRADE_COST;
-                        return (
-                          <div key={key} className="flex items-center gap-2">
-                            <span className="w-16 shrink-0 font-mono text-[9px] uppercase tracking-wide text-[#91897C]">
-                              {label}
-                            </span>
-                            {/* Pip track */}
-                            <div className="flex flex-1 gap-[2px]">
-                              {Array.from({ length: 10 }, (_, i) => (
-                                <div
-                                  key={i}
-                                  className={`h-2 flex-1 ${
-                                    i < current
-                                      ? i < base
-                                        ? "bg-[#EEF083]/60"
-                                        : "bg-[#EEF083]"
-                                      : i < cap
-                                      ? "bg-[#91897C]/25"
-                                      : "bg-[#91897C]/08"
-                                  }`}
-                                />
-                              ))}
-                            </div>
-                            <span className="w-8 shrink-0 text-right font-mono text-[10px] text-[#EEF083]">
-                              {current}<span className="text-[#91897C]">/{cap}</span>
-                            </span>
-                            <button
-                              type="button"
-                              disabled={atCap || !canAffordUpg}
-                              onClick={() => handleUpgrade(a.id, key, bought)}
-                              className={`shrink-0 border px-1.5 py-1 font-mono text-[9px] font-bold uppercase tracking-wide transition touch-manipulation ${
-                                atCap
-                                  ? "border-[#91897C]/20 text-[#91897C]/30 cursor-default"
-                                  : canAffordUpg
-                                  ? "border-[#EEF083] text-[#EEF083] hover:bg-[#EEF083] hover:text-[#241F19]"
-                                  : "border-[#91897C]/40 text-[#91897C]/40 cursor-not-allowed"
-                              }`}
-                            >
-                              {atCap ? "MAX" : "+1"}
-                            </button>
-                          </div>
-                        );
-                      })}
-                    </div>
-                    {aura < UPGRADE_COST && (
-                      <p className="mt-2 font-mono text-[10px] text-[#91897C]">
-                        Need {UPGRADE_COST} AURA — buy more in the{" "}
-                        <a href="/store" className="text-[#EEF083] underline">Store</a>.
-                      </p>
-                    )}
-                  </div>
-                );
-              })()}
+              {selectedArchId && <UpgradePanel
+                a={ARCHETYPES.find((x) => x.id === selectedArchId)!}
+                aura={aura}
+                fullAddress={fullAddress}
+                upgradeRev={upgradeRev}
+                onUpgrade={handleUpgrade}
+              />}
             </section>
 
             {/* ── BADGES ── */}
