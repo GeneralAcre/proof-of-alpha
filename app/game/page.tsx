@@ -25,7 +25,7 @@ type RoundResult = {
 
 type TickerEntry = { id: number; text: string };
 
-// ─── Tier display config ──────────────────────────────────────────────────────
+// ─── Tier config ─────────────────────────────────────────────────────────────
 
 const TIER_STYLE = {
   common:    { label: "COMMON",    color: "#91897C" },
@@ -44,27 +44,17 @@ function getStreakMultiplier(streak: number): number {
   return 1.0;
 }
 
-function calcAura(
-  closer: Closer,
-  totalScore: number,
-  girl: Girl,
-  streak: number,
-): { aura: number; win: boolean } {
+function calcAura(closer: Closer, totalScore: number, girl: Girl, streak: number) {
   const mult = getStreakMultiplier(streak);
   if (closer === "flirt") {
-    if (totalScore >= girl.winThreshold) {
-      return { aura: Math.round(girl.flirtWin * mult), win: true };
-    }
+    if (totalScore >= girl.winThreshold) return { aura: Math.round(girl.flirtWin * mult), win: true };
     return { aura: 0, win: false };
   }
-  if (closer === "flex") {
-    return { aura: Math.round(girl.flexWin * mult), win: true };
-  }
-  // leave — recover 50% approach cost
+  if (closer === "flex") return { aura: Math.round(girl.flexWin * mult), win: true };
   return { aura: Math.round(girl.approachCost * 0.5), win: false };
 }
 
-// ─── Lobby ticker seed ────────────────────────────────────────────────────────
+// ─── Ticker seed ─────────────────────────────────────────────────────────────
 
 function seedTicker(): TickerEntry[] {
   const entries: TickerEntry[] = [];
@@ -73,8 +63,7 @@ function seedTicker(): TickerEntry[] {
     const name = BOT_NAMES[i % BOT_NAMES.length];
     const girl = girls[i % 3];
     const pts  = Math.floor(Math.random() * 400) + 20;
-    const fn   = TICKER_TEMPLATES[i % TICKER_TEMPLATES.length];
-    entries.push({ id: i, text: fn(name, girl, pts) });
+    entries.push({ id: i, text: TICKER_TEMPLATES[i % TICKER_TEMPLATES.length](name, girl, pts) });
   }
   return entries;
 }
@@ -83,8 +72,8 @@ function seedTicker(): TickerEntry[] {
 
 function TickerBar({ entries }: { entries: TickerEntry[] }) {
   return (
-    <div className="border-b border-[#91897C] bg-[#1a1710] px-4 py-2 overflow-hidden">
-      <div className="flex gap-8 animate-[ticker_30s_linear_infinite] whitespace-nowrap">
+    <div className="border-b border-[#91897C]/30 bg-[#1a1710] overflow-hidden">
+      <div className="flex gap-12 animate-[ticker_30s_linear_infinite] whitespace-nowrap px-4 py-2">
         {[...entries, ...entries].map((e, i) => (
           <span key={i} className="font-mono text-[10px] text-[#91897C] shrink-0">{e.text}</span>
         ))}
@@ -94,13 +83,12 @@ function TickerBar({ entries }: { entries: TickerEntry[] }) {
 }
 
 function AttractionBar({ score }: { score: number }) {
-  const pct = Math.min(100, Math.max(0, ((score + 40) / 80) * 100));
+  const pct   = Math.min(100, Math.max(0, ((score + 40) / 80) * 100));
   const color = score > 10 ? "#00FF9D" : score > 0 ? "#EEF083" : score > -10 ? "#ffb1a1" : "#ff4444";
   return (
     <div className="space-y-1">
       <div className="flex justify-between font-mono text-[9px] uppercase text-[#91897C]">
-        <span>Vibe</span>
-        <span>???</span>
+        <span>Vibe</span><span>???</span>
       </div>
       <div className="h-1.5 w-full border border-[#91897C] bg-[#241F19]">
         <div className="h-full transition-all duration-700" style={{ width: `${pct}%`, backgroundColor: color }} />
@@ -118,28 +106,27 @@ function GameContent() {
 
   const archetypeId = params.get("archetype") ?? "alpha";
 
-  const [phase,          setPhase]         = useState<Phase>("lobby");
-  const [girlQueue,      setGirlQueue]     = useState<GirlId[]>(["bia", "rin", "luna"]);
-  const [currentGirl,    setCurrentGirl]   = useState<GirlId>("bia");
-  const [messages,       setMessages]      = useState<ChatMsg[]>([]);
-  const [draft,          setDraft]         = useState("");
-  const [isLoading,      setIsLoading]     = useState(false);
-  const [totalScore,     setTotalScore]    = useState(0);
-  const [msgCount,       setMsgCount]      = useState(0);
-  const [selectedCloser, setSelectedCloser]= useState<Closer | null>(null);
-  const [verdict,        setVerdict]       = useState("");
-  const [reaction,       setReaction]      = useState("neutral");
-  const [auraEarned,     setAuraEarned]    = useState(0);
-  const [results,        setResults]       = useState<RoundResult[]>([]);
-  const [sessionAura,    setSessionAura]   = useState(STARTING_AURA);
-  const [streak,         setStreak]        = useState(0);
-  const [ticker,         setTicker]        = useState<TickerEntry[]>(() => seedTicker());
-  const [tickerCount,    setTickerCount]   = useState(100);
+  const [phase,          setPhase]          = useState<Phase>("lobby");
+  const [girlQueue,      setGirlQueue]      = useState<GirlId[]>(["bia", "rin", "luna"]);
+  const [currentGirl,    setCurrentGirl]    = useState<GirlId>("bia");
+  const [messages,       setMessages]       = useState<ChatMsg[]>([]);
+  const [draft,          setDraft]          = useState("");
+  const [isLoading,      setIsLoading]      = useState(false);
+  const [totalScore,     setTotalScore]     = useState(0);
+  const [msgCount,       setMsgCount]       = useState(0);
+  const [selectedCloser, setSelectedCloser] = useState<Closer | null>(null);
+  const [verdict,        setVerdict]        = useState("");
+  const [reaction,       setReaction]       = useState("neutral");
+  const [auraEarned,     setAuraEarned]     = useState(0);
+  const [results,        setResults]        = useState<RoundResult[]>([]);
+  const [sessionAura,    setSessionAura]    = useState(STARTING_AURA);
+  const [streak,         setStreak]         = useState(0);
+  const [ticker,         setTicker]         = useState<TickerEntry[]>(() => seedTicker());
+  const [tickerCount,    setTickerCount]    = useState(100);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
   const inputRef   = useRef<HTMLInputElement>(null);
-
-  const MAX_MSGS = 4;
+  const MAX_MSGS   = 4;
 
   useEffect(() => { initSounds(); }, []);
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
@@ -152,32 +139,23 @@ function GameContent() {
   async function sendMessage() {
     const text = draft.trim();
     if (!text || isLoading || msgCount >= MAX_MSGS) return;
-
     setDraft("");
     setIsLoading(true);
     sfx.moveSelect();
-
     const userMsg: ChatMsg = { role: "user", content: text };
     const newMessages = [...messages, userMsg];
     const newCount = msgCount + 1;
     setMessages([...newMessages, { role: "assistant", content: "▋", score: 0 }]);
     setMsgCount(newCount);
-
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          phase: "chat",
-          girlId: currentGirl,
-          messages: newMessages.map(({ role, content }) => ({ role, content })),
-        }),
+        body: JSON.stringify({ phase: "chat", girlId: currentGirl, messages: newMessages.map(({ role, content }) => ({ role, content })) }),
       });
-
       const reader = res.body!.getReader();
       const decoder = new TextDecoder();
       let fullText = "";
-
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
@@ -186,15 +164,12 @@ function GameContent() {
         const displayText = scoreIdx >= 0 ? fullText.slice(0, scoreIdx).trim() : fullText;
         setMessages([...newMessages, { role: "assistant", content: displayText + (scoreIdx < 0 ? "▋" : ""), score: 0 }]);
       }
-
       const scoreMatch = fullText.match(/\[SCORE:\s*(-?\d+)\]/);
       const score = scoreMatch ? Math.max(-10, Math.min(10, parseInt(scoreMatch[1]))) : 0;
       const scoreIdx = fullText.indexOf("[SCORE:");
       const finalText = (scoreIdx >= 0 ? fullText.slice(0, scoreIdx).trim() : fullText.trim()) || "...";
-
       setMessages([...newMessages, { role: "assistant", content: finalText, score }]);
       setTotalScore((s) => s + score);
-
       if (newCount >= MAX_MSGS) setTimeout(() => setPhase("lock"), 600);
     } catch {
       setMessages([...newMessages, { role: "assistant", content: "...", score: 0 }]);
@@ -209,37 +184,24 @@ function GameContent() {
     setPhase("resolve");
     setIsLoading(true);
     sfx.moveConfirm();
-
     const g = getGirl(currentGirl);
     const { aura, win } = calcAura(closer, totalScore, g, streak);
     setAuraEarned(aura);
     setSessionAura((prev) => prev + aura);
-    if (win) {
-      setStreak((s) => s + 1);
-    } else if (closer !== "leave") {
-      setStreak(0);
-    }
-
+    if (win) setStreak((s) => s + 1);
+    else if (closer !== "leave") setStreak(0);
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          phase: "resolve",
-          girlId: currentGirl,
-          messages: messages.map(({ role, content }) => ({ role, content })),
-          closer,
-          totalScore,
-        }),
+        body: JSON.stringify({ phase: "resolve", girlId: currentGirl, messages: messages.map(({ role, content }) => ({ role, content })), closer, totalScore }),
       });
       const data = await res.json() as { verdict: string; reaction: string };
       setVerdict(data.verdict ?? "...");
       setReaction(data.reaction ?? "neutral");
-
-      const addrLabel = truncatedAddress ?? "ANON";
+      const addrLabel   = truncatedAddress ?? "ANON";
       const closerLabel = closer === "flirt" ? "FLIRT" : closer === "flex" ? "FLEX" : "LEAVE";
       pushTicker(`[${addrLabel}] tried to ${closerLabel} ${g.title}. She said: "${data.verdict}". ${aura > 0 ? `+${aura} AURA.` : "0 AURA. Devastating."}`);
-
       if (data.reaction === "impressed" || aura > 100) sfx.roundWin();
       else if (aura === 0) sfx.matchLoss();
       else sfx.moveConfirm();
@@ -249,36 +211,20 @@ function GameContent() {
     } finally {
       setIsLoading(false);
     }
-
-    setResults((prev) => [...prev, {
-      girlId: currentGirl,
-      totalScore,
-      closer,
-      auraEarned: aura,
-      verdict: "",
-      reaction: "neutral",
-    }]);
+    setResults((prev) => [...prev, { girlId: currentGirl, totalScore, closer, auraEarned: aura, verdict: "", reaction: "neutral" }]);
   }
 
   function nextRound() {
     const remaining = girlQueue.filter((g) => g !== currentGirl);
-
     if (remaining.length === 0) {
       const won = sessionAura > STARTING_AURA;
       router.push(`/end?won=${won}&archetype=${archetypeId}&earned=${sessionAura}&elims=0&mode=rizz`);
       return;
     }
-
     setGirlQueue(remaining);
     setCurrentGirl(remaining[0]);
-    setMessages([]);
-    setDraft("");
-    setTotalScore(0);
-    setMsgCount(0);
-    setSelectedCloser(null);
-    setVerdict("");
-    setReaction("neutral");
-    setAuraEarned(0);
+    setMessages([]); setDraft(""); setTotalScore(0); setMsgCount(0);
+    setSelectedCloser(null); setVerdict(""); setReaction("neutral"); setAuraEarned(0);
     setPhase("lobby");
   }
 
@@ -286,10 +232,7 @@ function GameContent() {
     const g = getGirl(girlId);
     setSessionAura((prev) => prev - g.approachCost);
     setCurrentGirl(girlId);
-    setMessages([]);
-    setDraft("");
-    setTotalScore(0);
-    setMsgCount(0);
+    setMessages([]); setDraft(""); setTotalScore(0); setMsgCount(0);
     setPhase("chat");
     sfx.moveSelect();
   }
@@ -310,196 +253,183 @@ function GameContent() {
 
         <main className="flex-1 mx-auto w-full max-w-2xl px-4 py-8 sm:px-6">
 
-          {/* ── Header ── */}
+          {/* Header */}
           <div className="mb-8">
             <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#91897C]">
               Proof of Alpha · Rizz Mode
             </p>
             <div className="mt-1 flex items-end justify-between gap-4">
               <h1 className="text-4xl font-black uppercase sm:text-5xl">
-                {allDone ? "All Rounds Done" : `Round ${roundNum} of 3`}
+                {allDone ? "All Done" : `Round ${roundNum} of 3`}
               </h1>
-              <div className="shrink-0 text-right">
-                <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#91897C]">AURA Balance</p>
-                <p className={`font-mono text-2xl font-black ${sessionAura >= STARTING_AURA ? "text-[#EEF083]" : "text-[#ff6b6b]"}`}>
+              <div className="shrink-0 text-right border border-[#91897C]/40 px-4 py-2">
+                <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#91897C]">AURA</p>
+                <p className={`font-mono text-2xl font-black leading-none ${sessionAura >= STARTING_AURA ? "text-[#EEF083]" : "text-[#ff6b6b]"}`}>
                   {sessionAura}
                 </p>
               </div>
             </div>
 
-            {/* Streak badge */}
             {streak >= 2 && (
-              <div className="mt-2 inline-flex items-center gap-1.5 border border-[#EEF083]/40 px-2 py-1">
-                <span className="text-[10px]">🔥</span>
-                <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#EEF083]">
-                  {streak}× Win Streak · {streakMult}× Boost Active
+              <div className="mt-3 inline-flex items-center gap-2 border border-[#EEF083]/30 bg-[#EEF083]/5 px-3 py-1.5">
+                <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#EEF083]">
+                  {streak}× Win Streak · {streakMult}× Boost
                 </span>
               </div>
             )}
 
-            {/* Progress bar */}
+            {/* Round progress */}
             <div className="mt-4 flex gap-1.5">
               {GIRLS.map((g) => (
                 <div
                   key={g.id}
-                  className="h-1 flex-1 transition-all duration-500"
+                  className="h-0.5 flex-1 transition-all duration-500"
                   style={{ backgroundColor: attempted.has(g.id) ? g.accentColor : "#3a342c" }}
                 />
               ))}
             </div>
           </div>
 
-          {/* ── Girl rows ── */}
-          <div className="space-y-3">
+          {/* Girl cards */}
+          <div className="space-y-4">
             {GIRLS.map((g, i) => {
-              const done       = attempted.has(g.id);
-              const result     = results.find((r) => r.girlId === g.id);
-              const tier       = TIER_STYLE[g.tier];
-              const canAfford  = sessionAura >= g.approachCost;
+              const done         = attempted.has(g.id);
+              const result       = results.find((r) => r.girlId === g.id);
+              const tier         = TIER_STYLE[g.tier];
+              const canAfford    = sessionAura >= g.approachCost;
               const flirtPreview = Math.round(g.flirtWin * streakMult);
               const flexPreview  = Math.round(g.flexWin * streakMult);
+
+              if (done) {
+                return (
+                  <div key={g.id} className="flex items-center gap-4 border border-[#3a342c] bg-[#2f2922]/60 px-5 py-4 opacity-50">
+                    <div
+                      className="flex h-10 w-10 shrink-0 items-center justify-center border font-mono text-xs font-black"
+                      style={{ borderColor: g.accentColor, color: g.accentColor }}
+                    >
+                      {g.initials}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-black uppercase text-[#EEF083] text-sm">{g.name}</p>
+                      <p className="font-mono text-[9px] uppercase text-[#91897C]">{g.title}</p>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <p className="font-mono text-sm font-black" style={{ color: (result?.auraEarned ?? 0) > 0 ? "#EEF083" : "#91897C" }}>
+                        +{result?.auraEarned ?? 0} AURA
+                      </p>
+                      <p className="font-mono text-[9px] uppercase text-[#91897C]">Done</p>
+                    </div>
+                  </div>
+                );
+              }
 
               return (
                 <div
                   key={g.id}
-                  className={`border bg-[#2f2922] transition-all duration-300 ${
-                    done
-                      ? "border-[#3a342c] opacity-60"
-                      : "border-[#91897C] shadow-[4px_4px_0_#3a342c] hover:border-[#EEF083] hover:shadow-[4px_4px_0_#91897C]"
-                  }`}
+                  className="border border-[#91897C] bg-[#2f2922] shadow-[4px_4px_0_#1a1710]"
+                  style={{ borderTopColor: g.accentColor, borderTopWidth: 3 }}
                 >
-                  {done ? (
-                    /* Completed row */
-                    <div className="flex items-center gap-4 px-5 py-4">
-                      <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#91897C] w-16 shrink-0">
-                        Round {i + 1}
-                      </span>
+                  <div className="p-5">
+                    {/* Top row: avatar + info */}
+                    <div className="flex items-start gap-4">
                       <div
-                        className="flex h-9 w-9 shrink-0 items-center justify-center border font-mono text-xs font-black"
+                        className="flex h-14 w-14 shrink-0 items-center justify-center border-2 font-mono text-base font-black"
                         style={{ borderColor: g.accentColor, color: g.accentColor }}
                       >
                         {g.initials}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-black uppercase text-[#EEF083] truncate">{g.name}</p>
-                        <p className="font-mono text-[9px] uppercase text-[#91897C] truncate">{g.title}</p>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#91897C]">Round {i + 1}</span>
+                          <span
+                            className="font-mono text-[8px] uppercase px-1.5 py-0.5 border font-black"
+                            style={{ borderColor: tier.color, color: tier.color }}
+                          >
+                            {tier.label}
+                          </span>
+                        </div>
+                        <p className="mt-0.5 text-xl font-black uppercase" style={{ color: g.accentColor }}>{g.name}</p>
+                        <p className="font-mono text-xs text-[#91897C]">{g.title}</p>
                       </div>
-                      <div className="shrink-0 text-right">
-                        <p className="font-mono text-xs font-black" style={{ color: (result?.auraEarned ?? 0) > 0 ? "#EEF083" : "#91897C" }}>
-                          +{result?.auraEarned ?? 0} AURA
+                    </div>
+
+                    <p className="mt-3 border-l-2 pl-3 font-mono text-xs italic text-[#d8d4a1]" style={{ borderColor: g.accentColor }}>
+                      "{g.tagline}"
+                    </p>
+
+                    {/* Economy stats */}
+                    <div className="mt-4 grid grid-cols-3 divide-x divide-[#3a342c] border border-[#3a342c]">
+                      <div className="bg-[#1a1710] px-3 py-2.5 text-center">
+                        <p className="font-mono text-[9px] uppercase tracking-wide text-[#91897C]">Entry</p>
+                        <p className="mt-1 font-mono text-sm font-black text-[#ff6b6b]">−{g.approachCost}</p>
+                      </div>
+                      <div className="bg-[#1a1710] px-3 py-2.5 text-center">
+                        <p className="font-mono text-[9px] uppercase tracking-wide text-[#91897C]">Flirt Win</p>
+                        <p className="mt-1 font-mono text-sm font-black text-[#EEF083]">
+                          +{flirtPreview}
+                          {streakMult > 1 && <span className="ml-1 text-[9px] text-[#91897C]">×{streakMult}</span>}
                         </p>
-                        <p className="font-mono text-[9px] uppercase text-[#91897C]">Done</p>
+                      </div>
+                      <div className="bg-[#1a1710] px-3 py-2.5 text-center">
+                        <p className="font-mono text-[9px] uppercase tracking-wide text-[#91897C]">Flex Safe</p>
+                        <p className="mt-1 font-mono text-sm font-black text-[#00FF9D]">
+                          +{flexPreview}
+                          {streakMult > 1 && <span className="ml-1 text-[9px] text-[#91897C]">×{streakMult}</span>}
+                        </p>
                       </div>
                     </div>
-                  ) : (
-                    /* Active row */
-                    <div className="p-5">
-                      <div className="flex items-start gap-4">
-                        {/* Avatar */}
-                        <div
-                          className="flex h-16 w-16 shrink-0 items-center justify-center border-2 font-mono text-lg font-black"
-                          style={{ borderColor: g.accentColor, color: g.accentColor }}
-                        >
-                          {g.initials}
-                        </div>
 
-                        {/* Info */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#91897C]">
-                              Round {i + 1}
-                            </span>
-                            <span
-                              className="font-mono text-[9px] uppercase px-2 py-0.5 border font-black"
-                              style={{ borderColor: tier.color, color: tier.color }}
-                            >
-                              {tier.label}
-                            </span>
-                          </div>
-                          <p className="mt-1 text-2xl font-black uppercase text-[#EEF083]">{g.name}</p>
-                          <p className="mt-0.5 text-xs italic text-[#91897C]">"{g.tagline}"</p>
-                        </div>
-                      </div>
-
-                      {/* Economy stats */}
-                      <div className="mt-4 grid grid-cols-3 gap-2 text-center">
-                        <div className="border border-[#3a342c] bg-[#1a1710] p-2">
-                          <p className="font-mono text-[9px] uppercase text-[#91897C]">Entry</p>
-                          <p className="mt-0.5 font-mono text-sm font-black text-[#ff6b6b]">−{g.approachCost}</p>
-                        </div>
-                        <div className="border border-[#3a342c] bg-[#1a1710] p-2">
-                          <p className="font-mono text-[9px] uppercase text-[#91897C]">FLIRT Win</p>
-                          <p className="mt-0.5 font-mono text-sm font-black text-[#EEF083]">
-                            +{flirtPreview}
-                            {streakMult > 1 && <span className="ml-1 text-[8px] text-[#91897C]">×{streakMult}</span>}
-                          </p>
-                        </div>
-                        <div className="border border-[#3a342c] bg-[#1a1710] p-2">
-                          <p className="font-mono text-[9px] uppercase text-[#91897C]">FLEX Safe</p>
-                          <p className="mt-0.5 font-mono text-sm font-black text-[#00FF9D]">
-                            +{flexPreview}
-                            {streakMult > 1 && <span className="ml-1 text-[8px] text-[#91897C]">×{streakMult}</span>}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Hints */}
-                      <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1">
-                        {g.wins.slice(0, 3).map((w) => (
-                          <p key={w} className="font-mono text-[9px] text-[#91897C]">
-                            <span style={{ color: g.accentColor }}>+</span> {w}
-                          </p>
-                        ))}
-                        {g.fails.slice(0, 2).map((f) => (
-                          <p key={f} className="font-mono text-[9px] text-[#91897C]">
-                            <span className="text-[#ff6b6b]">✗</span> {f}
-                          </p>
-                        ))}
-                      </div>
-
-                      {/* Approach button */}
-                      <button
-                        disabled={!canAfford}
-                        className="mt-5 w-full border-2 py-3 font-black uppercase tracking-[0.1em] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
-                        style={canAfford ? {
-                          borderColor: g.accentColor,
-                          backgroundColor: g.accentColor,
-                          color: "#241F19",
-                        } : {
-                          borderColor: "#3a342c",
-                          backgroundColor: "transparent",
-                          color: "#91897C",
-                        }}
-                        onMouseEnter={(e) => {
-                          if (!canAfford) return;
-                          const btn = e.currentTarget as HTMLButtonElement;
-                          btn.style.backgroundColor = "transparent";
-                          btn.style.color = g.accentColor;
-                        }}
-                        onMouseLeave={(e) => {
-                          if (!canAfford) return;
-                          const btn = e.currentTarget as HTMLButtonElement;
-                          btn.style.backgroundColor = g.accentColor;
-                          btn.style.color = "#241F19";
-                        }}
-                        onClick={() => startApproach(g.id)}
-                        type="button"
-                      >
-                        {canAfford
-                          ? `Approach ${g.name} — ${g.approachCost} AURA →`
-                          : `Need ${g.approachCost} AURA`}
-                      </button>
+                    {/* Hints */}
+                    <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
+                      {g.wins.slice(0, 2).map((w) => (
+                        <span key={w} className="font-mono text-[9px] text-[#91897C]">
+                          <span style={{ color: g.accentColor }}>+ </span>{w}
+                        </span>
+                      ))}
+                      {g.fails.slice(0, 2).map((f) => (
+                        <span key={f} className="font-mono text-[9px] text-[#91897C]">
+                          <span className="text-[#ff6b6b]">✗ </span>{f}
+                        </span>
+                      ))}
                     </div>
-                  )}
+
+                    {/* Approach button */}
+                    <button
+                      disabled={!canAfford}
+                      className="mt-4 w-full border-2 py-3.5 font-mono text-xs font-black uppercase tracking-widest transition-all touch-manipulation disabled:opacity-30 disabled:cursor-not-allowed"
+                      style={canAfford ? {
+                        borderColor: g.accentColor,
+                        backgroundColor: g.accentColor,
+                        color: "#241F19",
+                      } : {
+                        borderColor: "#3a342c",
+                        color: "#91897C",
+                      }}
+                      onPointerEnter={(e) => {
+                        if (!canAfford) return;
+                        (e.currentTarget as HTMLButtonElement).style.backgroundColor = "transparent";
+                        (e.currentTarget as HTMLButtonElement).style.color = g.accentColor;
+                      }}
+                      onPointerLeave={(e) => {
+                        if (!canAfford) return;
+                        (e.currentTarget as HTMLButtonElement).style.backgroundColor = g.accentColor;
+                        (e.currentTarget as HTMLButtonElement).style.color = "#241F19";
+                      }}
+                      onClick={() => startApproach(g.id)}
+                      type="button"
+                    >
+                      {canAfford ? `Approach ${g.name} — ${g.approachCost} AURA →` : `Need ${g.approachCost} AURA`}
+                    </button>
+                  </div>
                 </div>
               );
             })}
           </div>
 
-          {/* Cash out when all done */}
+          {/* Cash out */}
           {allDone && (
             <button
-              className="mt-6 w-full border-2 border-[#EEF083] bg-[#EEF083] py-4 text-lg font-black uppercase text-[#241F19] shadow-[6px_6px_0_#91897C] transition hover:bg-transparent hover:text-[#EEF083]"
+              className="mt-6 w-full border-2 border-[#EEF083] bg-[#EEF083] py-4 text-lg font-black uppercase text-[#241F19] shadow-[6px_6px_0_#91897C] transition hover:bg-transparent hover:text-[#EEF083] touch-manipulation"
               onClick={() => {
                 const won = sessionAura > STARTING_AURA;
                 router.push(`/end?won=${won}&archetype=${archetypeId}&earned=${sessionAura}&elims=0&mode=rizz`);
@@ -521,8 +451,11 @@ function GameContent() {
         <Nav />
         <TickerBar entries={ticker} />
 
-        {/* Header bar */}
-        <div className="flex items-center justify-between border-b border-[#91897C] px-4 py-3">
+        {/* Chat header */}
+        <div
+          className="flex items-center justify-between border-b px-4 py-3"
+          style={{ borderBottomColor: girl.accentColor, borderBottomWidth: 2 }}
+        >
           <div className="flex items-center gap-3">
             <div
               className="flex h-10 w-10 shrink-0 items-center justify-center border-2 font-mono text-xs font-black"
@@ -532,7 +465,7 @@ function GameContent() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <p className="font-black uppercase text-[#EEF083]">{girl.name}</p>
+                <p className="font-black uppercase" style={{ color: girl.accentColor }}>{girl.name}</p>
                 <span
                   className="font-mono text-[8px] uppercase px-1.5 py-0.5 border"
                   style={{ borderColor: TIER_STYLE[girl.tier].color, color: TIER_STYLE[girl.tier].color }}
@@ -543,16 +476,17 @@ function GameContent() {
               <p className="font-mono text-[9px] uppercase text-[#91897C]">{girl.title}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="hidden w-24 sm:block sm:w-32">
+
+          <div className="flex items-center gap-2">
+            <div className="hidden w-28 sm:block">
               <AttractionBar score={totalScore} />
             </div>
-            <div className="border border-[#91897C] px-2 py-1.5 text-center min-w-[44px]">
-              <p className="font-mono text-[9px] uppercase text-[#91897C]">Msgs</p>
+            <div className="border border-[#91897C]/50 px-3 py-1.5 text-center min-w-13">
+              <p className="font-mono text-[8px] uppercase text-[#91897C]">Msgs</p>
               <p className="font-mono text-sm font-black">{msgCount}/{MAX_MSGS}</p>
             </div>
-            <div className="border border-[#91897C] px-2 py-1.5 text-center min-w-[44px]">
-              <p className="font-mono text-[9px] uppercase text-[#91897C]">AURA</p>
+            <div className="border border-[#91897C]/50 px-3 py-1.5 text-center min-w-13">
+              <p className="font-mono text-[8px] uppercase text-[#91897C]">AURA</p>
               <p className={`font-mono text-sm font-black ${sessionAura >= STARTING_AURA ? "text-[#EEF083]" : "text-[#ff6b6b]"}`}>
                 {sessionAura}
               </p>
@@ -563,13 +497,13 @@ function GameContent() {
         {/* Chat window */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {messages.length === 0 && (
-            <div className="py-8 text-center space-y-2">
+            <div className="py-10 text-center space-y-2">
               <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#91897C]">
-                {girl.name} is waiting. Say something.
+                {girl.name} is waiting.
               </p>
-              <p className="text-[10px] italic text-[#91897C]">"{girl.tagline}"</p>
-              <p className="font-mono text-[9px] text-[#3a342c] uppercase">
-                Win at {girl.winThreshold}+ pts · FLIRT: +{Math.round(girl.flirtWin * streakMult)} AURA · FLEX: +{Math.round(girl.flexWin * streakMult)} AURA
+              <p className="text-sm italic text-[#91897C]">"{girl.tagline}"</p>
+              <p className="mt-3 font-mono text-[9px] text-[#3a342c] uppercase">
+                Win threshold {girl.winThreshold}+ pts · Flirt +{Math.round(girl.flirtWin * streakMult)} · Flex +{Math.round(girl.flexWin * streakMult)}
               </p>
             </div>
           )}
@@ -577,7 +511,7 @@ function GameContent() {
             <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
               {msg.role === "assistant" && (
                 <div
-                  className="mr-2 flex h-7 w-7 shrink-0 items-center justify-center border font-mono text-[9px] font-black"
+                  className="mr-2 mt-1 flex h-7 w-7 shrink-0 items-center justify-center border font-mono text-[9px] font-black"
                   style={{ borderColor: girl.accentColor, color: girl.accentColor }}
                 >
                   {girl.initials.slice(0, 2)}
@@ -587,7 +521,7 @@ function GameContent() {
                 className={`max-w-[75%] border px-3 py-2 text-sm leading-6 ${
                   msg.role === "user"
                     ? "border-[#EEF083] bg-[#EEF083]/10 text-[#EEF083]"
-                    : "border-[#91897C] bg-[#2f2922] text-[#d8d4a1]"
+                    : "border-[#91897C]/50 bg-[#2f2922] text-[#d8d4a1]"
                 }`}
               >
                 {msg.content}
@@ -600,7 +534,7 @@ function GameContent() {
         {/* Input or closer buttons */}
         {phase === "chat" ? (
           <form
-            className="border-t border-[#91897C] flex"
+            className="border-t border-[#91897C]/50 flex"
             onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
           >
             <input
@@ -610,12 +544,12 @@ function GameContent() {
               disabled={isLoading || msgCount >= MAX_MSGS}
               maxLength={200}
               onChange={(e) => setDraft(e.target.value)}
-              placeholder={msgCount >= MAX_MSGS ? "Choose your closer ↓" : `Type to ${girl.name}…`}
+              placeholder={msgCount >= MAX_MSGS ? "Choose your closer ↓" : `Message ${girl.name}…`}
               type="text"
               value={draft}
             />
             <button
-              className="border-l border-[#91897C] px-5 py-3.5 font-mono text-xs font-black uppercase text-[#91897C] transition hover:bg-[#EEF083] hover:text-[#241F19] disabled:opacity-40 touch-manipulation"
+              className="border-l border-[#91897C]/50 px-5 py-3.5 font-mono text-xs font-black uppercase text-[#91897C] transition hover:bg-[#EEF083] hover:text-[#241F19] disabled:opacity-30 touch-manipulation"
               disabled={!draft.trim() || isLoading || msgCount >= MAX_MSGS}
               type="submit"
             >
@@ -623,41 +557,40 @@ function GameContent() {
             </button>
           </form>
         ) : (
-          /* LOCK PHASE — closer buttons */
-          <div className="border-t border-[#91897C] bg-[#1a1710] p-4">
+          <div className="border-t-2 border-[#91897C]/40 bg-[#1a1710] p-4">
             <p className="mb-3 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-[#91897C]">
-              Chat over — choose your closer
+              Chat over — pick your closer
             </p>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2">
+              {/* Flirt */}
               <button
-                className="border border-[#EEF083] bg-[#EEF083]/5 px-2 py-4 text-center transition hover:bg-[#EEF083] hover:text-[#241F19] touch-manipulation"
+                className="border-2 border-[#EEF083] bg-[#EEF083]/5 px-2 py-4 text-center transition hover:bg-[#EEF083] hover:text-[#241F19] touch-manipulation group"
                 onClick={() => resolveRound("flirt")}
                 type="button"
               >
-                <p className="text-xl">✨</p>
-                <p className="mt-1 font-black uppercase text-xs text-[#EEF083]">Flirt</p>
-                <p className="mt-0.5 font-mono text-[9px] text-[#91897C]">Win if {girl.winThreshold}+ pts</p>
-                <p className="font-mono text-[9px] text-[#EEF083]">+{Math.round(girl.flirtWin * streakMult)}</p>
+                <p className="font-mono text-[8px] uppercase tracking-widest text-[#91897C] group-hover:text-[#241F19]">Flirt</p>
+                <p className="mt-1 font-mono text-lg font-black text-[#EEF083] group-hover:text-[#241F19]">+{Math.round(girl.flirtWin * streakMult)}</p>
+                <p className="mt-0.5 font-mono text-[8px] text-[#91897C] group-hover:text-[#241F19]/70">if {girl.winThreshold}+ pts</p>
               </button>
+              {/* Flex */}
               <button
-                className="border border-[#00FF9D] bg-[#00FF9D]/5 px-2 py-4 text-center transition hover:bg-[#00FF9D]/20 touch-manipulation"
+                className="border-2 border-[#00FF9D] bg-[#00FF9D]/5 px-2 py-4 text-center transition hover:bg-[#00FF9D]/20 touch-manipulation"
                 onClick={() => resolveRound("flex")}
                 type="button"
               >
-                <p className="text-xl">💪</p>
-                <p className="mt-1 font-black uppercase text-xs text-[#EEF083]">Flex</p>
-                <p className="mt-0.5 font-mono text-[9px] text-[#91897C]">Always wins</p>
-                <p className="font-mono text-[9px] text-[#00FF9D]">+{Math.round(girl.flexWin * streakMult)}</p>
+                <p className="font-mono text-[8px] uppercase tracking-widest text-[#91897C]">Flex</p>
+                <p className="mt-1 font-mono text-lg font-black text-[#00FF9D]">+{Math.round(girl.flexWin * streakMult)}</p>
+                <p className="mt-0.5 font-mono text-[8px] text-[#91897C]">always wins</p>
               </button>
+              {/* Leave */}
               <button
-                className="border border-[#91897C] bg-[#91897C]/5 px-2 py-4 text-center transition hover:bg-[#91897C]/10 touch-manipulation"
+                className="border-2 border-[#91897C]/40 bg-[#91897C]/5 px-2 py-4 text-center transition hover:bg-[#91897C]/15 touch-manipulation"
                 onClick={() => resolveRound("leave")}
                 type="button"
               >
-                <p className="text-xl">🚶</p>
-                <p className="mt-1 font-black uppercase text-xs text-[#EEF083]">Leave</p>
-                <p className="mt-0.5 font-mono text-[9px] text-[#91897C]">50% back</p>
-                <p className="font-mono text-[9px] text-[#91897C]">+{Math.round(girl.approachCost * 0.5)}</p>
+                <p className="font-mono text-[8px] uppercase tracking-widest text-[#91897C]">Leave</p>
+                <p className="mt-1 font-mono text-lg font-black text-[#91897C]">+{Math.round(girl.approachCost * 0.5)}</p>
+                <p className="mt-0.5 font-mono text-[8px] text-[#91897C]">50% back</p>
               </button>
             </div>
           </div>
@@ -668,17 +601,18 @@ function GameContent() {
 
   // ── RESOLVE ───────────────────────────────────────────────────────────────
   if (phase === "resolve") {
-    const isFlirtGhost = selectedCloser === "flirt" && auraEarned === 0;
-    const isWin        = auraEarned > 0 && selectedCloser !== "leave";
+    const isGhosted = selectedCloser === "flirt" && auraEarned === 0;
+    const isWin     = auraEarned > 0 && selectedCloser !== "leave";
+    const isLeave   = selectedCloser === "leave";
 
     return (
       <div className="flex h-svh flex-col bg-[#241F19] text-[#EEF083]">
         <Nav />
         <TickerBar entries={ticker} />
 
-        <main className="flex flex-1 flex-col items-center justify-center px-4 py-8">
+        <main className="flex flex-1 flex-col items-center justify-center px-4 py-8 text-center">
 
-          {/* Girl header */}
+          {/* Girl badge */}
           <div className="mb-6 flex items-center gap-3">
             <div
               className="flex h-12 w-12 items-center justify-center border-2 font-mono text-sm font-black"
@@ -686,28 +620,20 @@ function GameContent() {
             >
               {girl.initials}
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <p className="font-black uppercase text-[#EEF083]">{girl.name}</p>
-                <span
-                  className="font-mono text-[8px] uppercase px-1.5 py-0.5 border"
-                  style={{ borderColor: TIER_STYLE[girl.tier].color, color: TIER_STYLE[girl.tier].color }}
-                >
-                  {TIER_STYLE[girl.tier].label}
-                </span>
-              </div>
+            <div className="text-left">
+              <p className="font-black uppercase" style={{ color: girl.accentColor }}>{girl.name}</p>
               <p className="font-mono text-[9px] uppercase text-[#91897C]">{girl.title}</p>
             </div>
           </div>
 
-          {/* Verdict box */}
-          <div className={`w-full max-w-lg border-2 p-6 text-center shadow-[8px_8px_0_#91897C] mb-6 ${
-            isFlirtGhost ? "border-[#ff4444] bg-[#ff4444]/5" :
-            isWin        ? "border-[#EEF083]" :
-                           "border-[#91897C]"
+          {/* Verdict */}
+          <div className={`w-full max-w-lg border-2 p-6 shadow-[8px_8px_0_#1a1710] mb-6 ${
+            isGhosted ? "border-[#ff4444] bg-[#ff4444]/5" :
+            isWin     ? "border-[#EEF083] bg-[#EEF083]/5" :
+                        "border-[#91897C]"
           }`}>
             {isLoading ? (
-              <p className="font-mono text-sm text-[#91897C] animate-pulse">Waiting for verdict…</p>
+              <p className="font-mono text-sm text-[#91897C] animate-pulse">Waiting for her reaction…</p>
             ) : (
               <>
                 <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-[#91897C]">
@@ -718,46 +644,37 @@ function GameContent() {
             )}
           </div>
 
-          {/* AURA earned */}
+          {/* AURA result */}
           {!isLoading && (
-            <div className="mb-6 text-center">
-              {isFlirtGhost && (
-                <p className="mb-1 font-mono text-xs uppercase tracking-[0.2em] text-[#ff4444]">
-                  👻 Ghosted — Score below {girl.winThreshold}
-                </p>
-              )}
-              {selectedCloser === "leave" && (
-                <p className="mb-1 font-mono text-xs uppercase tracking-[0.2em] text-[#91897C]">
-                  🚶 Strategic Walk Away
-                </p>
-              )}
-              <p className={`text-5xl font-black ${auraEarned > 0 ? "text-[#EEF083]" : "text-[#91897C]"}`}>
+            <div className="mb-6">
+              {isGhosted && <p className="mb-2 font-mono text-xs uppercase tracking-widest text-[#ff4444]">Ghosted — score too low</p>}
+              {isLeave   && <p className="mb-2 font-mono text-xs uppercase tracking-widest text-[#91897C]">Strategic exit</p>}
+              <p className={`text-6xl font-black tabular-nums ${auraEarned > 0 ? "text-[#EEF083]" : "text-[#91897C]"}`}>
                 {auraEarned > 0 ? `+${auraEarned}` : "0"}
               </p>
-              <p className="mt-1 font-mono text-xs uppercase text-[#91897C]">AURA Earned</p>
+              <p className="mt-1 font-mono text-xs uppercase tracking-widest text-[#91897C]">AURA</p>
               <p className="mt-3 font-mono text-sm text-[#91897C]">
-                Balance: <span className={`font-black ${sessionAura >= STARTING_AURA ? "text-[#EEF083]" : "text-[#ff6b6b]"}`}>{sessionAura}</span> AURA
+                Balance: <span className={`font-black ${sessionAura >= STARTING_AURA ? "text-[#EEF083]" : "text-[#ff6b6b]"}`}>{sessionAura}</span>
               </p>
             </div>
           )}
 
-          {/* Summary row */}
           {!isLoading && (
-            <div className="mb-6 flex flex-wrap gap-4 font-mono text-xs text-[#91897C]">
+            <div className="mb-6 flex gap-4 font-mono text-xs text-[#91897C]">
               <span>Closer: <span className="uppercase text-[#EEF083]">{selectedCloser}</span></span>
-              <span>Chat: <span className="text-[#EEF083]">{totalScore > 0 ? `+${totalScore}` : totalScore}</span></span>
-              {streak > 1 && <span>Streak: <span className="text-[#EEF083]">🔥 {streak}×</span></span>}
+              <span>Score: <span className="text-[#EEF083]">{totalScore > 0 ? `+${totalScore}` : totalScore}</span></span>
+              {streak > 1 && <span>Streak: <span className="text-[#EEF083]">{streak}×</span></span>}
             </div>
           )}
 
           {!isLoading && (
             <button
-              className="w-full max-w-lg border-2 border-[#EEF083] bg-[#EEF083] py-4 font-black uppercase text-[#241F19] shadow-[6px_6px_0_#91897C] transition hover:bg-transparent hover:text-[#EEF083]"
+              className="w-full max-w-lg border-2 border-[#EEF083] bg-[#EEF083] py-4 font-black uppercase tracking-widest text-[#241F19] shadow-[6px_6px_0_#91897C] transition hover:bg-transparent hover:text-[#EEF083] touch-manipulation"
               onClick={nextRound}
               type="button"
             >
               {girlQueue.filter((g) => g !== currentGirl).length > 0
-                ? "Back to Lobby →"
+                ? "Next Round →"
                 : `Cash Out — ${sessionAura} AURA`}
             </button>
           )}

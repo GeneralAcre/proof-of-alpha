@@ -43,3 +43,5 @@ next-env.d.ts
 # Anchor / Solana build artifacts
 target/
 .anchor/
+
+.vercel
