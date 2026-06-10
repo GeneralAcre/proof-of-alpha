@@ -11,7 +11,7 @@ import type { MatchRecord } from "../end/page";
 const BADGES = [
   { name: "First Win",        desc: "Win your first match" },
   { name: "Streak x5",        desc: "5 wins in a row" },
-  { name: "Gigachad NFT",     desc: "Reach 2,500 σ to mint" },
+  { name: "Gigachad NFT",     desc: "Reach 2,500 AURA to mint" },
   { name: "100 Eliminations", desc: "Eliminate 100 players" },
 ];
 
@@ -35,7 +35,7 @@ function computeStats(records: MatchRecord[]): Stats {
 
 export default function ProfilePage() {
   const { account, truncatedAddress } = useWallet();
-  const [sigma,   setSigma]   = useState(0);
+  const [aura,    setAura]    = useState(0);
   const [records, setRecords] = useState<MatchRecord[]>([]);
   const [copied,  setCopied]  = useState(false);
   const [copiedAddr, setCopiedAddr] = useState(false);
@@ -46,9 +46,9 @@ export default function ProfilePage() {
   useEffect(() => { initSounds(); }, []);
 
   useEffect(() => {
-    const sigmaKey = fullAddress ? `poa_sigma_${fullAddress}` : "poa_sigma_anonymous";
+    const auraKey = fullAddress ? `poa_aura_${fullAddress}` : "poa_aura_anonymous";
     const matchKey = fullAddress ? `poa_matches_${fullAddress}` : "poa_matches_anonymous";
-    try { setSigma(Number(localStorage.getItem(sigmaKey) ?? "0") || 0); } catch {}
+    try { setAura(Number(localStorage.getItem(auraKey) ?? "0") || 0); } catch {}
     try {
       const raw = localStorage.getItem(matchKey);
       if (raw) setRecords(JSON.parse(raw) as MatchRecord[]);
@@ -58,9 +58,9 @@ export default function ProfilePage() {
 
   const stats = computeStats(records);
 
-  const rank     = getCurrentRank(sigma);
-  const nextRank = getNextRank(sigma);
-  const progress = getRankProgress(sigma);
+  const rank     = getCurrentRank(aura);
+  const nextRank = getNextRank(aura);
+  const progress = getRankProgress(aura);
 
   const initials = fullAddress ? fullAddress.slice(0, 2).toUpperCase() : "?";
 
@@ -79,12 +79,11 @@ export default function ProfilePage() {
   }
 
   function handleUnlock(archetypeId: string, cost: number) {
-    if (sigma < cost) return;
-    const newSigma = sigma - cost;
-    // deduct sigma
-    const sigmaKey = fullAddress ? `poa_sigma_${fullAddress}` : "poa_sigma_anonymous";
-    try { localStorage.setItem(sigmaKey, String(newSigma)); } catch {}
-    setSigma(newSigma);
+    if (aura < cost) return;
+    const newAura = aura - cost;
+    const auraKey = fullAddress ? `poa_aura_${fullAddress}` : "poa_aura_anonymous";
+    try { localStorage.setItem(auraKey, String(newAura)); } catch {}
+    setAura(newAura);
     // save unlock
     saveUnlock(fullAddress, archetypeId);
     setUnlocked(getUnlocked(fullAddress));
@@ -129,12 +128,12 @@ export default function ProfilePage() {
           </div>
         </section>
 
-        {/* ── SIGMA POINTS ── */}
+        {/* ── AURA ── */}
         <section className="border border-[#91897C] bg-[#2f2922] p-5 shadow-[4px_4px_0_#91897C]">
           <div className="mb-2 flex justify-between font-mono text-xs uppercase tracking-[0.14em]">
-            <span className="text-[#91897C]">Sigma Points</span>
+            <span className="text-[#91897C]">AURA</span>
             <span className="font-bold text-[#EEF083]">
-              {sigma.toLocaleString()} σ
+              {aura.toLocaleString()} AURA
               {nextRank && (
                 <span className="font-normal text-[#91897C]"> / {rank.next?.toLocaleString()} to {nextRank.name}</span>
               )}
@@ -165,7 +164,7 @@ export default function ProfilePage() {
                   { label: "Eliminations",  value: stats.elims      || "—" },
                   { label: "Best Streak",   value: stats.bestStreak || "—" },
                   { label: "Losses",        value: stats.losses     || "—" },
-                  { label: "Sigma Total",   value: sigma ? `${sigma}σ` : "—" },
+                  { label: "AURA Total",    value: aura ? `${aura} AURA` : "—" },
                 ] as const).map(({ label, value }, i) => (
                   <div key={i} className="border-b border-r border-[#91897C] p-4 last:border-r-0">
                     <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#91897C]">{label}</p>
@@ -202,7 +201,7 @@ export default function ProfilePage() {
                           </div>
                         </div>
                         <span className={`font-mono text-sm font-black ${r.earned >= 0 ? "text-[#EEF083]" : "text-[#91897C]"}`}>
-                          {r.earned >= 0 ? "+" : ""}{r.earned}σ
+                          {r.earned >= 0 ? "+" : ""}{r.earned} AURA
                         </span>
                       </div>
                     );
@@ -220,7 +219,7 @@ export default function ProfilePage() {
               <div className="grid grid-cols-3 gap-2">
                 {ARCHETYPES.map((a) => {
                   const owned = unlocked.has(a.id);
-                  const canAfford = sigma >= a.unlockCost;
+                  const canAfford = aura >= a.unlockCost;
                   return (
                     <div
                       key={a.id}
@@ -231,9 +230,9 @@ export default function ProfilePage() {
                         <p className="mt-0.5 text-[10px] text-[#91897C]">Owned</p>
                       ) : (
                         <>
-                          <p className="mt-0.5 text-[10px] text-[#91897C]">{a.unlockCost.toLocaleString()}σ</p>
+                          <p className="mt-0.5 text-[10px] text-[#91897C]">{a.unlockCost.toLocaleString()} AURA</p>
                           <button
-                            className={`mt-1.5 w-full border px-1 py-0.5 font-mono text-[9px] uppercase transition ${
+                            className={`mt-1.5 w-full border px-1 py-1.5 font-mono text-[10px] uppercase transition touch-manipulation ${
                               canAfford
                                 ? "border-[#EEF083] text-[#EEF083] hover:bg-[#EEF083] hover:text-[#241F19]"
                                 : "border-[#91897C]/40 text-[#91897C]/40 cursor-not-allowed"
@@ -242,7 +241,7 @@ export default function ProfilePage() {
                             onClick={() => handleUnlock(a.id, a.unlockCost)}
                             type="button"
                           >
-                            {canAfford ? "Unlock" : "Need σ"}
+                            {canAfford ? "Unlock" : "Need AURA"}
                           </button>
                         </>
                       )}

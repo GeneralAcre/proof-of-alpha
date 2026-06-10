@@ -1,7 +1,6 @@
-// Archetype unlock state — persisted to localStorage per wallet address.
-// Alpha and Beta are always free.
+// All archetypes are free to play — no unlock required.
 
-const FREE: ReadonlySet<string> = new Set(["alpha", "beta"]);
+const FREE: ReadonlySet<string> = new Set(["alpha", "beta", "sigma"]);
 
 function storageKey(addr: string | null): string {
   return addr ? `poa_unlocked_${addr}` : "poa_unlocked_anon";

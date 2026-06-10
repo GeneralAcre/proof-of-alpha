@@ -3,11 +3,9 @@
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { PublicKey } from "@solana/web3.js";
 import { Nav } from "../components/Nav";
 import { useWallet } from "../components/WalletProvider";
 import { ARCHETYPES, getCurrentRank, getNextRank, getRankProgress } from "../lib/archetypes";
-import { closeOnchainGame } from "../lib/game-program";
 import { sfx, initSounds } from "../lib/sounds";
 
 function buildBreakdown(won: boolean, elims: number, mode: string) {
@@ -41,14 +39,14 @@ function saveMatchRecord(address: string | null | undefined, record: MatchRecord
   } catch {}
 }
 
-function sigmaKey(address: string | null | undefined) {
-  return address ? `poa_sigma_${address}` : "poa_sigma_anonymous";
+function auraKey(address: string | null | undefined) {
+  return address ? `poa_aura_${address}` : "poa_aura_anonymous";
 }
-function readPrevSigma(address: string | null | undefined): number {
-  try { return Number(localStorage.getItem(sigmaKey(address)) ?? "0") || 0; } catch { return 0; }
+function readPrevAura(address: string | null | undefined): number {
+  try { return Number(localStorage.getItem(auraKey(address)) ?? "0") || 0; } catch { return 0; }
 }
-function saveSigma(address: string | null | undefined, next: number) {
-  try { localStorage.setItem(sigmaKey(address), String(next)); } catch {}
+function saveAura(address: string | null | undefined, next: number) {
+  try { localStorage.setItem(auraKey(address), String(next)); } catch {}
 }
 
 function EndContent() {
@@ -65,42 +63,26 @@ function EndContent() {
   const breakdown   = buildBreakdown(won, elims, mode);
   const totalEarned = breakdown.reduce((s, r) => s + r.points, 0);
 
-  const [prevSigma, setPrevSigma] = useState(0);
+  const [prevAura, setPrevAura] = useState(0);
   const [showRankUp, setShowRankUp] = useState(false);
-
-  const { selectedWallet, account: walletAccount } = useWallet();
 
   useEffect(() => { initSounds(); }, []);
 
   useEffect(() => {
-    const prev = readPrevSigma(walletAddr);
-    setPrevSigma(prev);
-    saveSigma(walletAddr, Math.max(0, prev + totalEarned));
+    const prev = readPrevAura(walletAddr);
+    setPrevAura(prev);
+    saveAura(walletAddr, Math.max(0, prev + totalEarned));
     saveMatchRecord(walletAddr, {
       ts: Date.now(), won, archetype: archetypeId, elims, earned: totalEarned, mode,
     });
-
-    // Close the on-chain game account to reclaim the creator's entry lamports
-    const pdaStr = sessionStorage.getItem("poa_onchain_pda");
-    if (pdaStr && selectedWallet && walletAccount) {
-      closeOnchainGame(selectedWallet, walletAccount, {
-        gamePDA: new PublicKey(pdaStr),
-        roomCode: "",
-        pendingSalts: new Map(),
-      }).then(() => {
-        sessionStorage.removeItem("poa_onchain_pda");
-      }).catch(() => {
-        // Non-fatal — account may already be closed or transaction failed
-      });
-    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalEarned]);
 
-  const newSigma  = Math.max(0, prevSigma + totalEarned);
-  const prevRank  = getCurrentRank(prevSigma);
-  const newRank   = getCurrentRank(newSigma);
+  const newAura   = Math.max(0, prevAura + totalEarned);
+  const prevRank  = getCurrentRank(prevAura);
+  const newRank   = getCurrentRank(newAura);
   const rankedUp  = newRank.name !== prevRank.name;
-  const progress  = getRankProgress(newSigma);
+  const progress  = getRankProgress(newAura);
 
   useEffect(() => {
     if (rankedUp) {
@@ -136,7 +118,7 @@ function EndContent() {
           <section className="border border-[#91897C] bg-[#2f2922] shadow-[4px_4px_0_#91897C]">
             <div className="border-b border-[#91897C] px-5 py-3">
               <p className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91897C]">
-                Sigma Points Earned
+                AURA Earned
               </p>
             </div>
             {breakdown.map(({ reason, points }) => (
@@ -146,14 +128,14 @@ function EndContent() {
               >
                 <span className="text-sm text-[#d8d4a1]">{reason}</span>
                 <span className={`font-mono text-sm font-black ${points >= 0 ? "text-[#EEF083]" : "text-[#91897C]"}`}>
-                  {points >= 0 ? "+" : ""}{points} σ
+                  {points >= 0 ? "+" : ""}{points} AURA
                 </span>
               </div>
             ))}
             <div className="flex items-center justify-between border-t-2 border-[#EEF083] px-5 py-3">
               <span className="font-black uppercase text-[#EEF083]">Total</span>
               <span className={`font-mono text-lg font-black ${totalEarned >= 0 ? "text-[#EEF083]" : "text-[#91897C]"}`}>
-                {totalEarned >= 0 ? "+" : ""}{totalEarned} σ
+                {totalEarned >= 0 ? "+" : ""}{totalEarned} AURA
               </span>
             </div>
           </section>
@@ -174,9 +156,9 @@ function EndContent() {
               )}
               <div className="mt-4">
                 <div className="mb-1.5 flex justify-between font-mono text-xs text-[#91897C]">
-                  <span>{newSigma.toLocaleString()} σ</span>
-                  {getNextRank(newSigma) && (
-                    <span>to {getNextRank(newSigma)?.name}</span>
+                  <span>{newAura.toLocaleString()} AURA</span>
+                  {getNextRank(newAura) && (
+                    <span>to {getNextRank(newAura)?.name}</span>
                   )}
                 </div>
                 <div className="h-2 w-full border border-[#91897C] bg-[#241F19]">
@@ -188,15 +170,15 @@ function EndContent() {
               </div>
             </div>
 
-            {newSigma >= 2500 && (
+            {newAura >= 2500 && (
               <div className="border border-[#EEF083] bg-[#EEF083]/5 p-5 shadow-[4px_4px_0_#91897C]">
                 <p className="mb-1 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91897C]">
                   Achievement Unlocked
                 </p>
                 <p className="text-xl font-black uppercase text-[#EEF083]">Gigachad NFT</p>
-                <p className="mt-1 text-sm text-[#d8d4a1]">2,500 σ threshold reached.</p>
+                <p className="mt-1 text-sm text-[#d8d4a1]">2,500 AURA threshold reached.</p>
                 <button
-                  className="mt-3 w-full border border-[#EEF083] bg-[#EEF083] py-2.5 font-black uppercase text-[#241F19] transition hover:bg-transparent hover:text-[#EEF083]"
+                  className="mt-3 w-full border border-[#EEF083] bg-[#EEF083] py-3.5 font-black uppercase text-[#241F19] transition hover:bg-transparent hover:text-[#EEF083] touch-manipulation"
                   type="button"
                 >
                   Mint Gigachad NFT
@@ -209,15 +191,15 @@ function EndContent() {
         {/* ── ACTIONS ── */}
         <div className="mt-8 flex flex-wrap gap-4">
           <Link
-            className="flex-1 border-2 border-[#EEF083] bg-[#EEF083] px-6 py-4 text-center font-black uppercase text-[#241F19] shadow-[6px_6px_0_#91897C] transition hover:bg-transparent hover:text-[#EEF083]"
+            className="flex-1 border-2 border-[#EEF083] bg-[#EEF083] px-6 py-4 text-center font-black uppercase text-[#241F19] shadow-[6px_6px_0_#91897C] transition hover:bg-transparent hover:text-[#EEF083] touch-manipulation"
             href="/mode-select"
           >
             Play Again
           </Link>
           <button
-            className="flex-1 border-2 border-[#91897C] px-6 py-4 font-black uppercase text-[#EEF083] transition hover:border-[#EEF083]"
+            className="flex-1 border-2 border-[#91897C] px-6 py-4 font-black uppercase text-[#EEF083] transition hover:border-[#EEF083] touch-manipulation"
             onClick={() => {
-              const text = `Just ${won ? "won" : "played"} a match as ${archetype.name} on Proof of Alpha! ${totalEarned >= 0 ? "+" : ""}${totalEarned} σ earned. The only fully on-chain meme battle game.`;
+              const text = `Just ${won ? "won" : "played"} a match as ${archetype.name} on Proof of Alpha! ${totalEarned >= 0 ? "+" : ""}${totalEarned} AURA earned. The only fully on-chain meme battle game.`;
               window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, "_blank");
             }}
             type="button"
@@ -225,7 +207,7 @@ function EndContent() {
             Share on X
           </button>
           <Link
-            className="border-2 border-[#91897C] px-6 py-4 font-black uppercase text-[#EEF083] transition hover:border-[#EEF083]"
+            className="border-2 border-[#91897C] px-6 py-4 font-black uppercase text-[#EEF083] transition hover:border-[#EEF083] touch-manipulation"
             href="/profile"
           >
             View Profile

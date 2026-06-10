@@ -21,9 +21,9 @@ const modifiers = [
 ];
 
 const scoreEvents = [
-  ["Win round", "+10 Sigma Points"],
-  ["Eliminate someone", "+15 Sigma Points"],
-  ["Win match", "+50 Sigma Points"],
+  ["Win round", "+10 AURA"],
+  ["Eliminate someone", "+15 AURA"],
+  ["Win match", "+50 AURA"],
 ];
 
 const ranks = ["NPC", "Beta", "Alpha", "Sigma", "Gigachad"];
@@ -36,7 +36,7 @@ export default function RulesPage() {
           <Link className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#EEF083]" href="/">
             Proof of Alpha
           </Link>
-          <Link className="rounded-md border border-[#EEF083] bg-[#EEF083] px-3 py-2 text-sm font-black uppercase text-[#241F19]" href="/play">
+          <Link className="rounded-md border border-[#EEF083] bg-[#EEF083] px-3 py-2 text-sm font-black uppercase text-[#241F19]" href="/mode-select">
             Enter arena
           </Link>
         </nav>
@@ -118,7 +118,7 @@ export default function RulesPage() {
           </article>
 
           <article className="rounded-lg border border-[#91897C] bg-[#2f2922] p-5">
-            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#91897C]">Sigma Points</p>
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#91897C]">AURA</p>
             <div className="mt-5 grid gap-3">
               {scoreEvents.map(([event, reward]) => (
                 <div key={event} className="flex items-center justify-between gap-4 rounded-lg border border-[#91897C] bg-[#241F19]/70 p-4">

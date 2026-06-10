@@ -1,0 +1,5 @@
+node_modules
+programs/proof-of-alpha/target
+target
+.anchor
+*.pem

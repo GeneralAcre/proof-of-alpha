@@ -1,172 +1,127 @@
 use anchor_lang::prelude::*;
-use anchor_lang::solana_program::hash::hash as sha256_hash;
 
 declare_id!("9UfB3hWQzQCFg47qjXnTigK2QTSkzSrApx5Z1tq1KkFD");
 
-pub const MAX_PLAYERS: usize = 6;
-pub const WINNING_ROUNDS: u8 = 5;
-pub const STARTING_BALANCE: u32 = 100;
-pub const ENTRY_LAMPORTS: u64 = 1_000_000; // 0.001 SOL per player
-
-// Phase IDs
-pub mod phase {
-    pub const LOBBY: u8 = 0;
-    pub const COMMIT: u8 = 1;
-    pub const REVEAL: u8 = 2;
-    pub const RESOLVE: u8 = 3;
-    pub const FINISHED: u8 = 4;
-}
-
-// Move IDs — must match client MOVE_ID_MAP
-pub mod move_id {
-    pub const TAX: u8 = 0;
-    pub const STEAL: u8 = 1;
-    pub const ROB: u8 = 2;
-    pub const BLUFF: u8 = 3;
-    pub const COUNTER: u8 = 4;
-    pub const NUKE: u8 = 5;
-    pub const FOLD: u8 = 6;
-}
-
-// Modifier IDs
-pub mod modifier {
-    pub const STANDARD: u8 = 0;
-    pub const GREED_MODE: u8 = 1;
-    pub const CHAOS_MODE: u8 = 2;
-    pub const SCARCITY: u8 = 3;
-    pub const FINAL_STAND: u8 = 4;
-}
-
 // ─── State ────────────────────────────────────────────────────────────────────
 
+/// Singleton config PDA — seeds = ["config"]
+/// Stores the backend authority keypair that can award AURA.
 #[account]
-pub struct GameRoom {
-    pub room_code: [u8; 4],          // 4
-    pub modifier: u8,                // 1
-    pub round: u8,                   // 1
-    pub phase: u8,                   // 1
-    pub player_count: u8,            // 1
-    pub creator: Pubkey,             // 32
-    pub bump: u8,                    // 1
-    pub created_at: i64,             // 8
-    pub players: [PlayerEntry; 6],   // 6 × 76 = 456
-    // Total (without discriminator): 505
+pub struct ProgramConfig {
+    pub authority: Pubkey, // 32 — backend keypair (server-side)
+    pub bump: u8,          // 1
+    // discriminator(8) + 32 + 1 = 41 bytes
 }
 
-impl GameRoom {
-    pub const LEN: usize = 8 + 505; // discriminator + data
+impl ProgramConfig {
+    pub const LEN: usize = 8 + 32 + 1;
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Default)]
-pub struct PlayerEntry {
-    pub pubkey: Pubkey,      // 32
-    pub archetype: u8,       // 1
-    pub balance: u32,        // 4
-    pub round_wins: u8,      // 1
-    pub move_hash: [u8; 32], // 32
-    pub move_revealed: u8,   // 1
-    pub target_revealed: u8, // 1
-    pub has_committed: bool, // 1
-    pub has_revealed: bool,  // 1
-    pub is_bot: bool,        // 1
-    pub is_eliminated: bool, // 1
-    // Total: 76
+/// Per-player AURA account — seeds = ["player", wallet]
+/// Tracks the player's AURA balance, lifetime stats, and streak.
+#[account]
+pub struct PlayerAura {
+    pub wallet: Pubkey,       // 32 — owner wallet
+    pub balance: u64,         // 8  — spendable AURA (earned minus spent)
+    pub lifetime_earned: u64, // 8  — all-time AURA earned
+    pub games_played: u32,    // 4
+    pub best_streak: u8,      // 1
+    pub bump: u8,             // 1
+    // discriminator(8) + 32 + 8 + 8 + 4 + 1 + 1 = 62 bytes
+}
+
+impl PlayerAura {
+    pub const LEN: usize = 8 + 32 + 8 + 8 + 4 + 1 + 1;
 }
 
 // ─── Contexts ─────────────────────────────────────────────────────────────────
 
 #[derive(Accounts)]
-#[instruction(room_code: [u8; 4])]
-pub struct CreateGame<'info> {
+pub struct Initialize<'info> {
     #[account(
         init,
-        payer = creator,
-        space = GameRoom::LEN,
-        seeds = [b"game", &room_code],
+        payer = payer,
+        space = ProgramConfig::LEN,
+        seeds = [b"config"],
         bump,
     )]
-    pub game: Account<'info, GameRoom>,
+    pub config: Account<'info, ProgramConfig>,
     #[account(mut)]
-    pub creator: Signer<'info>,
+    pub payer: Signer<'info>,
     pub system_program: Program<'info, System>,
 }
 
+/// Player calls this once after connecting their wallet.
+/// Creates their AURA account (player pays ~0.001 SOL rent).
 #[derive(Accounts)]
-pub struct AddBot<'info> {
-    #[account(mut, seeds = [b"game", &game.room_code], bump = game.bump)]
-    pub game: Account<'info, GameRoom>,
-    pub creator: Signer<'info>,
+pub struct InitPlayer<'info> {
+    #[account(
+        init,
+        payer = wallet,
+        space = PlayerAura::LEN,
+        seeds = [b"player", wallet.key().as_ref()],
+        bump,
+    )]
+    pub player: Account<'info, PlayerAura>,
+    #[account(mut)]
+    pub wallet: Signer<'info>,
+    pub system_program: Program<'info, System>,
 }
 
+/// Backend-only instruction. Auto-creates the player account if needed
+/// so the backend never fails on first-time players.
 #[derive(Accounts)]
-pub struct StartGame<'info> {
-    #[account(mut, seeds = [b"game", &game.room_code], bump = game.bump)]
-    pub game: Account<'info, GameRoom>,
-    pub creator: Signer<'info>,
-}
+pub struct AwardAura<'info> {
+    #[account(seeds = [b"config"], bump = config.bump)]
+    pub config: Account<'info, ProgramConfig>,
 
-#[derive(Accounts)]
-pub struct CommitMove<'info> {
-    #[account(mut, seeds = [b"game", &game.room_code], bump = game.bump)]
-    pub game: Account<'info, GameRoom>,
-    pub signer: Signer<'info>,
-}
+    #[account(
+        init_if_needed,
+        payer = authority,
+        space = PlayerAura::LEN,
+        seeds = [b"player", player_wallet.key().as_ref()],
+        bump,
+    )]
+    pub player: Account<'info, PlayerAura>,
 
-#[derive(Accounts)]
-pub struct RevealMove<'info> {
-    #[account(mut, seeds = [b"game", &game.room_code], bump = game.bump)]
-    pub game: Account<'info, GameRoom>,
-    pub signer: Signer<'info>,
-}
+    /// CHECK: Only used as PDA seed — no data read. The backend resolves this from the wallet pubkey.
+    pub player_wallet: UncheckedAccount<'info>,
 
-#[derive(Accounts)]
-pub struct ResolveRound<'info> {
-    #[account(mut, seeds = [b"game", &game.room_code], bump = game.bump)]
-    pub game: Account<'info, GameRoom>,
-    pub signer: Signer<'info>,
-}
-
-#[derive(Accounts)]
-pub struct CloseGame<'info> {
     #[account(
         mut,
-        seeds = [b"game", &game.room_code],
-        bump = game.bump,
-        close = creator,
+        constraint = authority.key() == config.authority @ AuraError::Unauthorized,
     )]
-    pub game: Account<'info, GameRoom>,
-    #[account(mut)]
-    pub creator: Signer<'info>,
+    pub authority: Signer<'info>,
+
+    pub system_program: Program<'info, System>,
+}
+
+/// Player signs this to burn AURA from their balance.
+/// Phase 2: this will also mint ALPHA tokens to the player.
+/// Phase 1: just deducts balance (ALPHA mint not wired yet).
+#[derive(Accounts)]
+pub struct SpendAura<'info> {
+    #[account(
+        mut,
+        seeds = [b"player", wallet.key().as_ref()],
+        bump = player.bump,
+        constraint = player.wallet == wallet.key() @ AuraError::Unauthorized,
+    )]
+    pub player: Account<'info, PlayerAura>,
+
+    pub wallet: Signer<'info>,
 }
 
 // ─── Errors ───────────────────────────────────────────────────────────────────
 
 #[error_code]
-pub enum GameError {
-    #[msg("Wrong phase for this instruction")]
-    WrongPhase,
-    #[msg("Room is full")]
-    RoomFull,
-    #[msg("Not enough players to start")]
-    NotEnoughPlayers,
-    #[msg("Player not found in this room")]
-    PlayerNotFound,
-    #[msg("Player is already eliminated")]
-    PlayerEliminated,
-    #[msg("Move already committed this round")]
-    AlreadyCommitted,
-    #[msg("Move already revealed this round")]
-    AlreadyRevealed,
-    #[msg("Must commit before revealing")]
-    NotCommitted,
-    #[msg("Reveal hash does not match commitment")]
-    HashMismatch,
-    #[msg("Not authorized for this action")]
+pub enum AuraError {
+    #[msg("Not authorized")]
     Unauthorized,
-    #[msg("Game is not finished yet")]
-    GameNotFinished,
-    #[msg("Move not allowed by current modifier")]
-    ModifierBlocked,
+    #[msg("Insufficient AURA balance")]
+    InsufficientBalance,
+    #[msg("Amount must be greater than zero")]
+    ZeroAmount,
 }
 
 // ─── Program ──────────────────────────────────────────────────────────────────
@@ -175,365 +130,64 @@ pub enum GameError {
 pub mod proof_of_alpha {
     use super::*;
 
-    /// Create a game room. Creator is added as player 0 and pays entry.
-    pub fn create_game(
-        ctx: Context<CreateGame>,
-        room_code: [u8; 4],
-        modifier: u8,
-        archetype: u8,
-    ) -> Result<()> {
-        let game = &mut ctx.accounts.game;
-        game.room_code = room_code;
-        game.modifier = modifier;
-        game.round = 1;
-        game.phase = phase::LOBBY;
-        game.player_count = 0;
-        game.creator = ctx.accounts.creator.key();
-        game.bump = ctx.bumps.game;
-        game.created_at = Clock::get()?.unix_timestamp;
-
-        game.players[0] = PlayerEntry {
-            pubkey: ctx.accounts.creator.key(),
-            archetype,
-            balance: STARTING_BALANCE,
-            ..Default::default()
-        };
-        game.player_count = 1;
-
-        // Creator pays entry deposit into the PDA
-        anchor_lang::solana_program::program::invoke(
-            &anchor_lang::solana_program::system_instruction::transfer(
-                &ctx.accounts.creator.key(),
-                &ctx.accounts.game.key(),
-                ENTRY_LAMPORTS,
-            ),
-            &[
-                ctx.accounts.creator.to_account_info(),
-                ctx.accounts.game.to_account_info(),
-                ctx.accounts.system_program.to_account_info(),
-            ],
-        )?;
-
+    /// One-time setup. Call this once after deploying to set the backend authority.
+    /// The authority keypair must be kept on the server — it never touches the client.
+    pub fn initialize(ctx: Context<Initialize>, authority: Pubkey) -> Result<()> {
+        let config = &mut ctx.accounts.config;
+        config.authority = authority;
+        config.bump = ctx.bumps.config;
         Ok(())
     }
 
-    /// Add a bot player. Only creator may call; bot's pubkey is an ephemeral key.
-    pub fn add_bot(ctx: Context<AddBot>, archetype: u8, bot_pubkey: Pubkey) -> Result<()> {
-        let game = &mut ctx.accounts.game;
-        require_keys_eq!(ctx.accounts.creator.key(), game.creator, GameError::Unauthorized);
-        require!(game.phase == phase::LOBBY, GameError::WrongPhase);
-        require!((game.player_count as usize) < MAX_PLAYERS, GameError::RoomFull);
-
-        let idx = game.player_count as usize;
-        game.players[idx] = PlayerEntry {
-            pubkey: bot_pubkey,
-            archetype,
-            balance: STARTING_BALANCE,
-            is_bot: true,
-            ..Default::default()
-        };
-        game.player_count += 1;
+    /// Create a PlayerAura account. Players call this once after connecting wallet.
+    /// Costs ~0.001 SOL rent (returned when account is closed).
+    pub fn init_player(ctx: Context<InitPlayer>) -> Result<()> {
+        let player = &mut ctx.accounts.player;
+        player.wallet = ctx.accounts.wallet.key();
+        player.balance = 0;
+        player.lifetime_earned = 0;
+        player.games_played = 0;
+        player.best_streak = 0;
+        player.bump = ctx.bumps.player;
         Ok(())
     }
 
-    /// Start the game. Requires all 6 player slots filled.
-    pub fn start_game(ctx: Context<StartGame>) -> Result<()> {
-        let game = &mut ctx.accounts.game;
-        require_keys_eq!(ctx.accounts.creator.key(), game.creator, GameError::Unauthorized);
-        require!(game.phase == phase::LOBBY, GameError::WrongPhase);
-        require!((game.player_count as usize) == MAX_PLAYERS, GameError::NotEnoughPlayers);
-        game.phase = phase::COMMIT;
-        Ok(())
-    }
+    /// Award AURA to a player after a game session.
+    /// Called server-side (backend signs with authority keypair).
+    /// Auto-creates the PlayerAura account if the player hasn't called init_player yet.
+    ///
+    /// Parameters:
+    ///   amount — AURA to award (net after FLIRT/FLEX/LEAVE calculation done off-chain)
+    ///   streak — current win streak (for leaderboard/stats)
+    pub fn award_aura(ctx: Context<AwardAura>, amount: u64, streak: u8) -> Result<()> {
+        require!(amount > 0, AuraError::ZeroAmount);
 
-    /// Commit a hashed move.
-    /// For bots, the creator may commit on their behalf.
-    pub fn commit_move(
-        ctx: Context<CommitMove>,
-        player_idx: u8,
-        move_hash: [u8; 32],
-    ) -> Result<()> {
-        let game = &mut ctx.accounts.game;
-        require!(game.phase == phase::COMMIT, GameError::WrongPhase);
+        let player = &mut ctx.accounts.player;
 
-        let idx = player_idx as usize;
-        require!(idx < game.player_count as usize, GameError::PlayerNotFound);
-        require!(!game.players[idx].is_eliminated, GameError::PlayerEliminated);
-        require!(!game.players[idx].has_committed, GameError::AlreadyCommitted);
+        // First-time init when account was just created via init_if_needed
+        if player.wallet == Pubkey::default() {
+            player.wallet = ctx.accounts.player_wallet.key();
+            player.bump = ctx.bumps.player;
+        }
 
-        // Auth: real player signs themselves; creator signs for bots
-        let authorized = if game.players[idx].is_bot {
-            ctx.accounts.signer.key() == game.creator
-        } else {
-            ctx.accounts.signer.key() == game.players[idx].pubkey
-        };
-        require!(authorized, GameError::Unauthorized);
-
-        // Scarcity blocks Rob (5) and NUKE (6) — but hash is opaque, enforced at reveal
-        game.players[idx].move_hash = move_hash;
-        game.players[idx].has_committed = true;
-
-        // Auto-advance when all alive players committed
-        if game.players[..game.player_count as usize]
-            .iter()
-            .filter(|p| !p.is_eliminated)
-            .all(|p| p.has_committed)
-        {
-            game.phase = phase::REVEAL;
+        player.balance = player.balance.saturating_add(amount);
+        player.lifetime_earned = player.lifetime_earned.saturating_add(amount);
+        player.games_played = player.games_played.saturating_add(1);
+        if streak > player.best_streak {
+            player.best_streak = streak;
         }
 
         Ok(())
     }
 
-    /// Reveal a move. Program verifies SHA-256(move_id || target_idx || salt) == committed hash.
-    pub fn reveal_move(
-        ctx: Context<RevealMove>,
-        player_idx: u8,
-        move_id: u8,
-        target_idx: u8,
-        salt: [u8; 32],
-    ) -> Result<()> {
-        let game = &mut ctx.accounts.game;
-        require!(game.phase == phase::REVEAL, GameError::WrongPhase);
-
-        let idx = player_idx as usize;
-        require!(idx < game.player_count as usize, GameError::PlayerNotFound);
-        require!(!game.players[idx].is_eliminated, GameError::PlayerEliminated);
-        require!(game.players[idx].has_committed, GameError::NotCommitted);
-        require!(!game.players[idx].has_revealed, GameError::AlreadyRevealed);
-
-        // Enforce Scarcity modifier: Rob and NUKE blocked
-        if game.modifier == modifier::SCARCITY {
-            require!(
-                move_id != move_id::ROB && move_id != move_id::NUKE,
-                GameError::ModifierBlocked
-            );
-        }
-
-        // Auth check
-        let authorized = if game.players[idx].is_bot {
-            ctx.accounts.signer.key() == game.creator
-        } else {
-            ctx.accounts.signer.key() == game.players[idx].pubkey
-        };
-        require!(authorized, GameError::Unauthorized);
-
-        // Verify hash: SHA256(move_id || target_idx || salt)
-        let mut preimage = [0u8; 34];
-        preimage[0] = move_id;
-        preimage[1] = target_idx;
-        preimage[2..].copy_from_slice(&salt);
-        let computed = sha256_hash(&preimage);
-        require!(computed.to_bytes() == game.players[idx].move_hash, GameError::HashMismatch);
-
-        game.players[idx].move_revealed = move_id;
-        game.players[idx].target_revealed = target_idx;
-        game.players[idx].has_revealed = true;
-
-        // Auto-advance when all alive players revealed
-        if game.players[..game.player_count as usize]
-            .iter()
-            .filter(|p| !p.is_eliminated)
-            .all(|p| p.has_revealed)
-        {
-            game.phase = phase::RESOLVE;
-        }
-
-        Ok(())
-    }
-
-    /// Resolve the round: compute deltas, eliminations, round wins.
-    pub fn resolve_round(ctx: Context<ResolveRound>) -> Result<()> {
-        let game = &mut ctx.accounts.game;
-        require_keys_eq!(ctx.accounts.signer.key(), game.creator, GameError::Unauthorized);
-        require!(game.phase == phase::RESOLVE, GameError::WrongPhase);
-
-        let count = game.player_count as usize;
-        let greed: i64 = if game.modifier == modifier::GREED_MODE { 2 } else { 1 };
-
-        let mut deltas = [0i64; MAX_PLAYERS];
-        let mut nuke_elim = [false; MAX_PLAYERS];
-
-        // ── CHAOS_MODE: shuffle targets before resolution ─────────────────────
-        if game.modifier == modifier::CHAOS_MODE {
-            let slot = Clock::get()?.slot;
-
-            // Collect alive indices into fixed-size array
-            let mut orig  = [0usize; MAX_PLAYERS];
-            let mut pool  = [0usize; MAX_PLAYERS];
-            let mut n     = 0usize;
-            for i in 0..count {
-                if !game.players[i].is_eliminated {
-                    orig[n] = i;
-                    pool[n] = i;
-                    n += 1;
-                }
-            }
-
-            if n > 1 {
-                // Fisher-Yates with LCG seeded by slot
-                let mut rng = slot ^ 0xdeadbeef_cafe_u64;
-                for i in (1..n).rev() {
-                    rng = rng.wrapping_mul(6364136223846793005)
-                             .wrapping_add(1442695040888963407);
-                    let j = (rng >> 33) as usize % (i + 1);
-                    pool.swap(i, j);
-                }
-
-                // Assign shuffled targets, skipping self
-                for j in 0..n {
-                    let player = orig[j];
-                    let mut tgt = pool[j];
-                    if tgt == player {
-                        tgt = pool[(j + 1) % n];
-                    }
-                    game.players[player].target_revealed = tgt as u8;
-                }
-            }
-        }
-
-        // ── Tax / Steal / Rob ─────────────────────────────────────────────────
-        for i in 0..count {
-            let actor = game.players[i];
-            if actor.is_eliminated { continue; }
-
-            let base: i64 = match actor.move_revealed {
-                m if m == move_id::TAX   => 5,
-                m if m == move_id::STEAL => 10,
-                m if m == move_id::ROB   => 20,
-                _ => continue,
-            };
-
-            let t = actor.target_revealed as usize;
-            if t >= count || game.players[t].is_eliminated { continue; }
-
-            let amount = base * greed;
-
-            let target    = game.players[t];
-            let countered = target.move_revealed == move_id::COUNTER
-                && target.target_revealed == i as u8;
-
-            if countered {
-                deltas[i] -= amount;
-                deltas[t] += amount;
-            } else {
-                deltas[i] += amount;
-                deltas[t] -= amount;
-            }
-        }
-
-        // ── Bluff ─────────────────────────────────────────────────────────────
-        // Bluffer gains +5 if their target wasted a Counter targeting them.
-        // (The -5 counter penalty is handled separately below.)
-        for i in 0..count {
-            let actor = game.players[i];
-            if actor.is_eliminated || actor.move_revealed != move_id::BLUFF { continue; }
-
-            let t = actor.target_revealed as usize;
-            if t >= count || game.players[t].is_eliminated { continue; }
-
-            let target = game.players[t];
-            if target.move_revealed == move_id::COUNTER && target.target_revealed == i as u8 {
-                deltas[i] += 5;
-            }
-        }
-
-        // ── Counter penalty ───────────────────────────────────────────────────
-        for i in 0..count {
-            let actor = game.players[i];
-            if actor.is_eliminated || actor.move_revealed != move_id::COUNTER { continue; }
-
-            let was_attacked = (0..count).any(|j| {
-                if j == i { return false; }
-                let other = game.players[j];
-                let is_atk = other.move_revealed == move_id::TAX
-                    || other.move_revealed == move_id::STEAL
-                    || other.move_revealed == move_id::ROB;
-                other.target_revealed == i as u8 && is_atk
-            });
-
-            if !was_attacked {
-                deltas[i] -= 5;
-            }
-        }
-
-        // ── NUKE ──────────────────────────────────────────────────────────────
-        for i in 0..count {
-            let actor = game.players[i];
-            if actor.is_eliminated || actor.move_revealed != move_id::NUKE { continue; }
-
-            deltas[i] -= 30;
-            let t = actor.target_revealed as usize;
-            if t < count && !game.players[t].is_eliminated {
-                let target_final = game.players[t].balance as i64 + deltas[t];
-                if target_final <= 30 {
-                    nuke_elim[t] = true;
-                }
-            }
-        }
-
-        // ── Apply deltas, find round winner ───────────────────────────────────
-        let is_final_stand = game.modifier == modifier::FINAL_STAND;
-        let mut best_delta = i64::MIN;
-        let mut round_winner: Option<usize> = None;
-
-        for i in 0..count {
-            let p = &mut game.players[i];
-            if p.is_eliminated { continue; }
-
-            let pre_bal  = p.balance;
-            let new_bal  = (p.balance as i64 + deltas[i]).max(0) as u32;
-            let broke    = new_bal == 0;
-
-            // FINAL_STAND: first-time elimination from balance loss (not NUKE) gives 1 $T buffer.
-            // Only saved if they had >1 $T before (pre_bal > 1), so a player already at the
-            // minimum doesn't loop indefinitely.
-            let saved_by_stand = is_final_stand
-                && broke
-                && !nuke_elim[i]
-                && pre_bal > 1;
-
-            p.balance = if saved_by_stand { 1 } else { new_bal };
-            p.is_eliminated = p.is_eliminated || nuke_elim[i] || (broke && !saved_by_stand);
-
-            if deltas[i] > best_delta {
-                best_delta = deltas[i];
-                round_winner = Some(i);
-            }
-        }
-
-        if let Some(w) = round_winner {
-            if best_delta > 0 {
-                game.players[w].round_wins += 1;
-            }
-        }
-
-        // ── Check match over ──────────────────────────────────────────────────
-        let alive      = game.players[..count].iter().filter(|p| !p.is_eliminated).count();
-        let has_winner = game.players[..count].iter().any(|p| p.round_wins >= WINNING_ROUNDS);
-
-        if has_winner || alive <= 1 {
-            game.phase = phase::FINISHED;
-        } else {
-            game.round += 1;
-            game.phase  = phase::COMMIT;
-            for p in game.players[..count].iter_mut() {
-                p.has_committed  = false;
-                p.has_revealed   = false;
-                p.move_hash      = [0u8; 32];
-                p.move_revealed  = move_id::FOLD;
-                p.target_revealed = 0;
-            }
-        }
-
-        Ok(())
-    }
-
-    /// Close the game account and return lamports to creator.
-    /// Only callable once the match is finished.
-    pub fn close_game(ctx: Context<CloseGame>) -> Result<()> {
-        require!(ctx.accounts.game.phase == phase::FINISHED, GameError::GameNotFinished);
-        // The `close = creator` constraint handles the lamport transfer.
+    /// Burn AURA from a player's balance. Player must sign.
+    /// Phase 1: deducts balance only.
+    /// Phase 2: will also mint ALPHA tokens at the configured rate.
+    pub fn spend_aura(ctx: Context<SpendAura>, amount: u64) -> Result<()> {
+        require!(amount > 0, AuraError::ZeroAmount);
+        let player = &mut ctx.accounts.player;
+        require!(player.balance >= amount, AuraError::InsufficientBalance);
+        player.balance = player.balance.saturating_sub(amount);
         Ok(())
     }
 }
