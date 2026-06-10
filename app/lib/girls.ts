@@ -14,7 +14,7 @@ export type Girl = {
   approachCost: number;
   winThreshold: number; // cumulative chat score needed to win FLIRT
   flirtWin: number;     // AURA on FLIRT win
-  flexWin: number;      // AURA on FLEX (guaranteed)
+  flexWin: number;      // AURA on FLEX win
 };
 
 // Ordered easy → hard: Common → Rare → Legendary
@@ -31,8 +31,8 @@ export const GIRLS: readonly Girl[] = [
     tier: "common",
     approachCost: 10,
     winThreshold: 8,
-    flirtWin: 50,
-    flexWin: 60,
+    flirtWin: 80,
+    flexWin: 40,
   },
   {
     id: "rin",

@@ -44,14 +44,29 @@ function getStreakMultiplier(streak: number): number {
   return 1.0;
 }
 
+/**
+ * Win probability (0–100) based on conversation score.
+ * score range realistically -20 to +40 with 4 messages.
+ * FLIRT: high variance 15%→90% — big upside if she liked you, crashes if not.
+ * FLEX:  safer floor  35%→70% — more consistent, lower ceiling.
+ */
+function calcWinChance(closer: Closer, totalScore: number): number {
+  const score = Math.max(-20, Math.min(40, totalScore));
+  const t = (score + 20) / 60; // 0..1
+  if (closer === "flirt") return Math.round(15 + t * 75);
+  if (closer === "flex")  return Math.round(35 + t * 35);
+  return 0;
+}
+
 function calcAura(closer: Closer, totalScore: number, girl: Girl, streak: number) {
   const mult = getStreakMultiplier(streak);
-  if (closer === "flirt") {
-    if (totalScore >= girl.winThreshold) return { aura: Math.round(girl.flirtWin * mult), win: true };
-    return { aura: 0, win: false };
+  if (closer === "leave") {
+    return { aura: Math.round(girl.approachCost * 0.5), win: false, winChance: 0 };
   }
-  if (closer === "flex") return { aura: Math.round(girl.flexWin * mult), win: true };
-  return { aura: Math.round(girl.approachCost * 0.5), win: false };
+  const winChance = calcWinChance(closer, totalScore);
+  const won = Math.random() * 100 < winChance;
+  const payout = closer === "flirt" ? girl.flirtWin : girl.flexWin;
+  return { aura: won ? Math.round(payout * mult) : 0, win: won, winChance };
 }
 
 // ─── Ticker seed ─────────────────────────────────────────────────────────────
@@ -121,6 +136,7 @@ function GameContent() {
   const [results,        setResults]        = useState<RoundResult[]>([]);
   const [sessionAura,    setSessionAura]    = useState(STARTING_AURA);
   const [streak,         setStreak]         = useState(0);
+  const [lastWinChance,  setLastWinChance]  = useState(0);
   const [ticker,         setTicker]         = useState<TickerEntry[]>(() => seedTicker());
   const [tickerCount,    setTickerCount]    = useState(100);
 
@@ -185,8 +201,9 @@ function GameContent() {
     setIsLoading(true);
     sfx.moveConfirm();
     const g = getGirl(currentGirl);
-    const { aura, win } = calcAura(closer, totalScore, g, streak);
+    const { aura, win, winChance } = calcAura(closer, totalScore, g, streak);
     setAuraEarned(aura);
+    setLastWinChance(winChance);
     setSessionAura((prev) => prev + aura);
     if (win) setStreak((s) => s + 1);
     else if (closer !== "leave") setStreak(0);
@@ -371,7 +388,7 @@ function GameContent() {
                         </p>
                       </div>
                       <div className="bg-[#1a1710] px-3 py-2.5 text-center">
-                        <p className="font-mono text-[9px] uppercase tracking-wide text-[#91897C]">Flex Safe</p>
+                        <p className="font-mono text-[9px] uppercase tracking-wide text-[#91897C]">Flex Win</p>
                         <p className="mt-1 font-mono text-sm font-black text-[#00FF9D]">
                           +{flexPreview}
                           {streakMult > 1 && <span className="ml-1 text-[9px] text-[#91897C]">×{streakMult}</span>}
@@ -561,38 +578,48 @@ function GameContent() {
             <p className="mb-3 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-[#91897C]">
               Chat over — pick your closer
             </p>
-            <div className="grid grid-cols-3 gap-2">
-              {/* Flirt */}
-              <button
-                className="border-2 border-[#EEF083] bg-[#EEF083]/5 px-2 py-4 text-center transition hover:bg-[#EEF083] hover:text-[#241F19] touch-manipulation group"
-                onClick={() => resolveRound("flirt")}
-                type="button"
-              >
-                <p className="font-mono text-[8px] uppercase tracking-widest text-[#91897C] group-hover:text-[#241F19]">Flirt</p>
-                <p className="mt-1 font-mono text-lg font-black text-[#EEF083] group-hover:text-[#241F19]">+{Math.round(girl.flirtWin * streakMult)}</p>
-                <p className="mt-0.5 font-mono text-[8px] text-[#91897C] group-hover:text-[#241F19]/70">if {girl.winThreshold}+ pts</p>
-              </button>
-              {/* Flex */}
-              <button
-                className="border-2 border-[#00FF9D] bg-[#00FF9D]/5 px-2 py-4 text-center transition hover:bg-[#00FF9D]/20 touch-manipulation"
-                onClick={() => resolveRound("flex")}
-                type="button"
-              >
-                <p className="font-mono text-[8px] uppercase tracking-widest text-[#91897C]">Flex</p>
-                <p className="mt-1 font-mono text-lg font-black text-[#00FF9D]">+{Math.round(girl.flexWin * streakMult)}</p>
-                <p className="mt-0.5 font-mono text-[8px] text-[#91897C]">always wins</p>
-              </button>
-              {/* Leave */}
-              <button
-                className="border-2 border-[#91897C]/40 bg-[#91897C]/5 px-2 py-4 text-center transition hover:bg-[#91897C]/15 touch-manipulation"
-                onClick={() => resolveRound("leave")}
-                type="button"
-              >
-                <p className="font-mono text-[8px] uppercase tracking-widest text-[#91897C]">Leave</p>
-                <p className="mt-1 font-mono text-lg font-black text-[#91897C]">+{Math.round(girl.approachCost * 0.5)}</p>
-                <p className="mt-0.5 font-mono text-[8px] text-[#91897C]">50% back</p>
-              </button>
-            </div>
+            {(() => {
+              const flirtChance = calcWinChance("flirt", totalScore);
+              const flexChance  = calcWinChance("flex",  totalScore);
+              return (
+                <div className="grid grid-cols-3 gap-2">
+                  {/* Flirt */}
+                  <button
+                    className="border-2 border-[#EEF083] bg-[#EEF083]/5 px-2 py-4 text-center transition hover:bg-[#EEF083] hover:text-[#241F19] touch-manipulation group"
+                    onClick={() => resolveRound("flirt")}
+                    type="button"
+                  >
+                    <p className="font-mono text-[8px] uppercase tracking-widest text-[#91897C] group-hover:text-[#241F19]">Flirt</p>
+                    <p className="mt-1 font-mono text-lg font-black text-[#EEF083] group-hover:text-[#241F19]">+{Math.round(girl.flirtWin * streakMult)}</p>
+                    <p className="mt-0.5 font-mono text-[10px] font-black" style={{ color: flirtChance >= 60 ? "#00FF9D" : flirtChance >= 40 ? "#EEF083" : "#ff6b6b" }}>
+                      {flirtChance}% WIN
+                    </p>
+                  </button>
+                  {/* Flex */}
+                  <button
+                    className="border-2 border-[#00FF9D] bg-[#00FF9D]/5 px-2 py-4 text-center transition hover:bg-[#00FF9D]/20 touch-manipulation"
+                    onClick={() => resolveRound("flex")}
+                    type="button"
+                  >
+                    <p className="font-mono text-[8px] uppercase tracking-widest text-[#91897C]">Flex</p>
+                    <p className="mt-1 font-mono text-lg font-black text-[#00FF9D]">+{Math.round(girl.flexWin * streakMult)}</p>
+                    <p className="mt-0.5 font-mono text-[10px] font-black" style={{ color: flexChance >= 60 ? "#00FF9D" : flexChance >= 40 ? "#EEF083" : "#ff6b6b" }}>
+                      {flexChance}% WIN
+                    </p>
+                  </button>
+                  {/* Leave */}
+                  <button
+                    className="border-2 border-[#91897C]/40 bg-[#91897C]/5 px-2 py-4 text-center transition hover:bg-[#91897C]/15 touch-manipulation"
+                    onClick={() => resolveRound("leave")}
+                    type="button"
+                  >
+                    <p className="font-mono text-[8px] uppercase tracking-widest text-[#91897C]">Leave</p>
+                    <p className="mt-1 font-mono text-lg font-black text-[#91897C]">+{Math.round(girl.approachCost * 0.5)}</p>
+                    <p className="mt-0.5 font-mono text-[10px] text-[#91897C]">Safe exit</p>
+                  </button>
+                </div>
+              );
+            })()}
           </div>
         )}
       </div>
@@ -601,9 +628,9 @@ function GameContent() {
 
   // ── RESOLVE ───────────────────────────────────────────────────────────────
   if (phase === "resolve") {
-    const isGhosted = selectedCloser === "flirt" && auraEarned === 0;
-    const isWin     = auraEarned > 0 && selectedCloser !== "leave";
     const isLeave   = selectedCloser === "leave";
+    const isMiss    = !isLeave && auraEarned === 0;
+    const isWin     = auraEarned > 0 && !isLeave;
 
     return (
       <div className="flex h-svh flex-col bg-[#241F19] text-[#EEF083]">
@@ -628,9 +655,9 @@ function GameContent() {
 
           {/* Verdict */}
           <div className={`w-full max-w-lg border-2 p-6 shadow-[8px_8px_0_#1a1710] mb-6 ${
-            isGhosted ? "border-[#ff4444] bg-[#ff4444]/5" :
-            isWin     ? "border-[#EEF083] bg-[#EEF083]/5" :
-                        "border-[#91897C]"
+            isMiss  ? "border-[#ff4444] bg-[#ff4444]/5" :
+            isWin   ? "border-[#EEF083] bg-[#EEF083]/5" :
+                      "border-[#91897C]"
           }`}>
             {isLoading ? (
               <p className="font-mono text-sm text-[#91897C] animate-pulse">Waiting for her reaction…</p>
@@ -647,8 +674,9 @@ function GameContent() {
           {/* AURA result */}
           {!isLoading && (
             <div className="mb-6">
-              {isGhosted && <p className="mb-2 font-mono text-xs uppercase tracking-widest text-[#ff4444]">Ghosted — score too low</p>}
-              {isLeave   && <p className="mb-2 font-mono text-xs uppercase tracking-widest text-[#91897C]">Strategic exit</p>}
+              {isMiss  && <p className="mb-2 font-mono text-xs uppercase tracking-widest text-[#ff4444]">Missed — {lastWinChance}% chance</p>}
+              {isLeave && <p className="mb-2 font-mono text-xs uppercase tracking-widest text-[#91897C]">Safe exit</p>}
+              {isWin   && <p className="mb-2 font-mono text-xs uppercase tracking-widest text-[#00FF9D]">Win — {lastWinChance}% chance</p>}
               <p className={`text-6xl font-black tabular-nums ${auraEarned > 0 ? "text-[#EEF083]" : "text-[#91897C]"}`}>
                 {auraEarned > 0 ? `+${auraEarned}` : "0"}
               </p>
@@ -663,6 +691,7 @@ function GameContent() {
             <div className="mb-6 flex gap-4 font-mono text-xs text-[#91897C]">
               <span>Closer: <span className="uppercase text-[#EEF083]">{selectedCloser}</span></span>
               <span>Score: <span className="text-[#EEF083]">{totalScore > 0 ? `+${totalScore}` : totalScore}</span></span>
+              {!isLeave && <span>Odds: <span className="text-[#EEF083]">{lastWinChance}%</span></span>}
               {streak > 1 && <span>Streak: <span className="text-[#EEF083]">{streak}×</span></span>}
             </div>
           )}
