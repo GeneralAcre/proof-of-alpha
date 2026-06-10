@@ -6,13 +6,18 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Nav } from "../components/Nav";
 import { ARCHETYPES, type Archetype } from "../lib/archetypes";
 import { getUnlocked } from "../lib/unlocks";
-import { getCharacterLevel } from "../lib/upgrades";
+import { getCharacterLevel, saveCharacterLevel, levelUpCost, MAX_LEVEL } from "../lib/upgrades";
 import { useWallet } from "../components/WalletProvider";
 
 const LAST_PICKED_KEY = "poa_last_archetype";
 
-function StatBar({ label, value, cap }: { label: string; value: number; cap: number }) {
-  const upgraded = value > cap - (cap - value);
+function auraStorageKey(addr: string | null | undefined) {
+  return addr ? `poa_aura_${addr}` : "poa_aura_anonymous";
+}
+
+function StatBar({ label, value, cap, nextValue }: {
+  label: string; value: number; cap: number; nextValue?: number;
+}) {
   return (
     <div className="flex items-center gap-3">
       <span className="w-20 shrink-0 font-mono text-[10px] uppercase tracking-[0.12em] text-[#91897C]">{label}</span>
@@ -23,15 +28,21 @@ function StatBar({ label, value, cap }: { label: string; value: number; cap: num
             className={`h-2 flex-1 transition-all ${
               i < value
                 ? "bg-[#EEF083]"
+                : nextValue && i < nextValue
+                ? "bg-[#EEF083]/30"
                 : i < cap
-                ? "bg-[#91897C]/30"
-                : "bg-[#91897C]/10"
+                ? "bg-[#91897C]/20"
+                : "bg-[#91897C]/08"
             }`}
           />
         ))}
       </div>
-      <span className="w-10 shrink-0 text-right font-mono text-xs text-[#EEF083]">
-        {value}<span className="text-[#91897C]">/{cap}</span>
+      <span className="w-14 shrink-0 text-right font-mono text-xs text-[#EEF083]">
+        {value}
+        {nextValue && nextValue > value && (
+          <span className="text-[#EEF083]/50">→{nextValue}</span>
+        )}
+        <span className="text-[#91897C]">/{cap}</span>
       </span>
     </div>
   );
@@ -45,17 +56,17 @@ function CharacterSelectContent() {
   const room = params.get("room") ?? "";
 
   const walletAddr = account ? String(account.address) : null;
-  const [unlocked, setUnlocked] = useState<Set<string>>(new Set(["alpha", "beta", "sigma"]));
+  const [unlocked,   setUnlocked]   = useState<Set<string>>(new Set(["alpha", "beta", "sigma"]));
   const [charLevels, setCharLevels] = useState<Record<string, number>>({});
+  const [aura,       setAura]       = useState(0);
 
   useEffect(() => { setUnlocked(getUnlocked(walletAddr)); }, [walletAddr]);
 
   useEffect(() => {
     const levels: Record<string, number> = {};
-    for (const a of ARCHETYPES) {
-      levels[a.id] = getCharacterLevel(walletAddr, a.id);
-    }
+    for (const a of ARCHETYPES) levels[a.id] = getCharacterLevel(walletAddr, a.id);
     setCharLevels(levels);
+    try { setAura(Number(localStorage.getItem(auraStorageKey(walletAddr)) ?? "0") || 0); } catch {}
   }, [walletAddr]);
 
   const [selectedId, setSelectedId] = useState<string>(() =>
@@ -73,6 +84,17 @@ function CharacterSelectContent() {
     setView("detail");
   }
 
+  function handleLevelUp(archetypeId: string, currentLevel: number) {
+    const cost = levelUpCost(currentLevel);
+    if (aura < cost) return;
+    const newAura = aura - cost;
+    try { localStorage.setItem(auraStorageKey(walletAddr), String(newAura)); } catch {}
+    setAura(newAura);
+    const newLevel = currentLevel + 1;
+    saveCharacterLevel(walletAddr, archetypeId, newLevel);
+    setCharLevels((prev) => ({ ...prev, [archetypeId]: newLevel }));
+  }
+
   function confirm() {
     if (mode === "solo") {
       router.push(`/game?mode=solo&archetype=${selected.id}`);
@@ -86,9 +108,14 @@ function CharacterSelectContent() {
 
   // ── DETAIL VIEW ────────────────────────────────────────────────────────────
   if (view === "detail") {
-    const a = selected;
-    const level = charLevels[a.id] ?? 1;
-    const effectiveStats = a.levels[level - 1];
+    const a        = selected;
+    const level    = charLevels[a.id] ?? 1;
+    const maxed    = level >= MAX_LEVEL;
+    const cost     = levelUpCost(level);
+    const canAfford = aura >= cost;
+    const cur      = a.levels[level - 1];
+    const next     = !maxed ? a.levels[level] : null;
+
     return (
       <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
         <Nav />
@@ -122,10 +149,18 @@ function CharacterSelectContent() {
                 </div>
               )}
               <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#241F19]/60 to-transparent" />
+
+              {/* Level badge on portrait */}
+              <div className="absolute bottom-3 left-3 border border-[#EEF083]/40 bg-[#241F19]/80 px-3 py-1.5 backdrop-blur-sm">
+                <p className="font-mono text-[10px] uppercase tracking-widest text-[#91897C]">Level</p>
+                <p className="font-mono text-2xl font-black leading-none text-[#EEF083]">
+                  {level}<span className="text-sm text-[#91897C]">/{MAX_LEVEL}</span>
+                </p>
+              </div>
             </div>
 
             {/* Info */}
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-4">
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-[#91897C]">
                   Step 2 of 3 · {mode === "solo" ? "Solo" : "Multiplayer"}
@@ -137,22 +172,59 @@ function CharacterSelectContent() {
 
               {/* Stats */}
               <div className="space-y-2">
-                <div className="flex items-baseline justify-between">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#91897C]">Stats</p>
-                  <p className="font-mono text-[10px] text-[#91897C]">
-                    LVL <span className="font-bold text-[#EEF083]">{level}</span>
-                    <span className="text-[#91897C]">/10</span>
-                    {level < 10 && <span className="ml-2 text-[#91897C]/60">· upgrade in profile</span>}
-                  </p>
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#91897C]">Stats</p>
+                <StatBar label="Aggression" value={cur.aggression} cap={a.statCaps.aggression} nextValue={next?.aggression} />
+                <StatBar label="Defense"    value={cur.defense}    cap={a.statCaps.defense}    nextValue={next?.defense} />
+                <StatBar label="Bluff"      value={cur.bluff}      cap={a.statCaps.bluff}      nextValue={next?.bluff} />
+                <StatBar label="Greed"      value={cur.greed}      cap={a.statCaps.greed}      nextValue={next?.greed} />
+              </div>
+
+              {/* Level-up block */}
+              <div className="border border-[#91897C]/40 bg-[#2f2922] p-3">
+                {/* Level pips */}
+                <div className="mb-2.5 flex items-center gap-2">
+                  <span className="font-mono text-[10px] uppercase tracking-wide text-[#91897C]">LVL</span>
+                  <div className="flex flex-1 gap-0.5">
+                    {Array.from({ length: MAX_LEVEL }, (_, i) => (
+                      <div key={i} className={`h-1.5 flex-1 ${i < level ? "bg-[#EEF083]" : "bg-[#91897C]/20"}`} />
+                    ))}
+                  </div>
+                  <span className="font-mono text-xs font-bold text-[#EEF083]">{level}/{MAX_LEVEL}</span>
                 </div>
-                <StatBar label="Aggression" value={effectiveStats.aggression} cap={a.statCaps.aggression} />
-                <StatBar label="Defense"    value={effectiveStats.defense}    cap={a.statCaps.defense} />
-                <StatBar label="Bluff"      value={effectiveStats.bluff}      cap={a.statCaps.bluff} />
-                <StatBar label="Greed"      value={effectiveStats.greed}      cap={a.statCaps.greed} />
+
+                {maxed ? (
+                  <p className="text-center font-mono text-xs uppercase tracking-widest text-[#EEF083]/40">Max Level</p>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      disabled={!canAfford}
+                      onClick={() => handleLevelUp(a.id, level)}
+                      className={`w-full border-2 py-3 font-mono text-xs font-black uppercase tracking-widest transition touch-manipulation ${
+                        canAfford
+                          ? "border-[#EEF083] bg-[#EEF083] text-[#241F19] hover:bg-transparent hover:text-[#EEF083]"
+                          : "border-[#91897C]/40 text-[#91897C]/40 cursor-not-allowed"
+                      }`}
+                    >
+                      Level Up → LVL {level + 1}
+                    </button>
+                    <div className="mt-1.5 flex items-center justify-between font-mono text-[10px]">
+                      <span className={canAfford ? "text-[#EEF083]" : "text-red-400"}>
+                        {cost} AURA
+                      </span>
+                      <span className="text-[#91897C]">
+                        Balance: {aura.toLocaleString()} AURA
+                        {!canAfford && (
+                          <> · <a href="/store" className="text-[#EEF083] underline">Buy more</a></>
+                        )}
+                      </span>
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Unique move */}
-              <div className="border-t border-[#91897C]/30 pt-4">
+              <div className="border-t border-[#91897C]/30 pt-3">
                 <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.2em] text-[#91897C]">Unique Move</p>
                 <p className="text-sm leading-6 text-[#d8d4a1]">{a.uniqueMove}</p>
               </div>
@@ -189,6 +261,7 @@ function CharacterSelectContent() {
         <div className="grid grid-cols-3 gap-3 sm:gap-4">
           {ARCHETYPES.map((a) => {
             const isAvailable = unlocked.has(a.id);
+            const lvl = charLevels[a.id] ?? 1;
             return (
               <button
                 key={a.id}
@@ -222,7 +295,9 @@ function CharacterSelectContent() {
                 {/* Name strip */}
                 <div className="border-t border-[#91897C] px-2 py-2 sm:px-3">
                   <p className="font-black uppercase leading-none text-[#EEF083] text-xs sm:text-sm">{a.name}</p>
-                  <p className="mt-0.5 hidden font-mono text-[10px] text-[#91897C] sm:block">{a.role}</p>
+                  <p className="mt-0.5 font-mono text-[9px] text-[#91897C]">
+                    {isAvailable ? `LVL ${lvl}` : a.role}
+                  </p>
                 </div>
               </button>
             );
@@ -230,7 +305,7 @@ function CharacterSelectContent() {
         </div>
 
         <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.15em] text-[#91897C]">
-          Tap a character to view details and confirm.
+          Tap a character to view details and upgrade.
         </p>
 
       </main>
