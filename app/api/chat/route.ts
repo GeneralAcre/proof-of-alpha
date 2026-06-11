@@ -1,7 +1,23 @@
-import Anthropic from "@anthropic-ai/sdk";
-import { CHAT_SYSTEM_PROMPTS, RESOLVE_SYSTEM_PROMPTS, type GirlId } from "../../lib/girls";
+import { CHAT_SYSTEM_PROMPTS, RESOLVE_SYSTEM_PROMPTS, GIRLS, type GirlId } from "../../lib/girls";
 
-const client = new Anthropic();
+// ─── Model config per girl tier ──────────────────────────────────────────────
+// common (easy)    → free Llama — predictable, easier to impress
+// rare   (medium)  → Qwen flash — witty, less predictable
+// legendary (hard) → Qwen flash — hardest to crack, highest temperature
+
+const MODEL_CONFIG = {
+  common:    { model: "meta-llama/llama-3-8b-instruct:free", temperature: 0.5 },
+  rare:      { model: "qwen/qwen3.5-flash-02-23",            temperature: 0.9 },
+  legendary: { model: "qwen/qwen3.5-flash-02-23",            temperature: 1.1 },
+} as const;
+
+const OR_BASE = "https://openrouter.ai/api/v1/chat/completions";
+
+function getConfig(girlId: GirlId) {
+  const girl = GIRLS.find((g) => g.id === girlId);
+  const tier = girl?.tier ?? "common";
+  return MODEL_CONFIG[tier];
+}
 
 type ChatRequest = {
   phase: "chat" | "resolve";
@@ -13,40 +29,72 @@ type ChatRequest = {
 
 function safeParseJSON(text: string): Record<string, unknown> | null {
   try {
-    const clean = text.replace(/```json|```/g, "").trim();
-    return JSON.parse(clean);
+    return JSON.parse(text.replace(/```json|```/g, "").trim());
   } catch {
     return null;
   }
 }
 
 export async function POST(req: Request): Promise<Response> {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) {
+    return Response.json({ error: "OPENROUTER_API_KEY not set" }, { status: 500 });
+  }
+
   try {
     const body = (await req.json()) as ChatRequest;
     const { phase, girlId, messages, closer, totalScore } = body;
+    const { model, temperature } = getConfig(girlId);
 
+    // ── CHAT (streaming) ─────────────────────────────────────────────────────
     if (phase === "chat") {
       const systemPrompt = CHAT_SYSTEM_PROMPTS[girlId];
-      if (!systemPrompt) {
+      if (!systemPrompt) return new Response("...\n[SCORE: 0]", { status: 200 });
+
+      const orRes = await fetch(OR_BASE, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model,
+          temperature,
+          max_tokens: 256,
+          stream: true,
+          messages: [
+            { role: "system", content: systemPrompt },
+            ...messages,
+          ],
+        }),
+      });
+
+      if (!orRes.ok || !orRes.body) {
         return new Response("...\n[SCORE: 0]", { status: 200 });
       }
 
-      const stream = client.messages.stream({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 256,
-        system: systemPrompt,
-        messages,
-      });
-
+      // Parse OpenRouter SSE and re-stream plain text to the client
       const readable = new ReadableStream({
         async start(controller) {
+          const reader = orRes.body!.getReader();
+          const dec = new TextDecoder();
+          let buf = "";
           try {
-            for await (const chunk of stream) {
-              if (
-                chunk.type === "content_block_delta" &&
-                chunk.delta.type === "text_delta"
-              ) {
-                controller.enqueue(new TextEncoder().encode(chunk.delta.text));
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              buf += dec.decode(value, { stream: true });
+              const lines = buf.split("\n");
+              buf = lines.pop() ?? "";
+              for (const line of lines) {
+                if (!line.startsWith("data: ")) continue;
+                const payload = line.slice(6).trim();
+                if (payload === "[DONE]") continue;
+                try {
+                  const chunk = JSON.parse(payload);
+                  const text: string | undefined = chunk.choices?.[0]?.delta?.content;
+                  if (text) controller.enqueue(new TextEncoder().encode(text));
+                } catch {}
               }
             }
           } finally {
@@ -60,33 +108,41 @@ export async function POST(req: Request): Promise<Response> {
       });
     }
 
+    // ── RESOLVE (non-streaming) ───────────────────────────────────────────────
     if (phase === "resolve") {
       const systemPrompt = RESOLVE_SYSTEM_PROMPTS[girlId];
       if (!systemPrompt) {
-        return Response.json({ verdict: "Whatever.", reaction: "neutral" }, { status: 200 });
+        return Response.json({ verdict: "Whatever.", reaction: "neutral" });
       }
 
       const closerLabel =
         closer === "flirt" ? "FLIRT (Rizz)" :
         closer === "flex"  ? "FLEX (Posture)" :
                              "LEAVE (Walk Away)";
-      const scoreContext = `His total Attraction Score during the chat was ${totalScore ?? 0} (scale: -40 to +40).`;
-      const closerContext = `He chose to: ${closerLabel}.`;
 
-      const response = await client.messages.create({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 256,
-        system: systemPrompt,
-        messages: [
-          ...messages,
-          {
-            role: "user",
-            content: `[GAME EVENT] ${scoreContext} ${closerContext} Give your final verdict.`,
-          },
-        ],
+      const orRes = await fetch(OR_BASE, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model,
+          temperature,
+          max_tokens: 256,
+          messages: [
+            { role: "system", content: systemPrompt },
+            ...messages,
+            {
+              role: "user",
+              content: `[GAME EVENT] His total Attraction Score during the chat was ${totalScore ?? 0} (scale: -40 to +40). He chose to: ${closerLabel}. Give your final verdict.`,
+            },
+          ],
+        }),
       });
 
-      const text = response.content[0]?.type === "text" ? response.content[0].text : "{}";
+      const data = await orRes.json() as { choices?: Array<{ message?: { content?: string } }> };
+      const text = data.choices?.[0]?.message?.content ?? "{}";
       const parsed = safeParseJSON(text);
 
       if (!parsed || typeof parsed.verdict !== "string") {
@@ -94,7 +150,7 @@ export async function POST(req: Request): Promise<Response> {
       }
 
       return Response.json({
-        verdict: parsed.verdict as string,
+        verdict: parsed.verdict,
         reaction: (parsed.reaction as string) ?? "neutral",
       });
     }
