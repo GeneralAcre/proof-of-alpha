@@ -3,9 +3,9 @@ import { GIRL_ARCHETYPES, type Difficulty } from "../../lib/girls";
 // ─── Model config per difficulty ──────────────────────────────────────────────
 
 const MODEL_CONFIG: Record<Difficulty, { model: string; temperature: number }> = {
-  easy:   { model: "meta-llama/llama-3-8b-instruct:free",      temperature: 0.5 },
-  medium: { model: "mistralai/mistral-7b-instruct:free",        temperature: 0.9 },
-  hard:   { model: "meta-llama/llama-3.1-8b-instruct:free",    temperature: 1.1 },
+  easy:   { model: "meta-llama/llama-3.2-3b-instruct:free",      temperature: 0.5 },
+  medium: { model: "meta-llama/llama-3.3-70b-instruct:free",     temperature: 0.9 },
+  hard:   { model: "qwen/qwen3-next-80b-a3b-instruct:free",      temperature: 1.1 },
 };
 
 const OR_BASE = "https://openrouter.ai/api/v1/chat/completions";
