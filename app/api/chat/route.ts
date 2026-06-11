@@ -3,9 +3,9 @@ import { GIRL_ARCHETYPES, type Difficulty } from "../../lib/girls";
 // ─── Model config per difficulty ──────────────────────────────────────────────
 
 const MODEL_CONFIG: Record<Difficulty, { model: string; temperature: number }> = {
-  easy:   { model: "meta-llama/llama-3-8b-instruct:free", temperature: 0.5 },
-  medium: { model: "qwen/qwen3.5-flash-02-23",            temperature: 0.9 },
-  hard:   { model: "qwen/qwen3.5-flash-02-23",            temperature: 1.1 },
+  easy:   { model: "meta-llama/llama-3-8b-instruct:free",      temperature: 0.5 },
+  medium: { model: "mistralai/mistral-7b-instruct:free",        temperature: 0.9 },
+  hard:   { model: "meta-llama/llama-3.1-8b-instruct:free",    temperature: 1.1 },
 };
 
 const OR_BASE = "https://openrouter.ai/api/v1/chat/completions";
@@ -60,7 +60,11 @@ export async function POST(req: Request): Promise<Response> {
         }),
       });
 
-      if (!orRes.ok || !orRes.body) return new Response("...\n[SCORE: 0]", { status: 200 });
+      if (!orRes.ok || !orRes.body) {
+        const errText = await orRes.text().catch(() => "unknown");
+        console.error("[/api/chat] OpenRouter error", orRes.status, errText);
+        return new Response(`[API error ${orRes.status}]\n[SCORE: 0]`, { status: 200 });
+      }
 
       const readable = new ReadableStream({
         async start(controller) {
