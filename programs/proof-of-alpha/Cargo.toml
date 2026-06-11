@@ -5,7 +5,7 @@ description = "Proof of Alpha — AURA economy and ALPHA token"
 edition = "2021"
 
 [lib]
-crate-type = ["cdylib", "lib"]
+crate-type = ["cdylib"]
 name = "proof_of_alpha"
 
 [features]

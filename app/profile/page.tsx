@@ -81,7 +81,7 @@ function UpgradePanel({
               </div>
               <span className="w-10 text-right font-mono text-[10px] text-[#EEF083]">
                 {val}
-                {gaining && <span className="text-[#EEF083]/50">→{nextVal}</span>}
+                {gaining && <span className="text-[#EEF083]/50"> {nextVal}</span>}
                 <span className="text-[#91897C]">/{cap}</span>
               </span>
             </div>
@@ -106,7 +106,7 @@ function UpgradePanel({
                 : "border-[#91897C]/40 text-[#91897C]/40 cursor-not-allowed"
             }`}
           >
-            Level Up → LVL {level + 1}
+            Level Up — LVL {level + 1}
           </button>
           <p className="mt-1.5 text-center font-mono text-[10px] text-[#91897C]">
             Cost: <span className={canAfford ? "text-[#EEF083]" : "text-red-400"}>{cost} AURA</span>

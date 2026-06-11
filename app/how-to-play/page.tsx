@@ -18,14 +18,14 @@ const CLOSERS = [
     name: "FLIRT",
     color: "#EEF083",
     risk: "High Risk",
-    odds: "15% → 90%",
+    odds: "15% – 90%",
     desc: "The big play. Win chance scales hard with your conversation score — bad chat = 15%, great chat = 90%. Pays the most on win.",
   },
   {
     name: "FLEX",
     color: "#00FF9D",
     risk: "Safer",
-    odds: "35% → 70%",
+    odds: "35% – 70%",
     desc: "More consistent floor. Even with a bad chat you still have 35% odds. Ceiling caps at 70% — lower payout but less variance.",
   },
   {
@@ -83,7 +83,7 @@ const FAQ = [
   { q: "How does the conversation score work?", a: "Each AI response includes a hidden score (-10 to +10) based on how well your message landed. After 4 messages your total score determines the win % shown on your closer buttons." },
   { q: "What's the difference between FLIRT and FLEX?", a: "FLIRT is high variance — terrible odds with a bad chat, great odds with a good one. FLEX has a safer floor but caps lower. FLIRT always pays more on win." },
   { q: "Does my archetype affect the chat?",  a: "Your archetype stats (Aggression, Defense, Bluff, Greed) influence your character's style but the AI scores you on the actual quality of your messages — not your stats directly." },
-  { q: "How do I upgrade my archetype?",      a: "On the Character Select page, tap any character → Level Up. Cost is Level × 150 AURA. Each level unlocks better base stats. Max level is 10." },
+  { q: "How do I upgrade my archetype?",      a: "On the Character Select page, tap any character, then Level Up. Cost is Level × 150 AURA. Each level unlocks better base stats. Max level is 10." },
   { q: "Are girls random every game?",        a: "Yes. Each session picks 3 random girls from a pool of 15 archetypes (5 per difficulty tier). Names and accent colors are randomised too — no two sessions look the same." },
   { q: "Can I play on mobile?",               a: "Yes. Proof of Alpha supports Solana Mobile Wallet Adapter — connect directly from Phantom, Backpack, or any MWA wallet." },
 ];
@@ -226,7 +226,7 @@ export default function HowToPlayPage() {
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               className="border-2 border-[#EEF083] bg-[#EEF083] px-7 py-3.5 text-sm font-black uppercase tracking-wide text-[#241F19] shadow-[4px_4px_0_#91897C] transition hover:bg-transparent hover:text-[#EEF083]"
-              href="/mode-select"
+              href="/map"
             >
               Play Now
             </Link>

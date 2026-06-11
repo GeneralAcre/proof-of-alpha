@@ -7,6 +7,8 @@ import { Nav } from "../components/Nav";
 import { useWallet } from "../components/WalletProvider";
 import { generateGirlSet, BOT_NAMES, TICKER_TEMPLATES, type Girl } from "../lib/girls";
 import { sfx, initSounds } from "../lib/sounds";
+import { ARCHETYPES, type StatBlock } from "../lib/archetypes";
+import { getCharacterLevel } from "../lib/upgrades";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -29,9 +31,9 @@ type TickerEntry = { id: number; text: string };
 // ─── Difficulty style ─────────────────────────────────────────────────────────
 
 const DIFF_STYLE = {
-  easy:   { label: "EASY",   color: "#90EE90" },
-  medium: { label: "MEDIUM", color: "#FFD700" },
-  hard:   { label: "HARD",   color: "#FF4444" },
+  easy:   { label: "WARM",  color: "#EEF083" },
+  medium: { label: "COLD",  color: "#EEF083" },
+  hard:   { label: "ICY",   color: "#EEF083" },
 } as const;
 
 // ─── AURA economy ─────────────────────────────────────────────────────────────
@@ -45,26 +47,34 @@ function getStreakMultiplier(streak: number): number {
   return 1.0;
 }
 
-/**
- * Win probability (0–100) based on conversation score.
- * score range realistically -20 to +40 with 4 messages.
- * FLIRT: high variance 15%→90% — big upside if she liked you, crashes if not.
- * FLEX:  safer floor  35%→70% — more consistent, lower ceiling.
- */
-function calcWinChance(closer: Closer, totalScore: number): number {
-  const score = Math.max(-20, Math.min(40, totalScore));
-  const t = (score + 20) / 60; // 0..1
-  if (closer === "flirt") return Math.round(15 + t * 75);
-  if (closer === "flex")  return Math.round(35 + t * 35);
+// Difficulty penalty to win%: harder girls are harder to close
+const DIFF_PENALTY: Record<string, number> = { easy: 0, medium: -12, hard: -25 };
+
+// Stat bonus to win%: max +15% when stats are maxed
+function statBonus(closer: Closer, stats: StatBlock): number {
+  if (closer === "flirt") return Math.round(((stats.bluff + stats.aggression) / 20) * 15);
+  if (closer === "flex")  return Math.round(((stats.aggression + stats.greed) / 20) * 15);
   return 0;
 }
 
-function calcAura(closer: Closer, totalScore: number, girl: Girl, streak: number) {
+function calcWinChance(closer: Closer, totalScore: number, difficulty: string, stats: StatBlock): number {
+  const score = Math.max(-20, Math.min(40, totalScore));
+  const t = (score + 20) / 60; // 0..1
+  let base = 0;
+  if (closer === "flirt") base = 15 + t * 75;
+  else if (closer === "flex") base = 35 + t * 35;
+  else return 0;
+  const penalty = DIFF_PENALTY[difficulty] ?? 0;
+  const bonus   = statBonus(closer, stats);
+  return Math.min(95, Math.max(5, Math.round(base + penalty + bonus)));
+}
+
+function calcAura(closer: Closer, totalScore: number, girl: Girl, streak: number, stats: StatBlock) {
   const mult = getStreakMultiplier(streak);
   if (closer === "leave") {
     return { aura: Math.round(girl.approachCost * 0.5), win: false, winChance: 0 };
   }
-  const winChance = calcWinChance(closer, totalScore);
+  const winChance = calcWinChance(closer, totalScore, girl.difficulty, stats);
   const won = Math.random() * 100 < winChance;
   const payout = closer === "flirt" ? girl.flirtWin : girl.flexWin;
   return { aura: won ? Math.round(payout * mult) : 0, win: won, winChance };
@@ -82,6 +92,63 @@ function seedTicker(): TickerEntry[] {
     entries.push({ id: i, text: TICKER_TEMPLATES[i % TICKER_TEMPLATES.length](name, girl, pts) });
   }
   return entries;
+}
+
+// ─── Coach tip system ─────────────────────────────────────────────────────────
+
+type CoachTipData = { text: string; type: "info" | "warn" | "good" };
+
+function getCoachTip(girl: Girl, messages: ChatMsg[]): CoachTipData | null {
+  const userMsgs  = messages.filter((m) => m.role === "user").length;
+  const aiMsgs    = messages.filter((m) => m.role === "assistant" && m.content !== "▋");
+  const lastAI    = aiMsgs[aiMsgs.length - 1];
+  const lastScore = lastAI?.score ?? null;
+
+  // No AI response yet — no tip
+  if (lastScore === null) return null;
+
+  // Score-reactive tips
+  if (lastScore <= -6) {
+    const tip = girl.wins[userMsgs % girl.wins.length];
+    return { text: `She went cold. Pivot — try: ${tip.toLowerCase()}.`, type: "warn" };
+  }
+  if (lastScore < 0) {
+    const fail = girl.fails[userMsgs % girl.fails.length];
+    return { text: `That didn't land. She hates: ${fail.toLowerCase()}. Adjust.`, type: "warn" };
+  }
+  if (lastScore >= 7) {
+    const next = girl.wins[(userMsgs + 1) % girl.wins.length];
+    return { text: `She's into it. Double down on: ${next.toLowerCase()}.`, type: "good" };
+  }
+  if (lastScore > 0) {
+    return { text: `Decent. She also likes: ${girl.wins[(userMsgs) % girl.wins.length].toLowerCase()}.`, type: "info" };
+  }
+
+  // Neutral — show a fail warning
+  const fail = girl.fails[(userMsgs - 1) % girl.fails.length];
+  return { text: `She's neutral. Avoid: ${fail.toLowerCase()}.`, type: "info" };
+}
+
+function CoachHint({ tip }: { tip: CoachTipData }) {
+  const colors = {
+    info: { border: "#91897C", text: "#d8d4a1", label: "#91897C" },
+    warn: { border: "#ff6b6b", text: "#ffb1a1", label: "#ff6b6b" },
+    good: { border: "#00FF9D", text: "#00FF9D", label: "#00FF9D" },
+  }[tip.type];
+
+  return (
+    <div
+      className="mt-1 inline-flex items-start gap-1.5 border-l-2 px-2 py-1"
+      style={{ borderLeftColor: colors.border }}
+    >
+      <span className="shrink-0 font-mono text-[7px] uppercase tracking-[0.18em] mt-px" style={{ color: colors.label }}>
+        Coach
+      </span>
+      <p className="font-mono text-[10px] leading-4" style={{ color: colors.text }}>
+        {tip.text}
+      </p>
+    </div>
+  );
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -118,11 +185,24 @@ function AttractionBar({ score }: { score: number }) {
 function GameContent() {
   const router      = useRouter();
   const params      = useSearchParams();
-  const { truncatedAddress } = useWallet();
+  const { truncatedAddress, account } = useWallet();
 
   const archetypeId = params.get("archetype") ?? "alpha";
+  const diffParam = params.get("difficulty") as "easy" | "medium" | "hard" | null;
 
-  const [girlSet] = useState<Girl[]>(() => generateGirlSet());
+  const [charStats, setCharStats] = useState<StatBlock>(() => {
+    const arch = ARCHETYPES.find((a) => a.id === archetypeId);
+    return arch ? arch.levels[0] : { aggression: 4, defense: 3, bluff: 2, greed: 3 };
+  });
+
+  useEffect(() => {
+    const addr = account?.address ?? null;
+    const level = getCharacterLevel(addr, archetypeId);
+    const arch = ARCHETYPES.find((a) => a.id === archetypeId);
+    if (arch) setCharStats(arch.levels[Math.max(0, level - 1)]);
+  }, [archetypeId, account]);
+
+  const [girlSet] = useState<Girl[]>(() => generateGirlSet(diffParam ?? undefined));
 
   const [phase,          setPhase]          = useState<Phase>("lobby");
   const [girlQueue,      setGirlQueue]      = useState<string[]>(() => girlSet.map((g) => g.id));
@@ -204,7 +284,7 @@ function GameContent() {
     setIsLoading(true);
     sfx.moveConfirm();
     const g = girlSet.find((gg) => gg.id === currentGirl) ?? girlSet[0];
-    const { aura, win, winChance } = calcAura(closer, totalScore, g, streak);
+    const { aura, win, winChance } = calcAura(closer, totalScore, g, streak, charStats);
     setAuraEarned(aura);
     setLastWinChance(winChance);
     setSessionAura((prev) => prev + aura);
@@ -322,133 +402,105 @@ function GameContent() {
 
               if (done) {
                 return (
-                  <div key={g.id} className="flex items-center gap-4 border border-[#3a342c] bg-[#2f2922]/60 px-5 py-4 opacity-50">
-                    <div className="relative h-10 w-10 shrink-0 overflow-hidden border grayscale"
-                      style={{ borderColor: g.accentColor }}>
+                  <div key={g.id} className="flex items-center gap-4 border border-[#2a2520] bg-[#2a2520] px-5 py-4 opacity-40">
+                    <div className="relative h-10 w-10 shrink-0 overflow-hidden border border-[#3a342c] grayscale">
                       <Image alt={g.name} src={g.image} fill className="object-cover object-top" sizes="40px" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-black uppercase text-[#EEF083] text-sm">{g.name}</p>
-                      <p className="font-mono text-[9px] uppercase text-[#91897C]">{g.title}</p>
+                      <p className="font-black uppercase text-[#91897C] text-sm">{g.name}</p>
                     </div>
                     <div className="shrink-0 text-right">
-                      <p className="font-mono text-sm font-black" style={{ color: (result?.auraEarned ?? 0) > 0 ? "#EEF083" : "#91897C" }}>
-                        +{result?.auraEarned ?? 0} AURA
+                      <p className="font-mono text-sm font-black text-[#91897C]">
+                        {(result?.auraEarned ?? 0) > 0 ? `+${result?.auraEarned}` : "0"} AURA
                       </p>
-                      <p className="font-mono text-[9px] uppercase text-[#91897C]">Done</p>
+                      <p className="font-mono text-[9px] uppercase text-[#3a342c]">Done</p>
                     </div>
                   </div>
                 );
               }
 
               return (
-                <div
-                  key={g.id}
-                  className="border border-[#91897C] bg-[#2f2922] shadow-[4px_4px_0_#1a1710]"
-                  style={{ borderTopColor: g.accentColor, borderTopWidth: 3 }}
-                >
-                  {/* Portrait + info row */}
-                  <div className="flex items-stretch gap-0">
+                <div key={g.id} className="border border-[#91897C]/40 bg-[#2f2922]">
+                  <div className="flex items-stretch">
+
                     {/* Portrait */}
-                    <div className="relative w-24 sm:w-32 shrink-0 overflow-hidden bg-[#1a1710]"
-                      style={{ borderRight: `2px solid ${g.accentColor}` }}>
+                    <div className="relative w-28 sm:w-36 shrink-0 overflow-hidden bg-[#1a1710] border-r border-[#91897C]/30">
                       <Image
                         alt={g.name}
                         src={g.image}
                         fill
                         className="object-cover object-top grayscale transition duration-300 hover:grayscale-0"
-                        sizes="(max-width: 640px) 96px, 128px"
+                        sizes="(max-width: 640px) 112px, 144px"
                       />
-                      <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#2f2922]/60 to-transparent" />
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#2f2922]/70 to-transparent" />
+                      {/* Difficulty badge over portrait */}
+                      <div className="absolute bottom-2 left-2">
+                        <span className="font-mono text-[7px] font-black uppercase tracking-[0.2em] border border-[#EEF083]/40 bg-[#241F19]/80 px-1.5 py-0.5 text-[#EEF083]/70">
+                          {tier.label}
+                        </span>
+                      </div>
                     </div>
 
-                  <div className="flex-1 p-4">
-                    {/* Top row: badges + info */}
-                    <div className="flex items-start gap-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
+                    {/* Info */}
+                    <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
+                      <div>
+                        {/* Name + round */}
+                        <div className="flex items-center gap-2 mb-1">
                           <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#91897C]">Round {i + 1}</span>
-                          <span
-                            className="font-mono text-[8px] uppercase px-1.5 py-0.5 border font-black"
-                            style={{ borderColor: tier.color, color: tier.color }}
-                          >
-                            {tier.label}
-                          </span>
                         </div>
-                        <p className="mt-0.5 text-xl font-black uppercase" style={{ color: g.accentColor }}>{g.name}</p>
-                        <p className="font-mono text-xs text-[#91897C]">{g.title}</p>
-                      </div>
-                    </div>
+                        <p className="text-2xl font-black uppercase text-[#EEF083] leading-none">{g.name}</p>
 
-                    <p className="mt-3 border-l-2 pl-3 font-mono text-xs italic text-[#d8d4a1]" style={{ borderColor: g.accentColor }}>
-                      "{g.tagline}"
-                    </p>
-
-                    {/* Economy stats */}
-                    <div className="mt-4 grid grid-cols-3 divide-x divide-[#3a342c] border border-[#3a342c]">
-                      <div className="bg-[#1a1710] px-3 py-2.5 text-center">
-                        <p className="font-mono text-[9px] uppercase tracking-wide text-[#91897C]">Entry</p>
-                        <p className="mt-1 font-mono text-sm font-black text-[#ff6b6b]">−{g.approachCost}</p>
-                      </div>
-                      <div className="bg-[#1a1710] px-3 py-2.5 text-center">
-                        <p className="font-mono text-[9px] uppercase tracking-wide text-[#91897C]">Flirt Win</p>
-                        <p className="mt-1 font-mono text-sm font-black text-[#EEF083]">
-                          +{flirtPreview}
-                          {streakMult > 1 && <span className="ml-1 text-[9px] text-[#91897C]">×{streakMult}</span>}
+                        {/* Tagline */}
+                        <p className="mt-2 font-mono text-[11px] italic text-[#91897C] leading-5">
+                          "{g.tagline}"
                         </p>
                       </div>
-                      <div className="bg-[#1a1710] px-3 py-2.5 text-center">
-                        <p className="font-mono text-[9px] uppercase tracking-wide text-[#91897C]">Flex Win</p>
-                        <p className="mt-1 font-mono text-sm font-black text-[#00FF9D]">
-                          +{flexPreview}
-                          {streakMult > 1 && <span className="ml-1 text-[9px] text-[#91897C]">×{streakMult}</span>}
-                        </p>
+
+                      {/* Economy row */}
+                      <div className="mt-4 flex gap-4 border-t border-[#91897C]/20 pt-3">
+                        <div>
+                          <p className="font-mono text-[8px] uppercase tracking-wide text-[#91897C]">Entry</p>
+                          <p className="font-mono text-sm font-black text-[#ff6b6b]">−{g.approachCost}</p>
+                        </div>
+                        <div>
+                          <p className="font-mono text-[8px] uppercase tracking-wide text-[#91897C]">Flirt</p>
+                          <p className="font-mono text-sm font-black text-[#EEF083]">
+                            +{flirtPreview}{streakMult > 1 && <span className="ml-0.5 text-[9px] text-[#91897C]">×{streakMult}</span>}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="font-mono text-[8px] uppercase tracking-wide text-[#91897C]">Flex</p>
+                          <p className="font-mono text-sm font-black text-[#d8d4a1]">
+                            +{flexPreview}{streakMult > 1 && <span className="ml-0.5 text-[9px] text-[#91897C]">×{streakMult}</span>}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Hints */}
+                      <div className="mt-2 flex flex-wrap gap-x-3 gap-y-0.5">
+                        {g.wins.slice(0, 2).map((w) => (
+                          <span key={w} className="font-mono text-[8px] text-[#91897C]">
+                            <span className="text-[#EEF083]/50">+ </span>{w}
+                          </span>
+                        ))}
+                        {g.fails.slice(0, 1).map((f) => (
+                          <span key={f} className="font-mono text-[8px] text-[#91897C]">
+                            <span className="text-[#ff6b6b]/60">✗ </span>{f}
+                          </span>
+                        ))}
                       </div>
                     </div>
+                  </div>
 
-                    {/* Hints */}
-                    <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
-                      {g.wins.slice(0, 2).map((w) => (
-                        <span key={w} className="font-mono text-[9px] text-[#91897C]">
-                          <span style={{ color: g.accentColor }}>+ </span>{w}
-                        </span>
-                      ))}
-                      {g.fails.slice(0, 2).map((f) => (
-                        <span key={f} className="font-mono text-[9px] text-[#91897C]">
-                          <span className="text-[#ff6b6b]">✗ </span>{f}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Approach button */}
-                    <button
-                      disabled={!canAfford}
-                      className="mt-4 w-full border-2 py-3.5 font-mono text-xs font-black uppercase tracking-widest transition-all touch-manipulation disabled:opacity-30 disabled:cursor-not-allowed"
-                      style={canAfford ? {
-                        borderColor: g.accentColor,
-                        backgroundColor: g.accentColor,
-                        color: "#241F19",
-                      } : {
-                        borderColor: "#3a342c",
-                        color: "#91897C",
-                      }}
-                      onPointerEnter={(e) => {
-                        if (!canAfford) return;
-                        (e.currentTarget as HTMLButtonElement).style.backgroundColor = "transparent";
-                        (e.currentTarget as HTMLButtonElement).style.color = g.accentColor;
-                      }}
-                      onPointerLeave={(e) => {
-                        if (!canAfford) return;
-                        (e.currentTarget as HTMLButtonElement).style.backgroundColor = g.accentColor;
-                        (e.currentTarget as HTMLButtonElement).style.color = "#241F19";
-                      }}
-                      onClick={() => startApproach(g.id)}
-                      type="button"
-                    >
-                      {canAfford ? `Approach ${g.name} — ${g.approachCost} AURA →` : `Need ${g.approachCost} AURA`}
-                    </button>
-                  </div>{/* end flex-1 info col */}
-                  </div>{/* end portrait+info row */}
+                  {/* Approach button — full width below */}
+                  <button
+                    disabled={!canAfford}
+                    className="w-full border-t border-[#91897C]/30 py-3.5 font-mono text-xs font-black uppercase tracking-widest transition-all touch-manipulation bg-[#EEF083] text-[#241F19] hover:bg-[#d8d4a1] disabled:opacity-25 disabled:cursor-not-allowed disabled:bg-transparent disabled:text-[#91897C]"
+                    onClick={() => startApproach(g.id)}
+                    type="button"
+                  >
+                    {canAfford ? `Approach ${g.name} — ${g.approachCost} AURA` : `Need ${g.approachCost} AURA`}
+                  </button>
                 </div>
               );
             })}
@@ -552,6 +604,16 @@ function GameContent() {
               </div>
             </div>
           ))}
+          {/* Coach hint — shows under last AI message */}
+          {phase === "chat" && !isLoading && (() => {
+            const tip = getCoachTip(girl, messages);
+            return tip ? (
+              <div className="flex justify-start pl-9">
+                <CoachHint tip={tip} />
+              </div>
+            ) : null;
+          })()}
+
           <div ref={chatEndRef} />
         </div>
 
@@ -586,8 +648,8 @@ function GameContent() {
               Chat over — pick your closer
             </p>
             {(() => {
-              const flirtChance = calcWinChance("flirt", totalScore);
-              const flexChance  = calcWinChance("flex",  totalScore);
+              const flirtChance = calcWinChance("flirt", totalScore, girl.difficulty, charStats);
+              const flexChance  = calcWinChance("flex",  totalScore, girl.difficulty, charStats);
               return (
                 <div className="grid grid-cols-3 gap-2">
                   {/* Flirt */}
@@ -708,7 +770,7 @@ function GameContent() {
               type="button"
             >
               {girlQueue.filter((g) => g !== currentGirl).length > 0
-                ? "Next Round →"
+                ? "Next Round"
                 : `Cash Out — ${sessionAura} AURA`}
             </button>
           )}

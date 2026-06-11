@@ -17,6 +17,7 @@
     "@solana-mobile/wallet-standard-mobile": "^0.5.3",
     "@solana/wallet-standard-chains": "^1.1.1",
     "@solana/web3.js": "^1.98.4",
+    "@supabase/supabase-js": "^2.108.1",
     "@wallet-standard/app": "^1.1.1",
     "@wallet-standard/base": "^1.1.1",
     "@wallet-standard/features": "^1.1.1",

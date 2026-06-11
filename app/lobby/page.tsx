@@ -190,7 +190,7 @@ function LobbyContent() {
                   onClick={() => router.push(`/game?mode=${mode}&archetype=${archetypeId}&round=1&room=${roomCode}`)}
                   type="button"
                 >
-                  Start Game →
+                  Start Game
                 </button>
               ) : (
                 <button

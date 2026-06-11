@@ -40,7 +40,7 @@ function StatBar({ label, value, cap, nextValue }: {
       <span className="w-14 shrink-0 text-right font-mono text-xs text-[#EEF083]">
         {value}
         {nextValue && nextValue > value && (
-          <span className="text-[#EEF083]/50">→{nextValue}</span>
+          <span className="text-[#EEF083]/50"> {nextValue}</span>
         )}
         <span className="text-[#91897C]">/{cap}</span>
       </span>
@@ -206,7 +206,7 @@ function CharacterSelectContent() {
                           : "border-[#91897C]/40 text-[#91897C]/40 cursor-not-allowed"
                       }`}
                     >
-                      Level Up → LVL {level + 1}
+                      Level Up — LVL {level + 1}
                     </button>
                     <div className="mt-1.5 flex items-center justify-between font-mono text-[10px]">
                       <span className={canAfford ? "text-[#EEF083]" : "text-red-400"}>
@@ -237,7 +237,7 @@ function CharacterSelectContent() {
                 onClick={confirm}
                 type="button"
               >
-                Play as {a.name} →
+                Play as {a.name}
               </button>
             </div>
           </div>

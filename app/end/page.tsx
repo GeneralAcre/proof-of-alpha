@@ -148,7 +148,7 @@ function EndContent() {
               </p>
               {rankedUp && showRankUp ? (
                 <div className="py-2 text-center">
-                  <p className="font-mono text-xs text-[#91897C]">{prevRank.name} →</p>
+                  <p className="font-mono text-xs text-[#91897C]">{prevRank.name}</p>
                   <p className="text-4xl font-black uppercase text-[#EEF083]">{newRank.name}</p>
                 </div>
               ) : (
@@ -192,7 +192,7 @@ function EndContent() {
         <div className="mt-8 flex flex-wrap gap-4">
           <Link
             className="flex-1 border-2 border-[#EEF083] bg-[#EEF083] px-6 py-4 text-center font-black uppercase text-[#241F19] shadow-[6px_6px_0_#91897C] transition hover:bg-transparent hover:text-[#EEF083] touch-manipulation"
-            href="/mode-select"
+            href="/map"
           >
             Play Again
           </Link>

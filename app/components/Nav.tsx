@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useWallet } from "./WalletProvider";
 
 export function Nav() {
@@ -29,11 +30,8 @@ export function Nav() {
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
 
         {/* Logo */}
-        <Link
-          href="/"
-          className="font-mono text-sm font-black uppercase tracking-[0.22em] text-[#EEF083]"
-        >
-          Proof of Alpha
+        <Link href="/">
+          <Image src="/logo.svg" alt="Proof of Alpha" width={28} height={28} />
         </Link>
 
         {/* Desktop centre links */}
@@ -49,6 +47,12 @@ export function Nav() {
             className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#91897C] transition hover:text-[#EEF083]"
           >
             Leaderboard
+          </Link>
+          <Link
+            href="/guilds"
+            className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#91897C] transition hover:text-[#EEF083]"
+          >
+            Gangs
           </Link>
           <Link
             href="/store"
@@ -157,6 +161,13 @@ export function Nav() {
               onClick={() => setMenuOpen(false)}
             >
               Leaderboard
+            </Link>
+            <Link
+              href="/guilds"
+              className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#91897C] transition hover:text-[#EEF083]"
+              onClick={() => setMenuOpen(false)}
+            >
+              Gangs
             </Link>
             <Link
               href="/store"

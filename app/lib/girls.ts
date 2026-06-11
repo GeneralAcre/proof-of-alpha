@@ -379,7 +379,7 @@ function pickRandom<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-export function generateGirlSet(): Girl[] {
+export function generateGirlSet(filterDifficulty?: Difficulty): Girl[] {
   const usedNames = new Set<string>();
 
   const pick = (difficulty: Difficulty): Girl => {
@@ -407,6 +407,9 @@ export function generateGirlSet(): Girl[] {
     };
   };
 
+  if (filterDifficulty) {
+    return [filterDifficulty, filterDifficulty, filterDifficulty].map(pick);
+  }
   return (["easy", "medium", "hard"] as Difficulty[]).map(pick);
 }
 
