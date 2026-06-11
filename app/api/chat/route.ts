@@ -5,7 +5,7 @@ import { GIRL_ARCHETYPES, type Difficulty } from "../../lib/girls";
 const MODEL_CONFIG: Record<Difficulty, { model: string; temperature: number }> = {
   easy:   { model: "meta-llama/llama-3.1-8b-instruct", temperature: 0.5 },
   medium: { model: "qwen/qwen-2.5-7b-instruct",        temperature: 0.9 },
-  hard:   { model: "openai/gpt-5-nano",                temperature: 1.0 },
+  hard:   { model: "mistralai/mistral-small-24b-instruct-2501", temperature: 1.0 },
 };
 
 const OR_BASE = "https://openrouter.ai/api/v1/chat/completions";
