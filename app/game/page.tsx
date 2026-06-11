@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Nav } from "../components/Nav";
 import { useWallet } from "../components/WalletProvider";
@@ -322,11 +323,9 @@ function GameContent() {
               if (done) {
                 return (
                   <div key={g.id} className="flex items-center gap-4 border border-[#3a342c] bg-[#2f2922]/60 px-5 py-4 opacity-50">
-                    <div
-                      className="flex h-10 w-10 shrink-0 items-center justify-center border font-mono text-xs font-black"
-                      style={{ borderColor: g.accentColor, color: g.accentColor }}
-                    >
-                      {g.initials}
+                    <div className="relative h-10 w-10 shrink-0 overflow-hidden border grayscale"
+                      style={{ borderColor: g.accentColor }}>
+                      <Image alt={g.name} src={g.image} fill className="object-cover object-top" sizes="40px" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-black uppercase text-[#EEF083] text-sm">{g.name}</p>
@@ -348,15 +347,24 @@ function GameContent() {
                   className="border border-[#91897C] bg-[#2f2922] shadow-[4px_4px_0_#1a1710]"
                   style={{ borderTopColor: g.accentColor, borderTopWidth: 3 }}
                 >
-                  <div className="p-5">
-                    {/* Top row: avatar + info */}
-                    <div className="flex items-start gap-4">
-                      <div
-                        className="flex h-14 w-14 shrink-0 items-center justify-center border-2 font-mono text-base font-black"
-                        style={{ borderColor: g.accentColor, color: g.accentColor }}
-                      >
-                        {g.initials}
-                      </div>
+                  {/* Portrait + info row */}
+                  <div className="flex items-stretch gap-0">
+                    {/* Portrait */}
+                    <div className="relative w-24 sm:w-32 shrink-0 overflow-hidden bg-[#1a1710]"
+                      style={{ borderRight: `2px solid ${g.accentColor}` }}>
+                      <Image
+                        alt={g.name}
+                        src={g.image}
+                        fill
+                        className="object-cover object-top grayscale transition duration-300 hover:grayscale-0"
+                        sizes="(max-width: 640px) 96px, 128px"
+                      />
+                      <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#2f2922]/60 to-transparent" />
+                    </div>
+
+                  <div className="flex-1 p-4">
+                    {/* Top row: badges + info */}
+                    <div className="flex items-start gap-3">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#91897C]">Round {i + 1}</span>
@@ -439,7 +447,8 @@ function GameContent() {
                     >
                       {canAfford ? `Approach ${g.name} — ${g.approachCost} AURA →` : `Need ${g.approachCost} AURA`}
                     </button>
-                  </div>
+                  </div>{/* end flex-1 info col */}
+                  </div>{/* end portrait+info row */}
                 </div>
               );
             })}
@@ -476,11 +485,9 @@ function GameContent() {
           style={{ borderBottomColor: girl.accentColor, borderBottomWidth: 2 }}
         >
           <div className="flex items-center gap-3">
-            <div
-              className="flex h-10 w-10 shrink-0 items-center justify-center border-2 font-mono text-xs font-black"
-              style={{ borderColor: girl.accentColor, color: girl.accentColor }}
-            >
-              {girl.initials}
+            <div className="relative h-10 w-10 shrink-0 overflow-hidden border-2"
+              style={{ borderColor: girl.accentColor }}>
+              <Image alt={girl.name} src={girl.image} fill className="object-cover object-top" sizes="40px" />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -529,11 +536,9 @@ function GameContent() {
           {messages.map((msg, i) => (
             <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
               {msg.role === "assistant" && (
-                <div
-                  className="mr-2 mt-1 flex h-7 w-7 shrink-0 items-center justify-center border font-mono text-[9px] font-black"
-                  style={{ borderColor: girl.accentColor, color: girl.accentColor }}
-                >
-                  {girl.initials.slice(0, 2)}
+                <div className="mr-2 mt-1 relative h-7 w-7 shrink-0 overflow-hidden border"
+                  style={{ borderColor: girl.accentColor }}>
+                  <Image alt={girl.name} src={girl.image} fill className="object-cover object-top" sizes="28px" />
                 </div>
               )}
               <div
@@ -643,11 +648,9 @@ function GameContent() {
 
           {/* Girl badge */}
           <div className="mb-6 flex items-center gap-3">
-            <div
-              className="flex h-12 w-12 items-center justify-center border-2 font-mono text-sm font-black"
-              style={{ borderColor: girl.accentColor, color: girl.accentColor }}
-            >
-              {girl.initials}
+            <div className="relative h-16 w-16 overflow-hidden border-2"
+              style={{ borderColor: girl.accentColor }}>
+              <Image alt={girl.name} src={girl.image} fill className="object-cover object-top" sizes="64px" />
             </div>
             <div className="text-left">
               <p className="font-black uppercase" style={{ color: girl.accentColor }}>{girl.name}</p>
