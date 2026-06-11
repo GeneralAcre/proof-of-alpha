@@ -4,7 +4,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Nav } from "../components/Nav";
 import { useWallet } from "../components/WalletProvider";
-import { GIRLS, BOT_NAMES, TICKER_TEMPLATES, getGirl, type GirlId, type Girl } from "../lib/girls";
+import { generateGirlSet, BOT_NAMES, TICKER_TEMPLATES, type Girl } from "../lib/girls";
 import { sfx, initSounds } from "../lib/sounds";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -15,7 +15,7 @@ type Closer = "flirt" | "flex" | "leave";
 type ChatMsg = { role: "user" | "assistant"; content: string; score?: number };
 
 type RoundResult = {
-  girlId: GirlId;
+  girlId: string;
   totalScore: number;
   closer: Closer;
   auraEarned: number;
@@ -25,12 +25,12 @@ type RoundResult = {
 
 type TickerEntry = { id: number; text: string };
 
-// ─── Tier config ─────────────────────────────────────────────────────────────
+// ─── Difficulty style ─────────────────────────────────────────────────────────
 
-const TIER_STYLE = {
-  common:    { label: "COMMON",    color: "#91897C" },
-  rare:      { label: "RARE",      color: "#60a5fa" },
-  legendary: { label: "LEGENDARY", color: "#EEF083" },
+const DIFF_STYLE = {
+  easy:   { label: "EASY",   color: "#90EE90" },
+  medium: { label: "MEDIUM", color: "#FFD700" },
+  hard:   { label: "HARD",   color: "#FF4444" },
 } as const;
 
 // ─── AURA economy ─────────────────────────────────────────────────────────────
@@ -121,9 +121,11 @@ function GameContent() {
 
   const archetypeId = params.get("archetype") ?? "alpha";
 
+  const [girlSet] = useState<Girl[]>(() => generateGirlSet());
+
   const [phase,          setPhase]          = useState<Phase>("lobby");
-  const [girlQueue,      setGirlQueue]      = useState<GirlId[]>(["bia", "rin", "luna"]);
-  const [currentGirl,    setCurrentGirl]    = useState<GirlId>("bia");
+  const [girlQueue,      setGirlQueue]      = useState<string[]>(() => girlSet.map((g) => g.id));
+  const [currentGirl,    setCurrentGirl]    = useState<string>(() => girlSet[0]?.id ?? "");
   const [messages,       setMessages]       = useState<ChatMsg[]>([]);
   const [draft,          setDraft]          = useState("");
   const [isLoading,      setIsLoading]      = useState(false);
@@ -167,7 +169,7 @@ function GameContent() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phase: "chat", girlId: currentGirl, messages: newMessages.map(({ role, content }) => ({ role, content })) }),
+        body: JSON.stringify({ phase: "chat", archetypeId: currentGirl, girlName: girl.name, difficulty: girl.difficulty, messages: newMessages.map(({ role, content }) => ({ role, content })) }),
       });
       const reader = res.body!.getReader();
       const decoder = new TextDecoder();
@@ -200,7 +202,7 @@ function GameContent() {
     setPhase("resolve");
     setIsLoading(true);
     sfx.moveConfirm();
-    const g = getGirl(currentGirl);
+    const g = girlSet.find((gg) => gg.id === currentGirl) ?? girlSet[0];
     const { aura, win, winChance } = calcAura(closer, totalScore, g, streak);
     setAuraEarned(aura);
     setLastWinChance(winChance);
@@ -211,7 +213,7 @@ function GameContent() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phase: "resolve", girlId: currentGirl, messages: messages.map(({ role, content }) => ({ role, content })), closer, totalScore }),
+        body: JSON.stringify({ phase: "resolve", archetypeId: currentGirl, girlName: girl.name, difficulty: girl.difficulty, messages: messages.map(({ role, content }) => ({ role, content })), closer, totalScore }),
       });
       const data = await res.json() as { verdict: string; reaction: string };
       setVerdict(data.verdict ?? "...");
@@ -245,8 +247,8 @@ function GameContent() {
     setPhase("lobby");
   }
 
-  function startApproach(girlId: GirlId) {
-    const g = getGirl(girlId);
+  function startApproach(girlId: string) {
+    const g = girlSet.find((gg) => gg.id === girlId)!;
     setSessionAura((prev) => prev - g.approachCost);
     setCurrentGirl(girlId);
     setMessages([]); setDraft(""); setTotalScore(0); setMsgCount(0);
@@ -254,14 +256,14 @@ function GameContent() {
     sfx.moveSelect();
   }
 
-  const girl       = getGirl(currentGirl);
+  const girl       = girlSet.find((g) => g.id === currentGirl) ?? girlSet[0];
   const attempted  = new Set(results.map((r) => r.girlId));
   const streakMult = getStreakMultiplier(streak);
 
   // ── LOBBY ──────────────────────────────────────────────────────────────────
   if (phase === "lobby") {
     const roundNum = attempted.size + 1;
-    const allDone  = attempted.size === GIRLS.length;
+    const allDone  = attempted.size === girlSet.length;
 
     return (
       <div className="min-h-screen bg-[#241F19] text-[#EEF083] flex flex-col">
@@ -297,7 +299,7 @@ function GameContent() {
 
             {/* Round progress */}
             <div className="mt-4 flex gap-1.5">
-              {GIRLS.map((g) => (
+              {girlSet.map((g) => (
                 <div
                   key={g.id}
                   className="h-0.5 flex-1 transition-all duration-500"
@@ -309,10 +311,10 @@ function GameContent() {
 
           {/* Girl cards */}
           <div className="space-y-4">
-            {GIRLS.map((g, i) => {
+            {girlSet.map((g, i) => {
               const done         = attempted.has(g.id);
               const result       = results.find((r) => r.girlId === g.id);
-              const tier         = TIER_STYLE[g.tier];
+              const tier         = DIFF_STYLE[g.difficulty];
               const canAfford    = sessionAura >= g.approachCost;
               const flirtPreview = Math.round(g.flirtWin * streakMult);
               const flexPreview  = Math.round(g.flexWin * streakMult);
@@ -485,9 +487,9 @@ function GameContent() {
                 <p className="font-black uppercase" style={{ color: girl.accentColor }}>{girl.name}</p>
                 <span
                   className="font-mono text-[8px] uppercase px-1.5 py-0.5 border"
-                  style={{ borderColor: TIER_STYLE[girl.tier].color, color: TIER_STYLE[girl.tier].color }}
+                  style={{ borderColor: DIFF_STYLE[girl.difficulty].color, color: DIFF_STYLE[girl.difficulty].color }}
                 >
-                  {TIER_STYLE[girl.tier].label}
+                  {DIFF_STYLE[girl.difficulty].label}
                 </span>
               </div>
               <p className="font-mono text-[9px] uppercase text-[#91897C]">{girl.title}</p>

@@ -1,27 +1,20 @@
-import { CHAT_SYSTEM_PROMPTS, RESOLVE_SYSTEM_PROMPTS, GIRLS, type GirlId } from "../../lib/girls";
+import { GIRL_ARCHETYPES, type Difficulty } from "../../lib/girls";
 
-// ─── Model config per girl tier ──────────────────────────────────────────────
-// common (easy)    → free Llama — predictable, easier to impress
-// rare   (medium)  → Qwen flash — witty, less predictable
-// legendary (hard) → Qwen flash — hardest to crack, highest temperature
+// ─── Model config per difficulty ──────────────────────────────────────────────
 
-const MODEL_CONFIG = {
-  common:    { model: "meta-llama/llama-3-8b-instruct:free", temperature: 0.5 },
-  rare:      { model: "qwen/qwen3.5-flash-02-23",            temperature: 0.9 },
-  legendary: { model: "qwen/qwen3.5-flash-02-23",            temperature: 1.1 },
-} as const;
+const MODEL_CONFIG: Record<Difficulty, { model: string; temperature: number }> = {
+  easy:   { model: "meta-llama/llama-3-8b-instruct:free", temperature: 0.5 },
+  medium: { model: "qwen/qwen3.5-flash-02-23",            temperature: 0.9 },
+  hard:   { model: "qwen/qwen3.5-flash-02-23",            temperature: 1.1 },
+};
 
 const OR_BASE = "https://openrouter.ai/api/v1/chat/completions";
 
-function getConfig(girlId: GirlId) {
-  const girl = GIRLS.find((g) => g.id === girlId);
-  const tier = girl?.tier ?? "common";
-  return MODEL_CONFIG[tier];
-}
-
 type ChatRequest = {
   phase: "chat" | "resolve";
-  girlId: GirlId;
+  archetypeId: string;
+  girlName: string;
+  difficulty: Difficulty;
   messages: Array<{ role: "user" | "assistant"; content: string }>;
   closer?: "flirt" | "flex" | "leave";
   totalScore?: number;
@@ -43,37 +36,32 @@ export async function POST(req: Request): Promise<Response> {
 
   try {
     const body = (await req.json()) as ChatRequest;
-    const { phase, girlId, messages, closer, totalScore } = body;
-    const { model, temperature } = getConfig(girlId);
+    const { phase, archetypeId, girlName, difficulty, messages, closer, totalScore } = body;
 
-    // ── CHAT (streaming) ─────────────────────────────────────────────────────
+    const { model, temperature } = MODEL_CONFIG[difficulty] ?? MODEL_CONFIG.easy;
+    const archetype = GIRL_ARCHETYPES.find((a) => a.id === archetypeId);
+
+    if (!archetype) {
+      return new Response("...\n[SCORE: 0]", { status: 200 });
+    }
+
+    // ── CHAT (streaming) ──────────────────────────────────────────────────────
     if (phase === "chat") {
-      const systemPrompt = CHAT_SYSTEM_PROMPTS[girlId];
-      if (!systemPrompt) return new Response("...\n[SCORE: 0]", { status: 200 });
+      const systemPrompt = archetype.chatPrompt.replace(/\{\{name\}\}/g, girlName);
 
       const orRes = await fetch(OR_BASE, {
         method: "POST",
-        headers: {
-          "Authorization": `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
+        headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
         body: JSON.stringify({
-          model,
-          temperature,
+          model, temperature,
           max_tokens: 256,
           stream: true,
-          messages: [
-            { role: "system", content: systemPrompt },
-            ...messages,
-          ],
+          messages: [{ role: "system", content: systemPrompt }, ...messages],
         }),
       });
 
-      if (!orRes.ok || !orRes.body) {
-        return new Response("...\n[SCORE: 0]", { status: 200 });
-      }
+      if (!orRes.ok || !orRes.body) return new Response("...\n[SCORE: 0]", { status: 200 });
 
-      // Parse OpenRouter SSE and re-stream plain text to the client
       const readable = new ReadableStream({
         async start(controller) {
           const reader = orRes.body!.getReader();
@@ -91,8 +79,7 @@ export async function POST(req: Request): Promise<Response> {
                 const payload = line.slice(6).trim();
                 if (payload === "[DONE]") continue;
                 try {
-                  const chunk = JSON.parse(payload);
-                  const text: string | undefined = chunk.choices?.[0]?.delta?.content;
+                  const text: string | undefined = JSON.parse(payload).choices?.[0]?.delta?.content;
                   if (text) controller.enqueue(new TextEncoder().encode(text));
                 } catch {}
               }
@@ -103,39 +90,32 @@ export async function POST(req: Request): Promise<Response> {
         },
       });
 
-      return new Response(readable, {
-        headers: { "Content-Type": "text/plain; charset=utf-8" },
-      });
+      return new Response(readable, { headers: { "Content-Type": "text/plain; charset=utf-8" } });
     }
 
     // ── RESOLVE (non-streaming) ───────────────────────────────────────────────
     if (phase === "resolve") {
-      const systemPrompt = RESOLVE_SYSTEM_PROMPTS[girlId];
-      if (!systemPrompt) {
-        return Response.json({ verdict: "Whatever.", reaction: "neutral" });
-      }
-
       const closerLabel =
         closer === "flirt" ? "FLIRT (Rizz)" :
         closer === "flex"  ? "FLEX (Posture)" :
                              "LEAVE (Walk Away)";
 
+      const systemPrompt = `You are ${girlName}, a ${archetype.title}. ${archetype.personality}
+A man just finished chatting with you and made his move. Stay in character — sharp, brief, real.
+OUTPUT: Valid JSON only: {"verdict": "1-2 sentences", "reaction": "impressed|neutral|disgusted|sigma_respect"}`;
+
       const orRes = await fetch(OR_BASE, {
         method: "POST",
-        headers: {
-          "Authorization": `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
+        headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
         body: JSON.stringify({
-          model,
-          temperature,
+          model, temperature,
           max_tokens: 256,
           messages: [
             { role: "system", content: systemPrompt },
             ...messages,
             {
               role: "user",
-              content: `[GAME EVENT] His total Attraction Score during the chat was ${totalScore ?? 0} (scale: -40 to +40). He chose to: ${closerLabel}. Give your final verdict.`,
+              content: `[GAME EVENT] Attraction Score: ${totalScore ?? 0} (scale: -40 to +40). He chose: ${closerLabel}. Give your final verdict.`,
             },
           ],
         }),
@@ -149,10 +129,7 @@ export async function POST(req: Request): Promise<Response> {
         return Response.json({ verdict: "Noted.", reaction: "neutral" });
       }
 
-      return Response.json({
-        verdict: parsed.verdict,
-        reaction: (parsed.reaction as string) ?? "neutral",
-      });
+      return Response.json({ verdict: parsed.verdict, reaction: (parsed.reaction as string) ?? "neutral" });
     }
 
     return Response.json({ error: "Invalid phase" }, { status: 400 });
