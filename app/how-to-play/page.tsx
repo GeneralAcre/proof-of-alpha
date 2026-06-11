@@ -3,61 +3,94 @@
 import Link from "next/link";
 import { Nav } from "../components/Nav";
 import { RANKS } from "../lib/archetypes";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
 
 const GAME_STEPS = [
-  { n: "01", title: "Connect & Select",   desc: "Connect your Solana wallet, pick Solo or Multiplayer, then choose your archetype." },
-  { n: "02", title: "Enter the Lobby",    desc: "Join a public room or create a private one. Each player starts with 100 $TEST." },
-  { n: "03", title: "Play Rounds",        desc: "Choose a move, pick a target, confirm. Moves resolve simultaneously." },
-  { n: "04", title: "Locker Room",        desc: "Between rounds: check the scoreboard, swap archetype, read the next modifier. 30 seconds." },
-  { n: "05", title: "Last One Standing",  desc: "Match ends when one player holds all the $TEST. Winner earns Sigma Points." },
-  { n: "06", title: "Rank Up",            desc: "Sigma Points accumulate across matches. Hit thresholds to unlock new archetypes." },
+  { n: "01", title: "Pick Your Archetype", desc: "Choose Alpha, Beta, or Sigma. Each has different stats that affect how the AI reacts to your style. Upgrade them with AURA to increase your stats over 10 levels." },
+  { n: "02", title: "Enter the Lobby",     desc: "Three girls appear — Easy, Medium, and Hard. Each round costs AURA to approach. Harder girls pay more on win but are tougher to impress." },
+  { n: "03", title: "Start the Chat",      desc: "You get 4 messages. Every reply the AI gives you a hidden score from -10 to +10. Talk your way up — the higher your total score, the better your win odds." },
+  { n: "04", title: "Pick a Closer",       desc: "After 4 messages you choose: FLIRT (high risk, high reward), FLEX (safer floor), or LEAVE (safe exit, 50% back). Win % is shown live on each button." },
+  { n: "05", title: "Collect AURA",        desc: "Win and collect AURA. Build a streak (2×, 3×, 5× multiplier). Lose and you get nothing — except a LEAVE refund." },
+  { n: "06", title: "Cash Out",            desc: "After all 3 girls, cash out. If your AURA is above your starting amount, you win. All AURA carries over to upgrade your character." },
 ];
 
-const MOVES = [
-  { name: "Tax",     cost: "5 $TEST",  effect: "Take 5 $TEST from target. Safe and reliable.",             counter: "Counter" },
-  { name: "Steal",   cost: "10 $TEST", effect: "Take 10 $TEST from target. Higher risk, higher reward.",   counter: "Counter" },
-  { name: "Rob",     cost: "20 $TEST", effect: "Take 20 $TEST from target. Only works if uncountered.",    counter: "Counter" },
-  { name: "Bluff",   cost: "Free",     effect: "Fake a big steal. If target wastes a Counter, you get +5.", counter: "Nothing — Bluff beats Counter" },
-  { name: "Counter", cost: "5 $TEST",  effect: "Block any incoming Tax, Steal, or Rob. Cost refunded on success.", counter: "Bluff" },
-  { name: "NUKE",    cost: "30 $TEST", effect: "Eliminate target instantly if their balance ≤ 30. High variance.",  counter: "Fold" },
-  { name: "Fold",    cost: "Free",     effect: "Skip the round entirely. You cannot be nuked. Purely defensive.",   counter: "Nothing" },
+const CLOSERS = [
+  {
+    name: "FLIRT",
+    color: "#EEF083",
+    risk: "High Risk",
+    odds: "15% → 90%",
+    desc: "The big play. Win chance scales hard with your conversation score — bad chat = 15%, great chat = 90%. Pays the most on win.",
+  },
+  {
+    name: "FLEX",
+    color: "#00FF9D",
+    risk: "Safer",
+    odds: "35% → 70%",
+    desc: "More consistent floor. Even with a bad chat you still have 35% odds. Ceiling caps at 70% — lower payout but less variance.",
+  },
+  {
+    name: "LEAVE",
+    color: "#91897C",
+    risk: "Safe Exit",
+    odds: "Always",
+    desc: "Walk away and get 50% of your approach cost back. Doesn't count as a win or loss. Use it when the chat went badly.",
+  },
 ];
 
-const MODIFIERS = [
-  { name: "Standard",    desc: "Normal rules, no special effects." },
-  { name: "Greed Mode",  desc: "All successful steals are doubled." },
-  { name: "Chaos Mode",  desc: "Targets are shuffled randomly mid-round." },
-  { name: "Scarcity",    desc: "Max bet capped at 25 $TEST for everyone." },
-  { name: "Final Stand", desc: "Eliminated players get one last move before they're out." },
+const DIFFICULTY = [
+  {
+    label: "EASY",
+    color: "#90EE90",
+    cost: "10 AURA",
+    flirt: "+80 AURA",
+    flex: "+40 AURA",
+    threshold: "Score 8+",
+    examples: "Barista, Bookstore Clerk, Yoga Instructor, College Student, Trail Runner",
+  },
+  {
+    label: "MEDIUM",
+    color: "#FFD700",
+    cost: "50 AURA",
+    flirt: "+150 AURA",
+    flex: "+80 AURA",
+    threshold: "Score 20+",
+    examples: "Personal Trainer, Software Engineer, Chef, Photographer, Musician",
+  },
+  {
+    label: "HARD",
+    color: "#FF4444",
+    cost: "100 AURA",
+    flirt: "+500 AURA",
+    flex: "+200 AURA",
+    threshold: "Score 30+",
+    examples: "Startup CEO, Crypto Analyst, Lawyer, Fashion Editor, VC Partner",
+  },
 ];
 
-const SIGMA_SYSTEM = [
-  { action: "Match win",         pts: "+50", positive: true },
-  { action: "Elimination",       pts: "+8",  positive: true },
-  { action: "Biggest steal",     pts: "+18", positive: true },
-  { action: "Survival bonus",    pts: "+10", positive: true },
-  { action: "Match loss",        pts: "−12", positive: false },
-  { action: "Solo mode penalty", pts: "−5",  positive: false },
+const AURA_USES = [
+  { action: "Approach a girl",         cost: "10 – 100 AURA (by difficulty)", earn: false },
+  { action: "Win with FLIRT",          cost: "80 – 500 AURA (by difficulty)", earn: true  },
+  { action: "Win with FLEX",           cost: "40 – 200 AURA (by difficulty)", earn: true  },
+  { action: "LEAVE refund",            cost: "50% of approach cost back",     earn: true  },
+  { action: "Level up an archetype",   cost: "Level × 150 AURA",              earn: false },
+  { action: "Win streak ×2",           cost: "+25% multiplier on winnings",   earn: true  },
+  { action: "Win streak ×3",           cost: "+75% multiplier on winnings",   earn: true  },
+  { action: "Win streak ×5",           cost: "+200% multiplier on winnings",  earn: true  },
 ];
 
 const FAQ = [
-  { q: "Is the game fully on-chain?",       a: "Game execution runs on MagicBlock Ephemeral Rollups — near-instant and cheap. Final settlements post to Solana devnet at match end." },
-  { q: "What is $TEST?",                    a: "$TEST is the in-match token. Every player starts with 100. It only exists within a match session." },
-  { q: "How do I unlock new archetypes?",   a: "Spend Sigma Points (σ) in the archetype picker. Some archetypes are free; others cost up to 2,000σ." },
-  { q: "Can I play on mobile?",             a: "Yes. Proof of Alpha supports Solana Mobile Wallet Adapter — connect directly from Phantom, Backpack, or any MWA wallet." },
-  { q: "What happens when I'm eliminated?", a: "Your $TEST hits zero. You can spectate the rest of the match. Final Stand modifier gives you one last move." },
-  { q: "Are matches ranked?",               a: "All matches affect Sigma Points. Solo mode earns slightly fewer points than multiplayer." },
+  { q: "What is AURA?",                      a: "AURA is the in-game currency. You start with 200 per session. Spend it to approach girls, earn it back by winning closers. AURA persists between sessions and can be spent upgrading your archetype." },
+  { q: "How does the conversation score work?", a: "Each AI response includes a hidden score (-10 to +10) based on how well your message landed. After 4 messages your total score determines the win % shown on your closer buttons." },
+  { q: "What's the difference between FLIRT and FLEX?", a: "FLIRT is high variance — terrible odds with a bad chat, great odds with a good one. FLEX has a safer floor but caps lower. FLIRT always pays more on win." },
+  { q: "Does my archetype affect the chat?",  a: "Your archetype stats (Aggression, Defense, Bluff, Greed) influence your character's style but the AI scores you on the actual quality of your messages — not your stats directly." },
+  { q: "How do I upgrade my archetype?",      a: "On the Character Select page, tap any character → Level Up. Cost is Level × 150 AURA. Each level unlocks better base stats. Max level is 10." },
+  { q: "Are girls random every game?",        a: "Yes. Each session picks 3 random girls from a pool of 15 archetypes (5 per difficulty tier). Names and accent colors are randomised too — no two sessions look the same." },
+  { q: "Can I play on mobile?",               a: "Yes. Proof of Alpha supports Solana Mobile Wallet Adapter — connect directly from Phantom, Backpack, or any MWA wallet." },
 ];
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-[#91897C]">
+    <p className="mb-4 font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#91897C]">
       {children}
     </p>
   );
@@ -71,10 +104,10 @@ export default function HowToPlayPage() {
 
         {/* HEADER */}
         <div>
-          <p className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-[#91897C]">Game Guide</p>
-          <h1 className="text-5xl uppercase">How to Play</h1>
+          <p className="mb-1 font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#91897C]">Game Guide</p>
+          <h1 className="text-5xl font-black uppercase">How to Play</h1>
           <p className="mt-3 text-sm leading-7 text-[#d8d4a1]">
-            Steal, bluff, and outlast every other player to claim Proof of Alpha.
+            Chat with AI girls. Read the room. Pick the right closer. Earn AURA.
           </p>
         </div>
 
@@ -86,7 +119,7 @@ export default function HowToPlayPage() {
               <li key={s.n} className="flex gap-4 border border-[#91897C]/50 bg-[#2f2922] px-5 py-4">
                 <span className="shrink-0 font-mono text-lg font-bold text-[#EEF083]/20">{s.n}</span>
                 <div>
-                  <p className="font-semibold text-[#EEF083]">{s.title}</p>
+                  <p className="font-black uppercase text-[#EEF083]">{s.title}</p>
                   <p className="mt-0.5 text-sm leading-6 text-[#d8d4a1]">{s.desc}</p>
                 </div>
               </li>
@@ -94,103 +127,111 @@ export default function HowToPlayPage() {
           </ol>
         </section>
 
-        {/* MOVES */}
+        {/* DIFFICULTY TIERS */}
         <section>
-          <SectionLabel>Moves</SectionLabel>
-          <Accordion className="border border-[#91897C]/50 bg-[#2f2922]">
-            {MOVES.map((m) => (
-              <AccordionItem key={m.name} value={m.name} className="border-b border-[#91897C]/50 last:border-b-0">
-                <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-[#EEF083]/5 [&_svg]:text-[#91897C]">
-                  <div className="flex items-center gap-3">
-                    <span className="font-semibold text-[#EEF083]">{m.name}</span>
-                    <span className="rounded-none border border-[#91897C]/60 px-2 py-0.5 font-mono text-[10px] text-[#91897C]">{m.cost}</span>
+          <SectionLabel>Girl Difficulty Tiers</SectionLabel>
+          <p className="mb-4 text-sm text-[#91897C]">Three girls per session, randomly picked from a pool of 15 archetypes. Harder girls pay more but are smarter AI models.</p>
+          <div className="space-y-3">
+            {DIFFICULTY.map((d) => (
+              <div key={d.label} className="border border-[#91897C]/50 bg-[#2f2922]"
+                style={{ borderTopColor: d.color, borderTopWidth: 2 }}>
+                <div className="flex items-center gap-3 border-b border-[#91897C]/30 px-5 py-3">
+                  <span className="font-mono text-xs font-black px-2 py-0.5 border" style={{ borderColor: d.color, color: d.color }}>{d.label}</span>
+                  <span className="font-mono text-xs text-[#91897C]">{d.threshold} to win FLIRT</span>
+                </div>
+                <div className="grid grid-cols-3 divide-x divide-[#3a342c] border-b border-[#91897C]/30">
+                  <div className="px-4 py-3 text-center">
+                    <p className="font-mono text-[9px] uppercase text-[#91897C]">Entry</p>
+                    <p className="mt-1 font-mono text-sm font-black text-[#ff6b6b]">{d.cost}</p>
                   </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-5 pb-5">
-                  <p className="text-sm leading-6 text-[#d8d4a1]">{m.effect}</p>
-                  <p className="mt-2 text-xs text-[#91897C]">
-                    Countered by: <span className="text-[#EEF083]">{m.counter}</span>
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
+                  <div className="px-4 py-3 text-center">
+                    <p className="font-mono text-[9px] uppercase text-[#91897C]">Flirt Win</p>
+                    <p className="mt-1 font-mono text-sm font-black text-[#EEF083]">{d.flirt}</p>
+                  </div>
+                  <div className="px-4 py-3 text-center">
+                    <p className="font-mono text-[9px] uppercase text-[#91897C]">Flex Win</p>
+                    <p className="mt-1 font-mono text-sm font-black text-[#00FF9D]">{d.flex}</p>
+                  </div>
+                </div>
+                <div className="px-5 py-3">
+                  <p className="font-mono text-[9px] uppercase text-[#91897C]">Examples</p>
+                  <p className="mt-0.5 text-xs text-[#d8d4a1]">{d.examples}</p>
+                </div>
+              </div>
             ))}
-          </Accordion>
+          </div>
         </section>
 
-        {/* ROUND MODIFIERS */}
+        {/* CLOSERS */}
         <section>
-          <SectionLabel>Round Modifiers</SectionLabel>
-          <ul className="space-y-2">
-            {MODIFIERS.map((m) => (
-              <li key={m.name} className="flex gap-4 border border-[#91897C]/50 bg-[#2f2922] px-5 py-4">
-                <span className="shrink-0 min-w-25 font-semibold text-[#EEF083]">{m.name}</span>
-                <span className="text-sm leading-6 text-[#d8d4a1]">{m.desc}</span>
-              </li>
+          <SectionLabel>Closers</SectionLabel>
+          <p className="mb-4 text-sm text-[#91897C]">After 4 messages the chat locks and you pick a closer. Win % is shown live based on your conversation score.</p>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {CLOSERS.map((c) => (
+              <div key={c.name} className="border-2 bg-[#2f2922] p-4" style={{ borderColor: c.color }}>
+                <div className="flex items-center justify-between mb-2">
+                  <p className="font-mono text-sm font-black" style={{ color: c.color }}>{c.name}</p>
+                  <span className="font-mono text-[9px] uppercase border px-1.5 py-0.5" style={{ borderColor: c.color, color: c.color }}>{c.risk}</span>
+                </div>
+                <p className="font-mono text-lg font-black mb-2" style={{ color: c.color }}>{c.odds}</p>
+                <p className="text-xs leading-5 text-[#d8d4a1]">{c.desc}</p>
+              </div>
             ))}
-          </ul>
+          </div>
         </section>
 
-        {/* SIGMA POINTS */}
+        {/* AURA */}
         <section>
-          <SectionLabel>Sigma Points</SectionLabel>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {/* Points per action */}
-            <div className="border border-[#91897C]/50 bg-[#2f2922]">
-              <p className="border-b border-[#91897C]/50 px-5 py-3 text-xs font-bold uppercase tracking-[0.14em] text-[#91897C]">
-                Points per Action
-              </p>
-              {SIGMA_SYSTEM.map(({ action, pts, positive }) => (
-                <div key={action} className="flex items-center justify-between border-b border-[#91897C]/30 px-5 py-3 last:border-b-0">
-                  <span className="text-sm text-[#d8d4a1]">{action}</span>
-                  <span className={`font-mono text-sm font-bold ${positive ? "text-[#EEF083]" : "text-[#91897C]"}`}>
-                    {pts} σ
-                  </span>
-                </div>
-              ))}
-            </div>
+          <SectionLabel>AURA Economy</SectionLabel>
+          <div className="border border-[#91897C]/50 bg-[#2f2922] divide-y divide-[#91897C]/20">
+            {AURA_USES.map(({ action, cost, earn }) => (
+              <div key={action} className="flex items-center justify-between px-5 py-3">
+                <span className="text-sm text-[#d8d4a1]">{action}</span>
+                <span className={`font-mono text-xs font-black ${earn ? "text-[#EEF083]" : "text-[#ff6b6b]"}`}>{cost}</span>
+              </div>
+            ))}
+          </div>
+        </section>
 
-            {/* Rank thresholds */}
-            <div className="border border-[#91897C]/50 bg-[#2f2922]">
-              <p className="border-b border-[#91897C]/50 px-5 py-3 text-xs font-bold uppercase tracking-[0.14em] text-[#91897C]">
-                Rank Thresholds
-              </p>
-              {RANKS.map((r) => (
-                <div key={r.name} className="flex items-center justify-between border-b border-[#91897C]/30 px-5 py-3 last:border-b-0">
-                  <span className="font-semibold text-[#EEF083]">{r.name}</span>
-                  <span className="font-mono text-xs text-[#91897C]">
-                    {r.min.toLocaleString()}{r.next ? ` – ${r.next.toLocaleString()}` : "+"} σ
-                  </span>
-                </div>
-              ))}
-            </div>
+        {/* RANKS */}
+        <section>
+          <SectionLabel>Rank Thresholds</SectionLabel>
+          <div className="border border-[#91897C]/50 bg-[#2f2922] divide-y divide-[#91897C]/20">
+            {RANKS.map((r) => (
+              <div key={r.name} className="flex items-center justify-between px-5 py-3">
+                <span className="font-black uppercase text-[#EEF083]">{r.name}</span>
+                <span className="font-mono text-xs text-[#91897C]">
+                  {r.min.toLocaleString()}{r.next ? ` – ${r.next.toLocaleString()}` : "+"} AURA
+                </span>
+              </div>
+            ))}
           </div>
         </section>
 
         {/* FAQ */}
         <section className="pb-8">
           <SectionLabel>FAQ</SectionLabel>
-          <Accordion className="border border-[#91897C]/50 bg-[#2f2922]">
+          <div className="border border-[#91897C]/50 bg-[#2f2922] divide-y divide-[#91897C]/20">
             {FAQ.map(({ q, a }) => (
-              <AccordionItem key={q} value={q} className="border-b border-[#91897C]/50 last:border-b-0">
-                <AccordionTrigger className="px-5 py-4 text-left font-semibold text-[#EEF083] hover:no-underline hover:bg-[#EEF083]/5 [&_svg]:text-[#91897C]">
+              <details key={q} className="group px-5 py-4 cursor-pointer">
+                <summary className="font-black uppercase text-sm text-[#EEF083] list-none flex items-center justify-between">
                   {q}
-                </AccordionTrigger>
-                <AccordionContent className="px-5 pb-5 text-sm leading-6 text-[#d8d4a1]">
-                  {a}
-                </AccordionContent>
-              </AccordionItem>
+                  <span className="font-mono text-[#91897C] group-open:rotate-45 transition-transform">+</span>
+                </summary>
+                <p className="mt-3 text-sm leading-6 text-[#d8d4a1]">{a}</p>
+              </details>
             ))}
-          </Accordion>
+          </div>
 
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
-              className="border-2 border-[#EEF083] bg-[#EEF083] px-7 py-3.5 text-sm font-bold uppercase tracking-wide text-[#241F19] shadow-[4px_4px_0_#91897C] transition hover:bg-transparent hover:text-[#EEF083]"
+              className="border-2 border-[#EEF083] bg-[#EEF083] px-7 py-3.5 text-sm font-black uppercase tracking-wide text-[#241F19] shadow-[4px_4px_0_#91897C] transition hover:bg-transparent hover:text-[#EEF083]"
               href="/mode-select"
             >
               Play Now
             </Link>
             <Link
-              className="border-2 border-[#91897C] px-7 py-3.5 text-sm font-bold uppercase tracking-wide text-[#EEF083] transition hover:border-[#EEF083]"
+              className="border-2 border-[#91897C] px-7 py-3.5 text-sm font-black uppercase tracking-wide text-[#EEF083] transition hover:border-[#EEF083]"
               href="/character-select"
             >
               Browse Archetypes
