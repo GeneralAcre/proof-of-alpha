@@ -1,7 +1,7 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Nav } from "../components/Nav";
 import { useWallet } from "../components/WalletProvider";
@@ -170,8 +170,10 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
   );
 }
 
-export default function MapPage() {
+function MapContent() {
   const router = useRouter();
+  const params = useSearchParams();
+  const archetype = params.get("archetype") ?? "alpha";
   const { account } = useWallet();
   const addr = account ? String(account.address) : null;
 
@@ -186,7 +188,7 @@ export default function MapPage() {
   }, [addr, rev]);
 
   function handleEnter(area: Area) {
-    router.push(`/game?difficulty=${area.difficulty}`);
+    router.push(`/game?mode=solo&archetype=${archetype}&difficulty=${area.difficulty}`);
   }
 
   function handleUnlock(area: Area) {
@@ -265,5 +267,13 @@ export default function MapPage() {
 
       </main>
     </div>
+  );
+}
+
+export default function MapPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#000F08]" />}>
+      <MapContent />
+    </Suspense>
   );
 }

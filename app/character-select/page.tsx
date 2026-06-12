@@ -97,7 +97,7 @@ function CharacterSelectContent() {
 
   function confirm() {
     if (mode === "solo") {
-      router.push(`/game?mode=solo&archetype=${selected.id}`);
+      router.push(`/map?archetype=${selected.id}`);
       return;
     }
     const href = room
