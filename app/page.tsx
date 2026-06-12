@@ -231,23 +231,23 @@ export default function Home() {
           {/* ── Partner marquee ── */}
           <section className="overflow-hidden border-b border-[#a09ab8]/25 bg-[#0a0820]">
             <div className="flex items-center">
-              <div className="shrink-0 border-r border-[#a09ab8]/25 px-5 py-4">
-                <p className="font-mono text-[9px] uppercase tracking-[0.28em] text-[#a09ab8]">Built with</p>
+              <div className="shrink-0 border-r border-[#a09ab8]/25 px-3 py-3 sm:px-5 sm:py-4">
+                <p className="font-mono text-[8px] uppercase tracking-[0.2em] text-[#a09ab8]">Built with</p>
               </div>
               <div className="overflow-hidden flex-1">
                 <div
-                  className="flex items-center whitespace-nowrap py-4"
+                  className="flex items-center whitespace-nowrap py-3 sm:py-4"
                   style={{ animation: "ticker 10s linear infinite" }}
                 >
                   {Array.from({ length: 8 }, () => PARTNERS).flat().map((p, i) => (
-                    <span key={i} className="inline-flex shrink-0 items-center px-12">
+                    <span key={i} className="inline-flex shrink-0 items-center px-6 sm:px-12">
                       <Image
                         src={p.src}
                         alt={p.name}
                         height={0}
                         width={0}
                         sizes="200px"
-                        className="h-8 w-auto object-contain brightness-200 opacity-90 transition-opacity hover:opacity-100"
+                        className="h-5 w-auto object-contain brightness-200 opacity-90 transition-opacity hover:opacity-100 sm:h-8"
                       />
                     </span>
                   ))}
