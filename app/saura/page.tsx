@@ -13,7 +13,7 @@ function UnlockRow({ active, title, desc }: { active: boolean; title: string; de
       }`}
     >
       <span className={`mt-0.5 h-3 w-3 shrink-0 ${active ? "bg-[#9945FF]" : "bg-[#91897C]/30"}`} />
-      <div>
+      <div className="min-w-0 flex-1">
         <p className="font-mono text-xs font-black uppercase tracking-[0.12em] text-[#EEF083]">{title}</p>
         <p className="mt-1 font-mono text-[11px] leading-5 text-[#91897C]">{desc}</p>
       </div>

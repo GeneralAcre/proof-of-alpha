@@ -59,8 +59,8 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
 
   return (
     <div
-      className={`relative flex flex-col justify-between p-4 sm:p-8 ${cfg.colSpan}`}
-      style={{ backgroundColor: "#241F19", clipPath: cfg.clip, minHeight: "clamp(180px, 35vw, 280px)" }}
+      className={`relative flex flex-col justify-between p-4 pb-6 sm:p-8 ${cfg.colSpan}`}
+      style={{ backgroundColor: "#241F19", clipPath: cfg.clip, minHeight: "clamp(220px, 38vw, 290px)" }}
     >
       {/* Grid overlay */}
       <svg
@@ -80,7 +80,7 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
       <div className="absolute left-0 right-0 top-0 h-0.5" style={{ backgroundColor: accent }} />
 
       {/* Header */}
-      <div className="relative z-10 flex items-center justify-between gap-2">
+      <div className="relative z-10 flex flex-wrap items-start justify-between gap-1">
         <div className="flex items-center gap-2">
           <span
             className="border px-2 py-0.5 font-mono text-[10px] font-black uppercase tracking-[0.22em]"
@@ -97,7 +97,7 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
         {area.locked && !isUnlocked && (
           isBsolGate ? (
             <span className="font-mono text-[10px] uppercase tracking-wide text-[#9945FF]/70">
-              Hold bSOL to enter
+              bSOL only
             </span>
           ) : (
             <span className="font-mono text-xs uppercase tracking-wide text-[#91897C]">
@@ -113,12 +113,12 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
           className="font-black uppercase leading-[0.88] tracking-tight"
           style={{
             color: accent,
-            fontSize: "clamp(16px, 2.5vw + 6px, 36px)",
+            fontSize: "clamp(13px, 2vw + 5px, 30px)",
           }}
         >
           {isUnlocked ? area.name : "???"}
         </h3>
-        <p className="mt-2 font-mono text-[11px] sm:text-sm italic leading-4 sm:leading-5 text-[#91897C]">
+        <p className="mt-2 font-mono text-[11px] sm:text-sm italic leading-4 sm:leading-5 text-[#91897C] line-clamp-2">
           {area.subtitle}
         </p>
       </div>
