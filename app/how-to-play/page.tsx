@@ -16,21 +16,18 @@ const GAME_STEPS = [
 const CLOSERS = [
   {
     name: "FLIRT",
-    color: "#E4D474",
     risk: "High Risk",
     odds: "15% – 90%",
     desc: "The big play. Win chance scales hard with your conversation score — bad chat = 15%, great chat = 90%. Pays the most on win.",
   },
   {
     name: "FLEX",
-    color: "#00FF9D",
     risk: "Safer",
     odds: "35% – 70%",
     desc: "More consistent floor. Even with a bad chat you still have 35% odds. Ceiling caps at 70% — lower payout but less variance.",
   },
   {
     name: "LEAVE",
-    color: "#a09ab8",
     risk: "Safe Exit",
     odds: "Always",
     desc: "Walk away and get 50% of your approach cost back. Doesn't count as a win or loss. Use it when the chat went badly.",
@@ -40,7 +37,6 @@ const CLOSERS = [
 const DIFFICULTY = [
   {
     label: "EASY",
-    color: "#90EE90",
     cost: "10 AURA",
     flirt: "+80 AURA",
     flex: "+40 AURA",
@@ -49,7 +45,6 @@ const DIFFICULTY = [
   },
   {
     label: "MEDIUM",
-    color: "#FFD700",
     cost: "50 AURA",
     flirt: "+150 AURA",
     flex: "+80 AURA",
@@ -58,7 +53,6 @@ const DIFFICULTY = [
   },
   {
     label: "HARD",
-    color: "#FF4444",
     cost: "100 AURA",
     flirt: "+500 AURA",
     flex: "+200 AURA",
@@ -133,16 +127,17 @@ export default function HowToPlayPage() {
           <p className="mb-4 text-sm text-[#a09ab8]">Three girls per session, randomly picked from a pool of 15 archetypes. Harder girls pay more but are smarter AI models.</p>
           <div className="space-y-3">
             {DIFFICULTY.map((d) => (
-              <div key={d.label} className="border border-[#a09ab8]/50 bg-[#2d1a4a]"
-                style={{ borderTopColor: d.color, borderTopWidth: 2 }}>
-                <div className="flex items-center gap-3 border-b border-[#a09ab8]/30 px-5 py-3">
-                  <span className="font-mono text-xs font-black px-2 py-0.5 border" style={{ borderColor: d.color, color: d.color }}>{d.label}</span>
+              <div key={d.label} className="border border-white/10 bg-white/4 backdrop-blur-sm">
+                <div className="flex items-center gap-3 border-b border-white/[0.07] px-5 py-3">
+                  <span className="border border-white/20 bg-white/10 px-2 py-0.5 font-mono text-xs font-black text-white tracking-widest">
+                    {d.label}
+                  </span>
                   <span className="font-mono text-xs text-[#a09ab8]">{d.threshold} to win FLIRT</span>
                 </div>
-                <div className="grid grid-cols-3 divide-x divide-[#170b2e] border-b border-[#a09ab8]/30">
+                <div className="grid grid-cols-3 divide-x divide-white/[0.07] border-b border-white/[0.07]">
                   <div className="px-4 py-3 text-center">
                     <p className="font-mono text-[9px] uppercase text-[#a09ab8]">Entry</p>
-                    <p className="mt-1 font-mono text-sm font-black text-[#ff6b6b]">{d.cost}</p>
+                    <p className="mt-1 font-mono text-sm font-black text-white">{d.cost}</p>
                   </div>
                   <div className="px-4 py-3 text-center">
                     <p className="font-mono text-[9px] uppercase text-[#a09ab8]">Flirt Win</p>
@@ -150,7 +145,7 @@ export default function HowToPlayPage() {
                   </div>
                   <div className="px-4 py-3 text-center">
                     <p className="font-mono text-[9px] uppercase text-[#a09ab8]">Flex Win</p>
-                    <p className="mt-1 font-mono text-sm font-black text-[#00FF9D]">{d.flex}</p>
+                    <p className="mt-1 font-mono text-sm font-black text-white">{d.flex}</p>
                   </div>
                 </div>
                 <div className="px-5 py-3">
@@ -168,12 +163,12 @@ export default function HowToPlayPage() {
           <p className="mb-4 text-sm text-[#a09ab8]">After 4 messages the chat locks and you pick a closer. Win % is shown live based on your conversation score.</p>
           <div className="grid gap-3 sm:grid-cols-3">
             {CLOSERS.map((c) => (
-              <div key={c.name} className="border-2 bg-[#2d1a4a] p-4" style={{ borderColor: c.color }}>
-                <div className="flex items-center justify-between mb-2">
-                  <p className="font-mono text-sm font-black" style={{ color: c.color }}>{c.name}</p>
-                  <span className="font-mono text-[9px] uppercase border px-1.5 py-0.5" style={{ borderColor: c.color, color: c.color }}>{c.risk}</span>
+              <div key={c.name} className="border border-white/10 bg-white/4 backdrop-blur-sm p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="font-mono text-sm font-black text-white">{c.name}</p>
+                  <span className="border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-[9px] uppercase text-[#a09ab8]">{c.risk}</span>
                 </div>
-                <p className="font-mono text-lg font-black mb-2" style={{ color: c.color }}>{c.odds}</p>
+                <p className="font-mono text-lg font-black mb-2 text-[#E4D474]">{c.odds}</p>
                 <p className="text-xs leading-5 text-[#ffffff]">{c.desc}</p>
               </div>
             ))}
