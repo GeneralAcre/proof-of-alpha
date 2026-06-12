@@ -107,7 +107,7 @@ export default function GuildsPage() {
           <div className="flex items-center gap-3 shrink-0">
             {supabaseReady && (
               <div className="flex items-center gap-2 border border-[#a09ab8]/30 px-3 py-2">
-                <span className="h-2 w-2 rounded-full bg-[#00FF9D] animate-pulse" />
+                <span className="h-2 w-2 rounded-full bg-[#E4D474] animate-pulse" />
                 <span className="font-mono text-[10px] uppercase tracking-widest text-[#a09ab8]">Live</span>
               </div>
             )}
@@ -174,13 +174,13 @@ export default function GuildsPage() {
                 <div className="grid grid-cols-2 divide-x divide-[#a09ab8]/20 border border-[#a09ab8]/30 bg-[#160c2c]">
                   <div className="px-5 py-4">
                     <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#a09ab8]">Cost to found</p>
-                    <p className="mt-1 font-mono text-2xl font-black text-[#ff6b6b]">−{GUILD_CREATE_COST}</p>
+                    <p className="mt-1 font-mono text-2xl font-black text-[#a09ab8]">−{GUILD_CREATE_COST}</p>
                     <p className="font-mono text-[10px] text-[#a09ab8]">AURA</p>
                   </div>
                   {addr ? (
                     <div className="px-5 py-4">
                       <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#a09ab8]">Balance after</p>
-                      <p className={`mt-1 font-mono text-2xl font-black ${canAffordCreate ? "text-[#E4D474]" : "text-[#ff6b6b]"}`}>
+                      <p className={`mt-1 font-mono text-2xl font-black ${canAffordCreate ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>
                         {canAffordCreate ? auraAfter : auraBalance}
                       </p>
                       <p className="font-mono text-[10px] text-[#a09ab8]">
@@ -261,7 +261,7 @@ export default function GuildsPage() {
                   </div>
 
                   {error && (
-                    <p className="border border-[#ff6b6b]/30 bg-[#ff6b6b]/5 px-4 py-3 font-mono text-xs text-[#ff6b6b]">
+                    <p className="border border-[#a09ab8]/30 bg-[#a09ab8]/5 px-4 py-3 font-mono text-xs text-[#a09ab8]">
                       {error}
                     </p>
                   )}
@@ -316,7 +316,7 @@ export default function GuildsPage() {
             ) : guilds.map((g, i) => {
               const isMe = myGuild?.id === g.id;
               const aura = getGuildAura(g);
-              const rankColor = i === 0 ? "#E4D474" : i === 1 ? "#aaa" : i === 2 ? "#cd7f32" : "#a09ab8";
+              const rankColor = i === 0 ? "#E4D474" : i === 1 ? "#aaa" : i === 2 ? "#a09ab8" : "#a09ab8";
 
               return (
                 <div

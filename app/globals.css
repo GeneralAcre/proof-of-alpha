@@ -181,7 +181,7 @@ h1 {
 .live-dot { animation: pulse-dot 1.4s ease-in-out infinite; }
 
 /* ── Countdown warning flash ── */
-@keyframes timer-flash { 0%, 100% { color: #E4D474; } 50% { color: #ff8080; } }
+@keyframes timer-flash { 0%, 100% { color: #E4D474; } 50% { color: #a09ab8; } }
 .timer-warn { animation: timer-flash 0.5s ease-in-out infinite; }
 
 /* ── Move card flip reveal ── */

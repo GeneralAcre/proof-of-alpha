@@ -46,7 +46,7 @@ const TIERS = [
   },
   {
     label: "COLD",
-    color: "#00FF9D",
+    color: "#E4D474",
     cost: "50 AURA entry",
     desc: "These girls are domain experts. Vague answers get punished. Show real knowledge or get filtered out.",
     archetypes: [
@@ -84,7 +84,7 @@ const TIERS = [
   },
   {
     label: "ICY",
-    color: "#FF4444",
+    color: "#a09ab8",
     cost: "100 AURA entry",
     desc: "Elite-tier. These women run rooms. You need sharp thinking, real metrics, and domain depth — not just charm.",
     archetypes: [
@@ -132,7 +132,7 @@ const CLOSER_TIPS = [
   },
   {
     name: "FLEX",
-    color: "#00FF9D",
+    color: "#E4D474",
     when: "Your chat was decent but not exceptional — or you're not sure.",
     rule: "Floor is 35%, ceiling is 70%. It pays less than FLIRT but the safety net is real. If your score is around zero, FLEX is almost always the better play.",
     trigger: "Neutral or slightly positive chat? FLEX every time. Never risk FLIRT on a flat conversation.",
@@ -178,7 +178,7 @@ const MESSAGE_BREAKDOWNS = [
   {
     archetype: "Software Engineer",
     tier: "COLD",
-    color: "#00FF9D",
+    color: "#E4D474",
     examples: [
       {
         msg: "I have this idea for an app, I just need someone to build it.",
@@ -200,7 +200,7 @@ const MESSAGE_BREAKDOWNS = [
   {
     archetype: "Corporate Lawyer",
     tier: "ICY",
-    color: "#FF4444",
+    color: "#a09ab8",
     examples: [
       {
         msg: "Haha lawyers are basically just professional liars right?",
@@ -239,7 +239,7 @@ const MESSAGE_BREAKDOWNS = [
   {
     archetype: "On-Chain Analyst",
     tier: "ICY",
-    color: "#FF4444",
+    color: "#a09ab8",
     examples: [
       {
         msg: "So what do you think Bitcoin is going to hit this cycle?",
@@ -256,7 +256,7 @@ const MESSAGE_BREAKDOWNS = [
   {
     archetype: "Indie Musician",
     tier: "COLD",
-    color: "#00FF9D",
+    color: "#E4D474",
     examples: [
       {
         msg: "I love music! My Spotify Wrapped was insane this year.",
@@ -319,9 +319,9 @@ export default function TipsPage() {
           <SectionLabel>How Scoring Works</SectionLabel>
           <div className="grid gap-3 sm:grid-cols-3">
             {[
-              { range: "+7 to +10", label: "She's into it", color: "#00FF9D", desc: "Deep domain knowledge, genuine curiosity, smart humor. She'll warm up fast." },
+              { range: "+7 to +10", label: "She's into it", color: "#E4D474", desc: "Deep domain knowledge, genuine curiosity, smart humor. She'll warm up fast." },
               { range: "+1 to +6", label: "Decent",         color: "#E4D474", desc: "Polite and relevant. Not impressive but not damaging. Keep building." },
-              { range: "-1 to -10", label: "Scored against you", color: "#ff4444", desc: "Generic lines, faking knowledge, cringe energy. You're losing ground." },
+              { range: "-1 to -10", label: "Scored against you", color: "#a09ab8", desc: "Generic lines, faking knowledge, cringe energy. You're losing ground." },
             ].map((s) => (
               <div key={s.range} className="border bg-[#2d1a4a] p-5" style={{ borderColor: s.color + "44", borderTopColor: s.color, borderTopWidth: 2 }}>
                 <p className="font-mono text-xl font-black" style={{ color: s.color }}>{s.range}</p>
@@ -357,7 +357,7 @@ export default function TipsPage() {
                   {b.examples.map((ex, i) => {
                     const isGood = ex.score > 4;
                     const isBad  = ex.score < 0;
-                    const scoreColor = isGood ? "#00FF9D" : isBad ? "#ff4444" : "#E4D474";
+                    const scoreColor = isGood ? "#E4D474" : isBad ? "#a09ab8" : "#E4D474";
                     return (
                       <div key={i} className="px-5 py-4 space-y-2">
                         {/* Chat bubble */}

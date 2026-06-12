@@ -182,7 +182,7 @@ export default function HowToPlayPage() {
             {AURA_USES.map(({ action, cost, earn }) => (
               <div key={action} className="flex items-center justify-between px-5 py-3">
                 <span className="text-sm text-[#ffffff]">{action}</span>
-                <span className={`font-mono text-xs font-black ${earn ? "text-[#E4D474]" : "text-[#ff6b6b]"}`}>{cost}</span>
+                <span className={`font-mono text-xs font-black ${earn ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>{cost}</span>
               </div>
             ))}
           </div>

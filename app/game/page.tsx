@@ -134,8 +134,8 @@ function getCoachTip(girl: Girl, messages: ChatMsg[]): CoachTipData | null {
 function CoachHint({ tip }: { tip: CoachTipData }) {
   const colors = {
     info: { border: "#a09ab8", text: "#ffffff", label: "#a09ab8" },
-    warn: { border: "#ff6b6b", text: "#ffb1a1", label: "#ff6b6b" },
-    good: { border: "#00FF9D", text: "#00FF9D", label: "#00FF9D" },
+    warn: { border: "#a09ab8", text: "#a09ab8", label: "#a09ab8" },
+    good: { border: "#E4D474", text: "#E4D474", label: "#E4D474" },
   }[tip.type];
 
   return (
@@ -169,7 +169,7 @@ function TickerBar({ entries }: { entries: TickerEntry[] }) {
 
 function AttractionBar({ score }: { score: number }) {
   const pct   = Math.min(100, Math.max(0, ((score + 40) / 80) * 100));
-  const color = score > 10 ? "#00FF9D" : score > 0 ? "#E4D474" : score > -10 ? "#ffb1a1" : "#ff4444";
+  const color = score > 10 ? "#E4D474" : score > 0 ? "#E4D474" : score > -10 ? "#a09ab8" : "#a09ab8";
   return (
     <div className="space-y-1">
       <div className="flex justify-between font-mono text-[9px] uppercase text-[#a09ab8]">
@@ -378,7 +378,7 @@ function GameContent() {
               </h1>
               <div className="shrink-0 text-right border border-[#a09ab8]/40 px-4 py-2">
                 <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#a09ab8]">AURA</p>
-                <p className={`font-mono text-2xl font-black leading-none ${sessionAura >= STARTING_AURA ? "text-[#E4D474]" : "text-[#ff6b6b]"}`}>
+                <p className={`font-mono text-2xl font-black leading-none ${sessionAura >= STARTING_AURA ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>
                   {sessionAura}
                 </p>
               </div>
@@ -474,7 +474,7 @@ function GameContent() {
                       <div className="mt-4 flex gap-5 border-t border-[#a09ab8]/20 pt-3">
                         <div>
                           <p className="font-mono text-xs uppercase tracking-wide text-[#a09ab8]">Entry</p>
-                          <p className="font-mono text-base font-black text-[#ff6b6b]">−{g.approachCost}</p>
+                          <p className="font-mono text-base font-black text-[#a09ab8]">−{g.approachCost}</p>
                         </div>
                         <div>
                           <p className="font-mono text-xs uppercase tracking-wide text-[#a09ab8]">Flirt</p>
@@ -581,7 +581,7 @@ function GameContent() {
             </div>
             <div className="border border-[#a09ab8]/50 px-3 py-1.5 text-center min-w-13">
               <p className="font-mono text-[8px] uppercase text-[#a09ab8]">AURA</p>
-              <p className={`font-mono text-sm font-black ${sessionAura >= STARTING_AURA ? "text-[#E4D474]" : "text-[#ff6b6b]"}`}>
+              <p className={`font-mono text-sm font-black ${sessionAura >= STARTING_AURA ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>
                 {sessionAura}
               </p>
             </div>
@@ -676,19 +676,19 @@ function GameContent() {
                   >
                     <p className="font-mono text-[8px] uppercase tracking-widest text-[#a09ab8] group-hover:text-[#24153E]">Flirt</p>
                     <p className="mt-1 font-mono text-lg font-black text-[#E4D474] group-hover:text-[#24153E]">+{Math.round(girl.flirtWin * streakMult)}</p>
-                    <p className="mt-0.5 font-mono text-[10px] font-black" style={{ color: flirtChance >= 60 ? "#00FF9D" : flirtChance >= 40 ? "#E4D474" : "#ff6b6b" }}>
+                    <p className="mt-0.5 font-mono text-[10px] font-black" style={{ color: flirtChance >= 60 ? "#E4D474" : flirtChance >= 40 ? "#E4D474" : "#a09ab8" }}>
                       {flirtChance}% WIN
                     </p>
                   </button>
                   {/* Flex */}
                   <button
-                    className="border-2 border-[#00FF9D] bg-[#00FF9D]/5 px-2 py-4 text-center transition hover:bg-[#00FF9D]/20 touch-manipulation"
+                    className="border-2 border-[#E4D474] bg-[#E4D474]/5 px-2 py-4 text-center transition hover:bg-[#E4D474]/20 touch-manipulation"
                     onClick={() => resolveRound("flex")}
                     type="button"
                   >
                     <p className="font-mono text-[8px] uppercase tracking-widest text-[#a09ab8]">Flex</p>
-                    <p className="mt-1 font-mono text-lg font-black text-[#00FF9D]">+{Math.round(girl.flexWin * streakMult)}</p>
-                    <p className="mt-0.5 font-mono text-[10px] font-black" style={{ color: flexChance >= 60 ? "#00FF9D" : flexChance >= 40 ? "#E4D474" : "#ff6b6b" }}>
+                    <p className="mt-1 font-mono text-lg font-black text-[#E4D474]">+{Math.round(girl.flexWin * streakMult)}</p>
+                    <p className="mt-0.5 font-mono text-[10px] font-black" style={{ color: flexChance >= 60 ? "#E4D474" : flexChance >= 40 ? "#E4D474" : "#a09ab8" }}>
                       {flexChance}% WIN
                     </p>
                   </button>
@@ -741,7 +741,7 @@ function GameContent() {
             <div className="flex flex-1 flex-col items-center justify-end px-6 pb-12 text-center sm:justify-center sm:pb-0">
 
               {/* Status label */}
-              <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-[#ff4444]">
+              <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-[#a09ab8]">
                 Not Interested
               </p>
 
@@ -759,8 +759,8 @@ function GameContent() {
               {isLoading ? (
                 <p className="mt-6 font-mono text-sm text-[#a09ab8] animate-pulse">Waiting…</p>
               ) : (
-                <div className="mt-6 max-w-md border-l-2 border-[#ff4444]/60 pl-4 text-left">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#ff4444]/70">
+                <div className="mt-6 max-w-md border-l-2 border-[#a09ab8]/60 pl-4 text-left">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#a09ab8]/70">
                     {girl.name} said:
                   </p>
                   <p className="mt-1 text-base leading-7 font-semibold text-[#ffffff]">
@@ -774,7 +774,7 @@ function GameContent() {
                 <div className="mt-6 flex gap-5 font-mono text-xs text-[#a09ab8]">
                   <span>Odds: <span className="text-white">{lastWinChance}%</span></span>
                   <span>Score: <span className="text-white">{totalScore > 0 ? `+${totalScore}` : totalScore}</span></span>
-                  <span>AURA: <span className="text-[#ff4444]">+0</span></span>
+                  <span>AURA: <span className="text-[#a09ab8]">+0</span></span>
                 </div>
               )}
 
@@ -837,13 +837,13 @@ function GameContent() {
           {!isLoading && (
             <div className="mb-6">
               {isLeave && <p className="mb-2 font-mono text-xs uppercase tracking-widest text-[#a09ab8]">Safe exit</p>}
-              {isWin   && <p className="mb-2 font-mono text-xs uppercase tracking-widest text-[#00FF9D]">Win — {lastWinChance}% chance</p>}
+              {isWin   && <p className="mb-2 font-mono text-xs uppercase tracking-widest text-[#E4D474]">Win — {lastWinChance}% chance</p>}
               <p className={`text-6xl font-black tabular-nums ${auraEarned > 0 ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>
                 {auraEarned > 0 ? `+${auraEarned}` : "0"}
               </p>
               <p className="mt-1 font-mono text-xs uppercase tracking-widest text-[#a09ab8]">AURA</p>
               <p className="mt-3 font-mono text-sm text-[#a09ab8]">
-                Balance: <span className={`font-black ${sessionAura >= STARTING_AURA ? "text-[#E4D474]" : "text-[#ff6b6b]"}`}>{sessionAura}</span>
+                Balance: <span className={`font-black ${sessionAura >= STARTING_AURA ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>{sessionAura}</span>
               </p>
             </div>
           )}

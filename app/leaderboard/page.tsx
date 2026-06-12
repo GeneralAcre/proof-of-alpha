@@ -58,7 +58,7 @@ export default function LeaderboardPage() {
           </div>
           {supabaseReady && (
             <div className="shrink-0 flex items-center gap-2 border border-[#a09ab8]/30 px-3 py-2">
-              <span className="h-2 w-2 rounded-full bg-[#00FF9D] animate-pulse" />
+              <span className="h-2 w-2 rounded-full bg-[#E4D474] animate-pulse" />
               <span className="font-mono text-[10px] uppercase tracking-widest text-[#a09ab8]">Live</span>
             </div>
           )}
@@ -119,7 +119,7 @@ export default function LeaderboardPage() {
                   className={`grid grid-cols-[36px_1fr_64px_80px] items-center gap-4 px-4 py-3 border-b border-[#a09ab8]/10 last:border-0 ${isMe ? "bg-[#E4D474]/5" : ""}`}
                 >
                   <span className="font-mono text-sm font-black" style={{
-                    color: i === 0 ? "#E4D474" : i === 1 ? "#aaa" : i === 2 ? "#cd7f32" : "#a09ab8"
+                    color: i === 0 ? "#E4D474" : i === 1 ? "#aaa" : i === 2 ? "#a09ab8" : "#a09ab8"
                   }}>
                     {i + 1}
                   </span>
@@ -197,7 +197,7 @@ export default function LeaderboardPage() {
                   className={`grid grid-cols-[36px_1fr_64px_90px] items-center gap-4 px-4 py-3 border-b border-[#a09ab8]/10 last:border-0 ${isMe ? "bg-[#E4D474]/5" : ""}`}
                 >
                   <span className="font-mono text-sm font-black" style={{
-                    color: i === 0 ? "#E4D474" : i === 1 ? "#aaa" : i === 2 ? "#cd7f32" : "#a09ab8"
+                    color: i === 0 ? "#E4D474" : i === 1 ? "#aaa" : i === 2 ? "#a09ab8" : "#a09ab8"
                   }}>
                     {i + 1}
                   </span>

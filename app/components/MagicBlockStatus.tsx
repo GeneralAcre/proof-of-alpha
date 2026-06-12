@@ -34,7 +34,7 @@ function getLatencyTone(latencyMs?: number) {
     return "text-[#ffffff]";
   }
 
-  return "text-[#ffb1a1]";
+  return "text-[#a09ab8]";
 }
 
 export function MagicBlockStatus() {
@@ -127,7 +127,7 @@ export function MagicBlockStatus() {
           <div key={probe.label} className="rounded-lg border border-[#a09ab8] bg-[#24153E]/70 p-4">
             <div className="flex items-center justify-between gap-3">
               <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#a09ab8]">{probe.label}</p>
-              <span className={`font-mono text-xs uppercase ${probe.ok ? "text-[#E4D474]" : "text-[#ffb1a1]"}`}>
+              <span className={`font-mono text-xs uppercase ${probe.ok ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>
                 {probe.ok ? "online" : "offline"}
               </span>
             </div>
@@ -154,7 +154,7 @@ export function MagicBlockStatus() {
       </div>
 
       {state.status === "error" ? (
-        <div className="mt-5 rounded-lg border border-[#ffb1a1] bg-[#24153E]/70 p-4 text-sm leading-6 text-[#ffb1a1]">
+        <div className="mt-5 rounded-lg border border-[#a09ab8] bg-[#24153E]/70 p-4 text-sm leading-6 text-[#a09ab8]">
           {state.error} The game UI stays responsive and staged locally instead of blocking on a slow RPC.
         </div>
       ) : null}

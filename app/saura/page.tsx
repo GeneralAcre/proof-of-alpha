@@ -17,7 +17,7 @@ function UnlockRow({ active, title, desc }: { active: boolean; title: string; de
         <p className="font-mono text-xs font-black uppercase tracking-[0.12em] text-[#E4D474]">{title}</p>
         <p className="mt-1 font-mono text-[11px] leading-5 text-[#a09ab8]">{desc}</p>
       </div>
-      <span className={`ml-auto shrink-0 font-mono text-[10px] font-black uppercase tracking-widest ${active ? "text-[#00FF9D]" : "text-[#a09ab8]"}`}>
+      <span className={`ml-auto shrink-0 font-mono text-[10px] font-black uppercase tracking-widest ${active ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>
         {active ? "Unlocked" : "Locked"}
       </span>
     </div>
@@ -81,9 +81,9 @@ export default function SauraPage() {
             <p className="mt-1 font-mono text-xs text-[#a09ab8]">Solana mainnet · SolBlaze pool</p>
           </div>
 
-          <div className={`border p-6 ${hasBSOL ? "border-[#00FF9D]/40 bg-[#00FF9D]/5" : "border-[#a09ab8]/20 bg-[#24153E]"}`}>
+          <div className={`border p-6 ${hasBSOL ? "border-[#E4D474]/40 bg-[#E4D474]/5" : "border-[#a09ab8]/20 bg-[#24153E]"}`}>
             <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#a09ab8]">Map Access</p>
-            <p className={`mt-2 font-mono text-4xl font-black uppercase ${hasBSOL ? "text-[#00FF9D]" : "text-[#a09ab8]"}`}>
+            <p className={`mt-2 font-mono text-4xl font-black uppercase ${hasBSOL ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>
               {hasBSOL ? "2 areas" : "0 areas"}
             </p>
             <p className="mt-1 font-mono text-xs text-[#a09ab8]">
@@ -124,7 +124,7 @@ export default function SauraPage() {
             {checked && (
               <p className="font-mono text-xs text-[#a09ab8]">
                 {hasBSOL
-                  ? <span className="text-[#00FF9D]">bSOL detected — areas unlocked</span>
+                  ? <span className="text-[#E4D474]">bSOL detected — areas unlocked</span>
                   : "No bSOL found in this wallet"}
               </p>
             )}

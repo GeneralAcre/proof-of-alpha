@@ -207,7 +207,7 @@ function LobbyContent() {
                 </button>
               )}
               <Link
-                className="border-2 border-[#a09ab8] px-6 py-4 font-black uppercase text-[#a09ab8] transition hover:border-[#ffb1a1] hover:text-[#ffb1a1]"
+                className="border-2 border-[#a09ab8] px-6 py-4 font-black uppercase text-[#a09ab8] transition hover:border-[#a09ab8] hover:text-[#a09ab8]"
                 href="/mode-select"
               >
                 Leave

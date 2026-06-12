@@ -1,4 +1,4 @@
-export type Difficulty = "easy" | "medium" | "hard";
+﻿export type Difficulty = "easy" | "medium" | "hard";
 
 export type GirlArchetype = {
   id: string;
@@ -370,9 +370,9 @@ const GIRL_NAMES = [
 ];
 
 const ACCENT_COLORS: Record<Difficulty, string[]> = {
-  easy:   ["#FF8C69", "#FFB347", "#FF69B4", "#90EE90", "#87CEEB", "#DDA0DD"],
-  medium: ["#00FF9D", "#00BFFF", "#40E0D0", "#FFD700", "#FFA500", "#7FFF00"],
-  hard:   ["#9945FF", "#FF4D8D", "#FF4444", "#E040FB", "#FF6B35", "#00FFFF"],
+  easy:   ["#e9d5ff", "#c4b5fd", "#ddd6fe", "#f0e6ff", "#bfdbfe", "#ffffff"],
+  medium: ["#a78bfa", "#818cf8", "#c084fc", "#93c5fd", "#E4D474", "#a09ab8"],
+  hard:   ["#9945FF", "#7c3aed", "#4f46e5", "#6d28d9", "#E4D474", "#ffffff"],
 };
 
 function pickRandom<T>(arr: readonly T[]): T {
