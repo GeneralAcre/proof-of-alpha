@@ -29,7 +29,7 @@ const AREAS: Area[] = [
 const AURA_KEY   = (addr: string) => `poa_aura_${addr}`;
 const UNLOCK_KEY = (addr: string, id: string) => `poa_area_${addr}_${id}`;
 
-const DIFF_LABEL: Record<string, string> = { easy: "WARM", medium: "COLD", hard: "ICY" };
+const DIFF_LABEL: Record<string, string> = { easy: "FRIENDLY", medium: "OK", hard: "ALPHA" };
 
 const CARD_CFG: Record<string, { colSpan: string }> = {
   common:   { colSpan: "col-span-2"               },

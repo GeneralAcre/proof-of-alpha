@@ -36,7 +36,7 @@ const CLOSERS = [
 
 const DIFFICULTY = [
   {
-    label: "EASY",
+    label: "FRIENDLY",
     cost: "10 AURA",
     flirt: "+80 AURA",
     flex: "+40 AURA",
@@ -44,7 +44,7 @@ const DIFFICULTY = [
     examples: "Barista, Bookstore Clerk, Yoga Instructor, College Student, Trail Runner",
   },
   {
-    label: "MEDIUM",
+    label: "OK",
     cost: "50 AURA",
     flirt: "+150 AURA",
     flex: "+80 AURA",
@@ -52,7 +52,7 @@ const DIFFICULTY = [
     examples: "Personal Trainer, Software Engineer, Chef, Photographer, Musician",
   },
   {
-    label: "HARD",
+    label: "ALPHA",
     cost: "100 AURA",
     flirt: "+500 AURA",
     flex: "+200 AURA",

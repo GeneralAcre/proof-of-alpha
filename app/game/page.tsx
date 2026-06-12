@@ -33,9 +33,9 @@ type TickerEntry = { id: number; text: string };
 // ─── Difficulty style ─────────────────────────────────────────────────────────
 
 const DIFF_STYLE = {
-  easy:   { label: "WARM",  color: "#E4D474" },
-  medium: { label: "COLD",  color: "#E4D474" },
-  hard:   { label: "ICY",   color: "#E4D474" },
+  easy:   { label: "FRIENDLY", color: "#E4D474" },
+  medium: { label: "OK",       color: "#E4D474" },
+  hard:   { label: "ALPHA",    color: "#E4D474" },
 } as const;
 
 // ─── AURA economy ─────────────────────────────────────────────────────────────

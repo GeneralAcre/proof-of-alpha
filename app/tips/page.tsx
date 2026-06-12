@@ -7,7 +7,7 @@ import { Nav } from "../components/Nav";
 
 const TIERS = [
   {
-    label: "WARM",
+    label: "FRIENDLY",
     color: "#E4D474",
     cost: "10 AURA entry",
     desc: "These girls value realness over flash. No need to impress — just don't be cringe.",
@@ -45,7 +45,7 @@ const TIERS = [
     ],
   },
   {
-    label: "COLD",
+    label: "OK",
     color: "#E4D474",
     cost: "50 AURA entry",
     desc: "These girls are domain experts. Vague answers get punished. Show real knowledge or get filtered out.",
@@ -83,7 +83,7 @@ const TIERS = [
     ],
   },
   {
-    label: "ICY",
+    label: "ALPHA",
     color: "#a09ab8",
     cost: "100 AURA entry",
     desc: "Elite-tier. These women run rooms. You need sharp thinking, real metrics, and domain depth — not just charm.",
@@ -155,7 +155,7 @@ const STREAK_TIPS = [
 const MESSAGE_BREAKDOWNS = [
   {
     archetype: "Coffee Barista",
-    tier: "WARM",
+    tier: "FRIENDLY",
     color: "#E4D474",
     examples: [
       {
@@ -177,7 +177,7 @@ const MESSAGE_BREAKDOWNS = [
   },
   {
     archetype: "Software Engineer",
-    tier: "COLD",
+    tier: "OK",
     color: "#E4D474",
     examples: [
       {
@@ -199,7 +199,7 @@ const MESSAGE_BREAKDOWNS = [
   },
   {
     archetype: "Corporate Lawyer",
-    tier: "ICY",
+    tier: "ALPHA",
     color: "#a09ab8",
     examples: [
       {
@@ -221,7 +221,7 @@ const MESSAGE_BREAKDOWNS = [
   },
   {
     archetype: "Trail Runner",
-    tier: "WARM",
+    tier: "FRIENDLY",
     color: "#E4D474",
     examples: [
       {
@@ -238,7 +238,7 @@ const MESSAGE_BREAKDOWNS = [
   },
   {
     archetype: "On-Chain Analyst",
-    tier: "ICY",
+    tier: "ALPHA",
     color: "#a09ab8",
     examples: [
       {
@@ -255,7 +255,7 @@ const MESSAGE_BREAKDOWNS = [
   },
   {
     archetype: "Indie Musician",
-    tier: "COLD",
+    tier: "OK",
     color: "#E4D474",
     examples: [
       {
