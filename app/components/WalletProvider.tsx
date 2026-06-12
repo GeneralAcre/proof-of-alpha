@@ -122,7 +122,11 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     () =>
       wallets
         .filter((w) => getConnectFeature(w))
-        .sort((a, b) => Number(isSolanaMobileWallet(b)) - Number(isSolanaMobileWallet(a))),
+        .sort((a, b) => {
+          if (a.name === "Solflare") return -1;
+          if (b.name === "Solflare") return 1;
+          return Number(isSolanaMobileWallet(b)) - Number(isSolanaMobileWallet(a));
+        }),
     [wallets],
   );
 
