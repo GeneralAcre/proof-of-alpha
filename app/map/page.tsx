@@ -31,14 +31,14 @@ const UNLOCK_KEY = (addr: string, id: string) => `poa_area_${addr}_${id}`;
 
 const DIFF_LABEL: Record<string, string> = { easy: "WARM", medium: "COLD", hard: "ICY" };
 
-const CARD_CFG: Record<string, { colSpan: string; clip: string }> = {
-  common:   { colSpan: "col-span-2",               clip: "polygon(0% 0%, 88% 0%, 100% 14%, 100% 100%, 0% 100%)"           },
-  frost:    { colSpan: "col-span-1",               clip: "polygon(16% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 18%)"           },
-  darkhall: { colSpan: "col-span-1",               clip: "polygon(0% 0%, 82% 0%, 100% 20%, 100% 100%, 0% 100%)"           },
-  mine:     { colSpan: "col-span-1 sm:col-span-2", clip: "polygon(0% 18%, 14% 0%, 100% 0%, 100% 100%, 0% 100%)"           },
-  vault:    { colSpan: "col-span-1",               clip: "polygon(12% 0%, 88% 0%, 100% 14%, 100% 100%, 0% 100%, 0% 14%)"  },
-  chamber:   { colSpan: "col-span-2",               clip: "polygon(0% 0%, 86% 0%, 100% 18%, 100% 100%, 12% 100%, 0% 86%)"  },
-  islandDAO: { colSpan: "col-span-2 sm:col-span-3", clip: "polygon(0% 0%, 98% 0%, 100% 10%, 100% 90%, 98% 100%, 2% 100%, 0% 90%, 0% 10%)" },
+const CARD_CFG: Record<string, { colSpan: string }> = {
+  common:   { colSpan: "col-span-2"               },
+  frost:    { colSpan: "col-span-1"               },
+  darkhall: { colSpan: "col-span-1"               },
+  mine:     { colSpan: "col-span-1 sm:col-span-2" },
+  vault:    { colSpan: "col-span-1"               },
+  chamber:  { colSpan: "col-span-2"               },
+  islandDAO:{ colSpan: "col-span-2 sm:col-span-3" },
 };
 
 function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
@@ -59,8 +59,8 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
 
   return (
     <div
-      className={`relative flex flex-col justify-between p-4 pb-6 sm:p-8 ${cfg.colSpan}`}
-      style={{ backgroundColor: "#24153E", clipPath: cfg.clip, minHeight: "clamp(220px, 38vw, 290px)" }}
+      className={`relative flex flex-col justify-between p-4 pb-6 sm:p-8 border border-[#E4D474]/10 ${cfg.colSpan}`}
+      style={{ backgroundColor: "#24153E", minHeight: "clamp(200px, 30vw, 260px)" }}
     >
       {/* Grid overlay */}
       <svg
