@@ -3,9 +3,9 @@ members = ["programs/*"]
 resolver = "2"
 
 [profile.release]
-opt-level = "z"          # optimize for binary size (not speed)
-lto = true               # link-time optimization — strips unused code across crates
-codegen-units = 1        # single compilation unit — better dead-code elimination
-overflow-checks = false  # safe — we use saturating_add/sub everywhere
-strip = "symbols"        # strip debug symbols from final binary
+overflow-checks = true   # explicit safety (saturating_* ops prevent actual overflow)
+lto = "fat"              # full cross-crate LTO — strips all unused code
+codegen-units = 1        # single CGU — maximises dead-code elimination
+opt-level = "z"          # optimise for binary size
+strip = "symbols"        # strip debug symbols (free size win)
 panic = "abort"          # smaller panic handler
