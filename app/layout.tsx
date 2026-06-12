@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Bebas_Neue, Geist_Mono } from "next/font/google";
 import { SolanaMobileWalletProvider } from "./components/SolanaMobileWalletProvider";
 import { WalletProvider } from "./components/WalletProvider";
@@ -31,7 +31,7 @@ export default function RootLayout({
       lang="en"
       className={`${bebasNeue.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#241F19]">
+      <body className="min-h-full flex flex-col bg-[#24153E]">
         <SolanaMobileWalletProvider />
         <WalletProvider>
           <WalletGate>{children}</WalletGate>

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(wsl -d Ubuntu -- /bin/bash -c 'head -5 ~/poa-build/programs/proof-of-alpha/src/lib.rs')",
+      "Bash(npm run *)"
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { Nav } from "../components/Nav";
@@ -36,23 +36,23 @@ function UpgradePanel({
   const next    = !maxed ? a.levels[level] : null;
 
   return (
-    <div className="mt-3 border border-[#EEF083]/40 bg-[#241F19] p-3">
+    <div className="mt-3 border border-[#E4D474]/40 bg-[#24153E] p-3">
       {/* Level header */}
       <div className="mb-3 flex items-center justify-between">
-        <p className="font-mono text-xs font-bold uppercase tracking-[0.15em] text-[#EEF083]">
+        <p className="font-mono text-xs font-bold uppercase tracking-[0.15em] text-[#E4D474]">
           {a.name}
         </p>
         <div className="flex items-center gap-2">
-          <span className="font-mono text-xs text-[#91897C]">LVL</span>
-          <span className="font-mono text-lg font-black text-[#EEF083] leading-none">{level}</span>
-          <span className="font-mono text-xs text-[#91897C]">/ {MAX_LEVEL}</span>
+          <span className="font-mono text-xs text-[#a09ab8]">LVL</span>
+          <span className="font-mono text-lg font-black text-[#E4D474] leading-none">{level}</span>
+          <span className="font-mono text-xs text-[#a09ab8]">/ {MAX_LEVEL}</span>
         </div>
       </div>
 
       {/* Level progress pips */}
       <div className="mb-3 flex gap-0.5">
         {Array.from({ length: MAX_LEVEL }, (_, i) => (
-          <div key={i} className={`h-1.5 flex-1 ${i < level ? "bg-[#EEF083]" : "bg-[#91897C]/20"}`} />
+          <div key={i} className={`h-1.5 flex-1 ${i < level ? "bg-[#E4D474]" : "bg-[#a09ab8]/20"}`} />
         ))}
       </div>
 
@@ -65,24 +65,24 @@ function UpgradePanel({
           const gaining  = nextVal > val;
           return (
             <div key={key} className="flex items-center gap-2">
-              <span className="w-7 font-mono text-[9px] uppercase tracking-wide text-[#91897C]">{label}</span>
+              <span className="w-7 font-mono text-[9px] uppercase tracking-wide text-[#a09ab8]">{label}</span>
               <div className="flex flex-1 gap-0.5">
                 {Array.from({ length: 10 }, (_, i) => (
                   <div
                     key={i}
                     className={`h-2 flex-1 transition-all ${
-                      i < val  ? "bg-[#EEF083]/70"
-                      : i < nextVal && !maxed ? "bg-[#EEF083]/25"
-                      : i < cap ? "bg-[#91897C]/20"
+                      i < val  ? "bg-[#E4D474]/70"
+                      : i < nextVal && !maxed ? "bg-[#E4D474]/25"
+                      : i < cap ? "bg-[#a09ab8]/20"
                       : "bg-transparent"
                     }`}
                   />
                 ))}
               </div>
-              <span className="w-10 text-right font-mono text-[10px] text-[#EEF083]">
+              <span className="w-10 text-right font-mono text-[10px] text-[#E4D474]">
                 {val}
-                {gaining && <span className="text-[#EEF083]/50"> {nextVal}</span>}
-                <span className="text-[#91897C]">/{cap}</span>
+                {gaining && <span className="text-[#E4D474]/50"> {nextVal}</span>}
+                <span className="text-[#a09ab8]">/{cap}</span>
               </span>
             </div>
           );
@@ -91,7 +91,7 @@ function UpgradePanel({
 
       {/* Level up button */}
       {maxed ? (
-        <div className="border border-[#EEF083]/30 py-2 text-center font-mono text-xs uppercase tracking-widest text-[#EEF083]/50">
+        <div className="border border-[#E4D474]/30 py-2 text-center font-mono text-xs uppercase tracking-widest text-[#E4D474]/50">
           Max Level
         </div>
       ) : (
@@ -102,16 +102,16 @@ function UpgradePanel({
             onClick={() => onLevelUp(a.id, level)}
             className={`w-full border-2 py-2.5 font-mono text-xs font-bold uppercase tracking-widest transition touch-manipulation ${
               canAfford
-                ? "border-[#EEF083] bg-[#EEF083] text-[#241F19] hover:bg-transparent hover:text-[#EEF083]"
-                : "border-[#91897C]/40 text-[#91897C]/40 cursor-not-allowed"
+                ? "border-[#E4D474] bg-[#E4D474] text-[#24153E] hover:bg-transparent hover:text-[#E4D474]"
+                : "border-[#a09ab8]/40 text-[#a09ab8]/40 cursor-not-allowed"
             }`}
           >
             Level Up — LVL {level + 1}
           </button>
-          <p className="mt-1.5 text-center font-mono text-[10px] text-[#91897C]">
-            Cost: <span className={canAfford ? "text-[#EEF083]" : "text-red-400"}>{cost} AURA</span>
+          <p className="mt-1.5 text-center font-mono text-[10px] text-[#a09ab8]">
+            Cost: <span className={canAfford ? "text-[#E4D474]" : "text-red-400"}>{cost} AURA</span>
             {!canAfford && (
-              <> · <a href="/store" className="text-[#EEF083] underline">Buy AURA</a></>
+              <> · <a href="/store" className="text-[#E4D474] underline">Buy AURA</a></>
             )}
           </p>
         </>
@@ -216,36 +216,36 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
+    <div className="min-h-screen bg-[#24153E] text-[#E4D474]">
       <Nav />
       <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8 space-y-6">
 
         {/* ── IDENTITY ── */}
-        <section className="border border-[#91897C] bg-[#2f2922] p-5 shadow-[6px_6px_0_#91897C]">
+        <section className="border border-[#a09ab8] bg-[#2d1a4a] p-5 shadow-[6px_6px_0_#a09ab8]">
           <div className="flex flex-wrap items-start gap-5">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center border-2 border-[#EEF083] bg-[#EEF083]/10 font-mono text-3xl font-black text-[#EEF083]">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center border-2 border-[#E4D474] bg-[#E4D474]/10 font-mono text-3xl font-black text-[#E4D474]">
               {initials}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.2em] text-[#91897C]">Wallet</p>
+              <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.2em] text-[#a09ab8]">Wallet</p>
               {fullAddress ? (
                 <>
-                  <p className="break-all font-mono text-sm font-bold leading-6 text-[#EEF083]">{fullAddress}</p>
-                  <button className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[#91897C] transition hover:text-[#EEF083]" onClick={copyAddress} type="button">
+                  <p className="break-all font-mono text-sm font-bold leading-6 text-[#E4D474]">{fullAddress}</p>
+                  <button className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[#a09ab8] transition hover:text-[#E4D474]" onClick={copyAddress} type="button">
                     {copiedAddr ? "✓ Copied" : "Copy address"}
                   </button>
                 </>
               ) : (
-                <p className="text-sm text-[#91897C]">Not connected</p>
+                <p className="text-sm text-[#a09ab8]">Not connected</p>
               )}
             </div>
             <div className="flex shrink-0 flex-col items-end gap-2">
-              <div className="border border-[#EEF083] bg-[#EEF083]/10 px-5 py-3 text-center">
-                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#91897C]">Rank</p>
-                <p className="text-2xl font-black uppercase text-[#EEF083]">{rank.name}</p>
+              <div className="border border-[#E4D474] bg-[#E4D474]/10 px-5 py-3 text-center">
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#a09ab8]">Rank</p>
+                <p className="text-2xl font-black uppercase text-[#E4D474]">{rank.name}</p>
               </div>
               {account && (
-                <button className="border border-[#91897C] px-4 py-2 font-mono text-[10px] uppercase text-[#91897C] transition hover:border-[#EEF083] hover:text-[#EEF083]" onClick={copyProfileLink} type="button">
+                <button className="border border-[#a09ab8] px-4 py-2 font-mono text-[10px] uppercase text-[#a09ab8] transition hover:border-[#E4D474] hover:text-[#E4D474]" onClick={copyProfileLink} type="button">
                   {copied ? "Copied!" : "Copy Profile Link"}
                 </button>
               )}
@@ -254,20 +254,20 @@ export default function ProfilePage() {
         </section>
 
         {/* ── AURA ── */}
-        <section className="border border-[#91897C] bg-[#2f2922] p-5 shadow-[4px_4px_0_#91897C]">
+        <section className="border border-[#a09ab8] bg-[#2d1a4a] p-5 shadow-[4px_4px_0_#a09ab8]">
           <div className="mb-2 flex justify-between font-mono text-xs uppercase tracking-[0.14em]">
-            <span className="text-[#91897C]">AURA</span>
-            <span className="font-bold text-[#EEF083]">
+            <span className="text-[#a09ab8]">AURA</span>
+            <span className="font-bold text-[#E4D474]">
               {aura.toLocaleString()} AURA
               {nextRank && (
-                <span className="font-normal text-[#91897C]"> / {rank.next?.toLocaleString()} to {nextRank.name}</span>
+                <span className="font-normal text-[#a09ab8]"> / {rank.next?.toLocaleString()} to {nextRank.name}</span>
               )}
             </span>
           </div>
-          <div className="h-2 w-full border border-[#91897C] bg-[#241F19]">
-            <div className="h-full bg-[#EEF083] transition-all" style={{ width: `${progress}%` }} />
+          <div className="h-2 w-full border border-[#a09ab8] bg-[#24153E]">
+            <div className="h-full bg-[#E4D474] transition-all" style={{ width: `${progress}%` }} />
           </div>
-          <div className="mt-1.5 flex justify-between font-mono text-[10px] uppercase text-[#91897C]">
+          <div className="mt-1.5 flex justify-between font-mono text-[10px] uppercase text-[#a09ab8]">
             {["NPC","Beta","Alpha","Sigma","Gigachad"].map((r) => <span key={r}>{r}</span>)}
           </div>
         </section>
@@ -276,9 +276,9 @@ export default function ProfilePage() {
           <div className="space-y-6">
 
             {/* ── STATS ── */}
-            <section className="border border-[#91897C] bg-[#2f2922] shadow-[4px_4px_0_#91897C]">
-              <div className="border-b border-[#91897C] px-5 py-3">
-                <p className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#91897C]">Stats</p>
+            <section className="border border-[#a09ab8] bg-[#2d1a4a] shadow-[4px_4px_0_#a09ab8]">
+              <div className="border-b border-[#a09ab8] px-5 py-3">
+                <p className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#a09ab8]">Stats</p>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4">
                 {([
@@ -291,23 +291,23 @@ export default function ProfilePage() {
                   { label: "Losses",        value: stats.losses     || "—" },
                   { label: "AURA Total",    value: aura ? `${aura} AURA` : "—" },
                 ] as const).map(({ label, value }, i) => (
-                  <div key={i} className="border-b border-r border-[#91897C] p-4 last:border-r-0">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#91897C]">{label}</p>
-                    <p className="mt-1 text-xl font-bold text-[#EEF083]">{value}</p>
+                  <div key={i} className="border-b border-r border-[#a09ab8] p-4 last:border-r-0">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#a09ab8]">{label}</p>
+                    <p className="mt-1 text-xl font-bold text-[#E4D474]">{value}</p>
                   </div>
                 ))}
               </div>
             </section>
 
             {/* ── MATCH HISTORY ── */}
-            <section className="border border-[#91897C] bg-[#2f2922] shadow-[4px_4px_0_#91897C]">
-              <div className="border-b border-[#91897C] px-5 py-3">
-                <p className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#91897C]">Recent Matches</p>
+            <section className="border border-[#a09ab8] bg-[#2d1a4a] shadow-[4px_4px_0_#a09ab8]">
+              <div className="border-b border-[#a09ab8] px-5 py-3">
+                <p className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#a09ab8]">Recent Matches</p>
               </div>
               {records.length === 0 ? (
                 <div className="px-5 py-10 text-center">
-                  <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#91897C]">No matches yet</p>
-                  <p className="mt-2 text-sm text-[#d8d4a1]">Play your first game to see history here.</p>
+                  <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#a09ab8]">No matches yet</p>
+                  <p className="mt-2 text-sm text-[#ffffff]">Play your first game to see history here.</p>
                 </div>
               ) : (
                 <div>
@@ -315,17 +315,17 @@ export default function ProfilePage() {
                     const arch = ARCHETYPES.find((a) => a.id === r.archetype);
                     const date = new Date(r.ts).toLocaleDateString(undefined, { month: "short", day: "numeric" });
                     return (
-                      <div key={i} className="flex items-center justify-between border-b border-[#91897C]/40 px-5 py-3 last:border-b-0">
+                      <div key={i} className="flex items-center justify-between border-b border-[#a09ab8]/40 px-5 py-3 last:border-b-0">
                         <div className="flex items-center gap-3">
-                          <span className={`w-12 shrink-0 font-mono text-xs font-black uppercase ${r.won ? "text-[#EEF083]" : "text-[#91897C]"}`}>
+                          <span className={`w-12 shrink-0 font-mono text-xs font-black uppercase ${r.won ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>
                             {r.won ? "WIN" : "LOSS"}
                           </span>
                           <div>
-                            <p className="font-mono text-xs font-bold text-[#EEF083]">{arch?.name ?? r.archetype} · {r.mode}</p>
-                            <p className="text-[10px] text-[#91897C]">{r.elims} elim{r.elims !== 1 ? "s" : ""} · {date}</p>
+                            <p className="font-mono text-xs font-bold text-[#E4D474]">{arch?.name ?? r.archetype} · {r.mode}</p>
+                            <p className="text-[10px] text-[#a09ab8]">{r.elims} elim{r.elims !== 1 ? "s" : ""} · {date}</p>
                           </div>
                         </div>
-                        <span className={`font-mono text-sm font-black ${r.earned >= 0 ? "text-[#EEF083]" : "text-[#91897C]"}`}>
+                        <span className={`font-mono text-sm font-black ${r.earned >= 0 ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>
                           {r.earned >= 0 ? "+" : ""}{r.earned} AURA
                         </span>
                       </div>
@@ -339,8 +339,8 @@ export default function ProfilePage() {
           <div className="space-y-5">
 
             {/* ── ARCHETYPE COLLECTION ── */}
-            <section className="border border-[#91897C] bg-[#2f2922] p-4 shadow-[4px_4px_0_#91897C]">
-              <p className="mb-3 font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#91897C]">Collection</p>
+            <section className="border border-[#a09ab8] bg-[#2d1a4a] p-4 shadow-[4px_4px_0_#a09ab8]">
+              <p className="mb-3 font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#a09ab8]">Collection</p>
 
               {/* Character grid */}
               <div className="grid grid-cols-3 gap-2">
@@ -356,22 +356,22 @@ export default function ProfilePage() {
                           onClick={() => setSelectedArchId(isSelected ? null : a.id)}
                           className={`w-full border p-2 text-center transition touch-manipulation ${
                             isSelected
-                              ? "border-[#EEF083] bg-[#EEF083] text-[#241F19]"
-                              : "border-[#EEF083] bg-[#EEF083]/5 text-[#EEF083] hover:bg-[#EEF083]/15"
+                              ? "border-[#E4D474] bg-[#E4D474] text-[#24153E]"
+                              : "border-[#E4D474] bg-[#E4D474]/5 text-[#E4D474] hover:bg-[#E4D474]/15"
                           }`}
                         >
                           <p className="font-mono text-sm font-bold">{a.initials}</p>
                           <p className="mt-0.5 font-mono text-[9px] uppercase tracking-wide">Upgrade</p>
                         </button>
                       ) : (
-                        <div className="border border-[#91897C] p-2 text-center">
-                          <p className="font-mono text-sm font-bold text-[#EEF083]/40">{a.initials}</p>
-                          <p className="mt-0.5 text-[10px] text-[#91897C]">{a.unlockCost.toLocaleString()}</p>
+                        <div className="border border-[#a09ab8] p-2 text-center">
+                          <p className="font-mono text-sm font-bold text-[#E4D474]/40">{a.initials}</p>
+                          <p className="mt-0.5 text-[10px] text-[#a09ab8]">{a.unlockCost.toLocaleString()}</p>
                           <button
                             className={`mt-1.5 w-full border px-1 py-1.5 font-mono text-[10px] uppercase transition touch-manipulation ${
                               canAfford
-                                ? "border-[#EEF083] text-[#EEF083] hover:bg-[#EEF083] hover:text-[#241F19]"
-                                : "border-[#91897C]/40 text-[#91897C]/40 cursor-not-allowed"
+                                ? "border-[#E4D474] text-[#E4D474] hover:bg-[#E4D474] hover:text-[#24153E]"
+                                : "border-[#a09ab8]/40 text-[#a09ab8]/40 cursor-not-allowed"
                             }`}
                             disabled={!canAfford}
                             onClick={() => handleUnlock(a.id, a.unlockCost)}
@@ -397,14 +397,14 @@ export default function ProfilePage() {
             </section>
 
             {/* ── BADGES ── */}
-            <section className="border border-[#91897C] bg-[#2f2922] p-4 shadow-[4px_4px_0_#91897C]">
-              <p className="mb-3 font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#91897C]">On-chain Badges</p>
+            <section className="border border-[#a09ab8] bg-[#2d1a4a] p-4 shadow-[4px_4px_0_#a09ab8]">
+              <p className="mb-3 font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#a09ab8]">On-chain Badges</p>
               {BADGES.map(({ name, desc }) => (
-                <div key={name} className="mb-2 flex items-center gap-3 border border-[#91897C] p-3 opacity-40 last:mb-0">
-                  <div className="h-6 w-6 shrink-0 border border-[#91897C]" />
+                <div key={name} className="mb-2 flex items-center gap-3 border border-[#a09ab8] p-3 opacity-40 last:mb-0">
+                  <div className="h-6 w-6 shrink-0 border border-[#a09ab8]" />
                   <div>
-                    <p className="text-xs font-bold uppercase text-[#EEF083]">{name}</p>
-                    <p className="text-[10px] text-[#91897C]">{desc}</p>
+                    <p className="text-xs font-bold uppercase text-[#E4D474]">{name}</p>
+                    <p className="text-[10px] text-[#a09ab8]">{desc}</p>
                   </div>
                 </div>
               ))}

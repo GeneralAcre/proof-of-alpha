@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -29,40 +29,40 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
+    <div className="min-h-screen bg-[#24153E] text-[#E4D474]">
       <Nav />
       <main className="mx-auto max-w-5xl px-4 py-8 sm:px-8 space-y-6">
 
         <div>
-          <p className="mb-2 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91897C]">
+          <p className="mb-2 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#a09ab8]">
             Preferences
           </p>
           <h1 className="text-4xl font-black uppercase">Settings</h1>
         </div>
 
         {/* ── WALLET ── */}
-        <section className="border border-[#91897C] bg-[#2f2922] shadow-[4px_4px_0_#91897C]">
-          <div className="border-b border-[#91897C] px-5 py-3">
-            <p className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91897C]">Wallet</p>
+        <section className="border border-[#a09ab8] bg-[#2d1a4a] shadow-[4px_4px_0_#a09ab8]">
+          <div className="border-b border-[#a09ab8] px-5 py-3">
+            <p className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#a09ab8]">Wallet</p>
           </div>
           <div className="px-5 py-5">
             {account ? (
               <div className="space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#91897C]">Connected as</p>
-                    <p className="mt-0.5 font-mono text-sm font-black text-[#EEF083]">{truncatedAddress}</p>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#a09ab8]">Connected as</p>
+                    <p className="mt-0.5 font-mono text-sm font-black text-[#E4D474]">{truncatedAddress}</p>
                   </div>
                   <div className="flex gap-2">
                     <button
-                      className="border border-[#91897C] px-4 py-2 font-mono text-xs uppercase text-[#91897C] transition hover:border-[#EEF083] hover:text-[#EEF083]"
+                      className="border border-[#a09ab8] px-4 py-2 font-mono text-xs uppercase text-[#a09ab8] transition hover:border-[#E4D474] hover:text-[#E4D474]"
                       onClick={copyAddress}
                       type="button"
                     >
                       {copied ? "Copied!" : "Copy Address"}
                     </button>
                     <button
-                      className="border border-[#91897C] px-4 py-2 font-mono text-xs uppercase text-[#91897C] transition hover:border-red-400 hover:text-red-400"
+                      className="border border-[#a09ab8] px-4 py-2 font-mono text-xs uppercase text-[#a09ab8] transition hover:border-red-400 hover:text-red-400"
                       onClick={disconnect}
                       type="button"
                     >
@@ -70,20 +70,20 @@ export default function SettingsPage() {
                     </button>
                   </div>
                 </div>
-                <div className="border-t border-[#91897C] pt-4">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#91897C]">
+                <div className="border-t border-[#a09ab8] pt-4">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#a09ab8]">
                     Full address
                   </p>
-                  <p className="mt-1 break-all font-mono text-xs text-[#d8d4a1]">
+                  <p className="mt-1 break-all font-mono text-xs text-[#ffffff]">
                     {String(account.address)}
                   </p>
                 </div>
               </div>
             ) : (
               <div className="flex items-center justify-between">
-                <p className="text-sm text-[#91897C]">No wallet connected.</p>
-                <p className="font-mono text-xs text-[#91897C]">
-                  Use the <span className="text-[#EEF083]">Connect Wallet</span> button in the nav above.
+                <p className="text-sm text-[#a09ab8]">No wallet connected.</p>
+                <p className="font-mono text-xs text-[#a09ab8]">
+                  Use the <span className="text-[#E4D474]">Connect Wallet</span> button in the nav above.
                 </p>
               </div>
             )}
@@ -91,35 +91,35 @@ export default function SettingsPage() {
         </section>
 
         {/* ── SOUND ── */}
-        <section className="border border-[#91897C] bg-[#2f2922] shadow-[4px_4px_0_#91897C]">
-          <div className="border-b border-[#91897C] px-5 py-3">
-            <p className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91897C]">Audio</p>
+        <section className="border border-[#a09ab8] bg-[#2d1a4a] shadow-[4px_4px_0_#a09ab8]">
+          <div className="border-b border-[#a09ab8] px-5 py-3">
+            <p className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#a09ab8]">Audio</p>
           </div>
           <div className="px-5 py-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-black uppercase text-[#EEF083]">Sound Effects</p>
-                <p className="mt-0.5 text-sm text-[#91897C]">Move confirms, round results, eliminations</p>
+                <p className="font-black uppercase text-[#E4D474]">Sound Effects</p>
+                <p className="mt-0.5 text-sm text-[#a09ab8]">Move confirms, round results, eliminations</p>
               </div>
               <button
-                className={`h-7 w-14 border transition ${sound ? "border-[#EEF083] bg-[#EEF083]" : "border-[#91897C] bg-transparent"}`}
+                className={`h-7 w-14 border transition ${sound ? "border-[#E4D474] bg-[#E4D474]" : "border-[#a09ab8] bg-transparent"}`}
                 onClick={() => setSound((s) => { setSoundEnabled(!s); return !s; })}
                 type="button"
               >
-                <span className={`block h-5 w-5 border transition-transform ${sound ? "translate-x-8 border-[#241F19] bg-[#241F19]" : "translate-x-1 border-[#91897C] bg-[#91897C]"}`} />
+                <span className={`block h-5 w-5 border transition-transform ${sound ? "translate-x-8 border-[#24153E] bg-[#24153E]" : "translate-x-1 border-[#a09ab8] bg-[#a09ab8]"}`} />
               </button>
             </div>
           </div>
         </section>
 
         {/* ── ANIMATION SPEED ── */}
-        <section className="border border-[#91897C] bg-[#2f2922] shadow-[4px_4px_0_#91897C]">
-          <div className="border-b border-[#91897C] px-5 py-3">
-            <p className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91897C]">Accessibility</p>
+        <section className="border border-[#a09ab8] bg-[#2d1a4a] shadow-[4px_4px_0_#a09ab8]">
+          <div className="border-b border-[#a09ab8] px-5 py-3">
+            <p className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#a09ab8]">Accessibility</p>
           </div>
           <div className="px-5 py-5">
-            <p className="font-black uppercase text-[#EEF083]">Animation Speed</p>
-            <p className="mt-0.5 mb-4 text-sm text-[#91897C]">
+            <p className="font-black uppercase text-[#E4D474]">Animation Speed</p>
+            <p className="mt-0.5 mb-4 text-sm text-[#a09ab8]">
               Reduce or disable animations for epilepsy or motion sensitivity.
             </p>
             <div className="flex gap-2">
@@ -128,8 +128,8 @@ export default function SettingsPage() {
                   key={s}
                   className={`border px-4 py-2 font-mono text-xs uppercase transition ${
                     animSpeed === s
-                      ? "border-[#EEF083] bg-[#EEF083] text-[#241F19]"
-                      : "border-[#91897C] text-[#EEF083] hover:border-[#EEF083]"
+                      ? "border-[#E4D474] bg-[#E4D474] text-[#24153E]"
+                      : "border-[#a09ab8] text-[#E4D474] hover:border-[#E4D474]"
                   }`}
                   onClick={() => setAnimSpeed(s)}
                   type="button"
@@ -139,7 +139,7 @@ export default function SettingsPage() {
               ))}
             </div>
             {animSpeed === "off" && (
-              <p className="mt-3 font-mono text-xs text-[#91897C]">
+              <p className="mt-3 font-mono text-xs text-[#a09ab8]">
                 All flip-in, stamp, and rank-up animations will be skipped.
               </p>
             )}
@@ -147,11 +147,11 @@ export default function SettingsPage() {
         </section>
 
         {/* ── NOTIFICATIONS ── */}
-        <section className="border border-[#91897C] bg-[#2f2922] shadow-[4px_4px_0_#91897C]">
-          <div className="border-b border-[#91897C] px-5 py-3">
-            <p className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91897C]">Notifications</p>
+        <section className="border border-[#a09ab8] bg-[#2d1a4a] shadow-[4px_4px_0_#a09ab8]">
+          <div className="border-b border-[#a09ab8] px-5 py-3">
+            <p className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#a09ab8]">Notifications</p>
           </div>
-          <div className="divide-y divide-[#91897C]">
+          <div className="divide-y divide-[#a09ab8]">
             {[
               { label: "Match win / loss result", sub: "Notify when a match you're in concludes", val: notifyWin, set: setNotifyWin },
               { label: "Rank up",                 sub: "Notify when you reach a new rank",        val: notifyRankUp, set: setNotifyRankUp },
@@ -159,15 +159,15 @@ export default function SettingsPage() {
             ].map(({ label, sub, val, set }) => (
               <div key={label} className="flex items-center justify-between px-5 py-4">
                 <div>
-                  <p className="font-black uppercase text-[#EEF083]">{label}</p>
-                  <p className="mt-0.5 text-sm text-[#91897C]">{sub}</p>
+                  <p className="font-black uppercase text-[#E4D474]">{label}</p>
+                  <p className="mt-0.5 text-sm text-[#a09ab8]">{sub}</p>
                 </div>
                 <button
-                  className={`h-7 w-14 border transition ${val ? "border-[#EEF083] bg-[#EEF083]" : "border-[#91897C] bg-transparent"}`}
+                  className={`h-7 w-14 border transition ${val ? "border-[#E4D474] bg-[#E4D474]" : "border-[#a09ab8] bg-transparent"}`}
                   onClick={() => set((v: boolean) => !v)}
                   type="button"
                 >
-                  <span className={`block h-5 w-5 border transition-transform ${val ? "translate-x-8 border-[#241F19] bg-[#241F19]" : "translate-x-1 border-[#91897C] bg-[#91897C]"}`} />
+                  <span className={`block h-5 w-5 border transition-transform ${val ? "translate-x-8 border-[#24153E] bg-[#24153E]" : "translate-x-1 border-[#a09ab8] bg-[#a09ab8]"}`} />
                 </button>
               </div>
             ))}
@@ -175,31 +175,31 @@ export default function SettingsPage() {
         </section>
 
         {/* ── TRANSACTION HISTORY ── */}
-        <section className="border border-[#91897C] bg-[#2f2922] shadow-[4px_4px_0_#91897C]">
-          <div className="border-b border-[#91897C] px-5 py-3">
-            <p className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91897C]">
+        <section className="border border-[#a09ab8] bg-[#2d1a4a] shadow-[4px_4px_0_#a09ab8]">
+          <div className="border-b border-[#a09ab8] px-5 py-3">
+            <p className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#a09ab8]">
               Transaction History
             </p>
           </div>
           <div className="px-5 py-10 text-center">
-            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#91897C]">No transactions yet</p>
-            <p className="mt-2 text-sm text-[#d8d4a1]">Sigma Points earned on-chain will appear here.</p>
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#a09ab8]">No transactions yet</p>
+            <p className="mt-2 text-sm text-[#ffffff]">Sigma Points earned on-chain will appear here.</p>
           </div>
         </section>
 
         {/* ── DANGER ZONE ── */}
-        <section className="border border-[#91897C] bg-[#2f2922] shadow-[4px_4px_0_#91897C]">
-          <div className="border-b border-[#91897C] px-5 py-3">
-            <p className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91897C]">Danger Zone</p>
+        <section className="border border-[#a09ab8] bg-[#2d1a4a] shadow-[4px_4px_0_#a09ab8]">
+          <div className="border-b border-[#a09ab8] px-5 py-3">
+            <p className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#a09ab8]">Danger Zone</p>
           </div>
           <div className="px-5 py-5 space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p className="font-black uppercase text-[#EEF083]">Clear Local Data</p>
-                <p className="mt-0.5 text-sm text-[#91897C]">Removes saved archetype preferences and UI state.</p>
+                <p className="font-black uppercase text-[#E4D474]">Clear Local Data</p>
+                <p className="mt-0.5 text-sm text-[#a09ab8]">Removes saved archetype preferences and UI state.</p>
               </div>
               <button
-                className="border border-[#91897C] px-4 py-2 font-mono text-xs uppercase text-[#91897C] transition hover:border-red-400 hover:text-red-400"
+                className="border border-[#a09ab8] px-4 py-2 font-mono text-xs uppercase text-[#a09ab8] transition hover:border-red-400 hover:text-red-400"
                 onClick={() => {
                   localStorage.removeItem("poa_last_archetype");
                 }}
@@ -213,7 +213,7 @@ export default function SettingsPage() {
 
         <div className="pb-8">
           <Link
-            className="font-mono text-xs uppercase text-[#91897C] transition hover:text-[#EEF083]"
+            className="font-mono text-xs uppercase text-[#a09ab8] transition hover:text-[#E4D474]"
             href="/"
           >
             Back

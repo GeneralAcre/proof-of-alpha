@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { Nav } from "../components/Nav";
@@ -16,7 +16,7 @@ const GAME_STEPS = [
 const CLOSERS = [
   {
     name: "FLIRT",
-    color: "#EEF083",
+    color: "#E4D474",
     risk: "High Risk",
     odds: "15% – 90%",
     desc: "The big play. Win chance scales hard with your conversation score — bad chat = 15%, great chat = 90%. Pays the most on win.",
@@ -30,7 +30,7 @@ const CLOSERS = [
   },
   {
     name: "LEAVE",
-    color: "#91897C",
+    color: "#a09ab8",
     risk: "Safe Exit",
     odds: "Always",
     desc: "Walk away and get 50% of your approach cost back. Doesn't count as a win or loss. Use it when the chat went badly.",
@@ -90,7 +90,7 @@ const FAQ = [
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="mb-4 font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#91897C]">
+    <p className="mb-4 font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#a09ab8]">
       {children}
     </p>
   );
@@ -98,15 +98,15 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 export default function HowToPlayPage() {
   return (
-    <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
+    <div className="min-h-screen bg-[#24153E] text-[#E4D474]">
       <Nav />
       <main className="mx-auto max-w-5xl px-4 py-10 sm:px-8 space-y-12">
 
         {/* HEADER */}
         <div>
-          <p className="mb-1 font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#91897C]">Game Guide</p>
+          <p className="mb-1 font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#a09ab8]">Game Guide</p>
           <h1 className="text-5xl font-black uppercase">How to Play</h1>
-          <p className="mt-3 text-sm leading-7 text-[#d8d4a1]">
+          <p className="mt-3 text-sm leading-7 text-[#ffffff]">
             Chat with AI girls. Read the room. Pick the right closer. Earn AURA.
           </p>
         </div>
@@ -116,11 +116,11 @@ export default function HowToPlayPage() {
           <SectionLabel>Game Flow</SectionLabel>
           <ol className="space-y-3">
             {GAME_STEPS.map((s) => (
-              <li key={s.n} className="flex gap-4 border border-[#91897C]/50 bg-[#2f2922] px-5 py-4">
-                <span className="shrink-0 font-mono text-lg font-bold text-[#EEF083]/20">{s.n}</span>
+              <li key={s.n} className="flex gap-4 border border-[#a09ab8]/50 bg-[#2d1a4a] px-5 py-4">
+                <span className="shrink-0 font-mono text-lg font-bold text-[#E4D474]/20">{s.n}</span>
                 <div>
-                  <p className="font-black uppercase text-[#EEF083]">{s.title}</p>
-                  <p className="mt-0.5 text-sm leading-6 text-[#d8d4a1]">{s.desc}</p>
+                  <p className="font-black uppercase text-[#E4D474]">{s.title}</p>
+                  <p className="mt-0.5 text-sm leading-6 text-[#ffffff]">{s.desc}</p>
                 </div>
               </li>
             ))}
@@ -130,32 +130,32 @@ export default function HowToPlayPage() {
         {/* DIFFICULTY TIERS */}
         <section>
           <SectionLabel>Girl Difficulty Tiers</SectionLabel>
-          <p className="mb-4 text-sm text-[#91897C]">Three girls per session, randomly picked from a pool of 15 archetypes. Harder girls pay more but are smarter AI models.</p>
+          <p className="mb-4 text-sm text-[#a09ab8]">Three girls per session, randomly picked from a pool of 15 archetypes. Harder girls pay more but are smarter AI models.</p>
           <div className="space-y-3">
             {DIFFICULTY.map((d) => (
-              <div key={d.label} className="border border-[#91897C]/50 bg-[#2f2922]"
+              <div key={d.label} className="border border-[#a09ab8]/50 bg-[#2d1a4a]"
                 style={{ borderTopColor: d.color, borderTopWidth: 2 }}>
-                <div className="flex items-center gap-3 border-b border-[#91897C]/30 px-5 py-3">
+                <div className="flex items-center gap-3 border-b border-[#a09ab8]/30 px-5 py-3">
                   <span className="font-mono text-xs font-black px-2 py-0.5 border" style={{ borderColor: d.color, color: d.color }}>{d.label}</span>
-                  <span className="font-mono text-xs text-[#91897C]">{d.threshold} to win FLIRT</span>
+                  <span className="font-mono text-xs text-[#a09ab8]">{d.threshold} to win FLIRT</span>
                 </div>
-                <div className="grid grid-cols-3 divide-x divide-[#3a342c] border-b border-[#91897C]/30">
+                <div className="grid grid-cols-3 divide-x divide-[#170b2e] border-b border-[#a09ab8]/30">
                   <div className="px-4 py-3 text-center">
-                    <p className="font-mono text-[9px] uppercase text-[#91897C]">Entry</p>
+                    <p className="font-mono text-[9px] uppercase text-[#a09ab8]">Entry</p>
                     <p className="mt-1 font-mono text-sm font-black text-[#ff6b6b]">{d.cost}</p>
                   </div>
                   <div className="px-4 py-3 text-center">
-                    <p className="font-mono text-[9px] uppercase text-[#91897C]">Flirt Win</p>
-                    <p className="mt-1 font-mono text-sm font-black text-[#EEF083]">{d.flirt}</p>
+                    <p className="font-mono text-[9px] uppercase text-[#a09ab8]">Flirt Win</p>
+                    <p className="mt-1 font-mono text-sm font-black text-[#E4D474]">{d.flirt}</p>
                   </div>
                   <div className="px-4 py-3 text-center">
-                    <p className="font-mono text-[9px] uppercase text-[#91897C]">Flex Win</p>
+                    <p className="font-mono text-[9px] uppercase text-[#a09ab8]">Flex Win</p>
                     <p className="mt-1 font-mono text-sm font-black text-[#00FF9D]">{d.flex}</p>
                   </div>
                 </div>
                 <div className="px-5 py-3">
-                  <p className="font-mono text-[9px] uppercase text-[#91897C]">Examples</p>
-                  <p className="mt-0.5 text-xs text-[#d8d4a1]">{d.examples}</p>
+                  <p className="font-mono text-[9px] uppercase text-[#a09ab8]">Examples</p>
+                  <p className="mt-0.5 text-xs text-[#ffffff]">{d.examples}</p>
                 </div>
               </div>
             ))}
@@ -165,16 +165,16 @@ export default function HowToPlayPage() {
         {/* CLOSERS */}
         <section>
           <SectionLabel>Closers</SectionLabel>
-          <p className="mb-4 text-sm text-[#91897C]">After 4 messages the chat locks and you pick a closer. Win % is shown live based on your conversation score.</p>
+          <p className="mb-4 text-sm text-[#a09ab8]">After 4 messages the chat locks and you pick a closer. Win % is shown live based on your conversation score.</p>
           <div className="grid gap-3 sm:grid-cols-3">
             {CLOSERS.map((c) => (
-              <div key={c.name} className="border-2 bg-[#2f2922] p-4" style={{ borderColor: c.color }}>
+              <div key={c.name} className="border-2 bg-[#2d1a4a] p-4" style={{ borderColor: c.color }}>
                 <div className="flex items-center justify-between mb-2">
                   <p className="font-mono text-sm font-black" style={{ color: c.color }}>{c.name}</p>
                   <span className="font-mono text-[9px] uppercase border px-1.5 py-0.5" style={{ borderColor: c.color, color: c.color }}>{c.risk}</span>
                 </div>
                 <p className="font-mono text-lg font-black mb-2" style={{ color: c.color }}>{c.odds}</p>
-                <p className="text-xs leading-5 text-[#d8d4a1]">{c.desc}</p>
+                <p className="text-xs leading-5 text-[#ffffff]">{c.desc}</p>
               </div>
             ))}
           </div>
@@ -183,11 +183,11 @@ export default function HowToPlayPage() {
         {/* AURA */}
         <section>
           <SectionLabel>AURA Economy</SectionLabel>
-          <div className="border border-[#91897C]/50 bg-[#2f2922] divide-y divide-[#91897C]/20">
+          <div className="border border-[#a09ab8]/50 bg-[#2d1a4a] divide-y divide-[#a09ab8]/20">
             {AURA_USES.map(({ action, cost, earn }) => (
               <div key={action} className="flex items-center justify-between px-5 py-3">
-                <span className="text-sm text-[#d8d4a1]">{action}</span>
-                <span className={`font-mono text-xs font-black ${earn ? "text-[#EEF083]" : "text-[#ff6b6b]"}`}>{cost}</span>
+                <span className="text-sm text-[#ffffff]">{action}</span>
+                <span className={`font-mono text-xs font-black ${earn ? "text-[#E4D474]" : "text-[#ff6b6b]"}`}>{cost}</span>
               </div>
             ))}
           </div>
@@ -196,11 +196,11 @@ export default function HowToPlayPage() {
         {/* RANKS */}
         <section>
           <SectionLabel>Rank Thresholds</SectionLabel>
-          <div className="border border-[#91897C]/50 bg-[#2f2922] divide-y divide-[#91897C]/20">
+          <div className="border border-[#a09ab8]/50 bg-[#2d1a4a] divide-y divide-[#a09ab8]/20">
             {RANKS.map((r) => (
               <div key={r.name} className="flex items-center justify-between px-5 py-3">
-                <span className="font-black uppercase text-[#EEF083]">{r.name}</span>
-                <span className="font-mono text-xs text-[#91897C]">
+                <span className="font-black uppercase text-[#E4D474]">{r.name}</span>
+                <span className="font-mono text-xs text-[#a09ab8]">
                   {r.min.toLocaleString()}{r.next ? ` – ${r.next.toLocaleString()}` : "+"} AURA
                 </span>
               </div>
@@ -211,27 +211,27 @@ export default function HowToPlayPage() {
         {/* FAQ */}
         <section className="pb-8">
           <SectionLabel>FAQ</SectionLabel>
-          <div className="border border-[#91897C]/50 bg-[#2f2922] divide-y divide-[#91897C]/20">
+          <div className="border border-[#a09ab8]/50 bg-[#2d1a4a] divide-y divide-[#a09ab8]/20">
             {FAQ.map(({ q, a }) => (
               <details key={q} className="group px-5 py-4 cursor-pointer">
-                <summary className="font-black uppercase text-sm text-[#EEF083] list-none flex items-center justify-between">
+                <summary className="font-black uppercase text-sm text-[#E4D474] list-none flex items-center justify-between">
                   {q}
-                  <span className="font-mono text-[#91897C] group-open:rotate-45 transition-transform">+</span>
+                  <span className="font-mono text-[#a09ab8] group-open:rotate-45 transition-transform">+</span>
                 </summary>
-                <p className="mt-3 text-sm leading-6 text-[#d8d4a1]">{a}</p>
+                <p className="mt-3 text-sm leading-6 text-[#ffffff]">{a}</p>
               </details>
             ))}
           </div>
 
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
-              className="border-2 border-[#EEF083] bg-[#EEF083] px-7 py-3.5 text-sm font-black uppercase tracking-wide text-[#241F19] shadow-[4px_4px_0_#91897C] transition hover:bg-transparent hover:text-[#EEF083]"
+              className="border-2 border-[#E4D474] bg-[#E4D474] px-7 py-3.5 text-sm font-black uppercase tracking-wide text-[#24153E] shadow-[4px_4px_0_#a09ab8] transition hover:bg-transparent hover:text-[#E4D474]"
               href="/map"
             >
               Play Now
             </Link>
             <Link
-              className="border-2 border-[#91897C] px-7 py-3.5 text-sm font-black uppercase tracking-wide text-[#EEF083] transition hover:border-[#EEF083]"
+              className="border-2 border-[#a09ab8] px-7 py-3.5 text-sm font-black uppercase tracking-wide text-[#E4D474] transition hover:border-[#E4D474]"
               href="/character-select"
             >
               Browse Archetypes

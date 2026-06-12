@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { Nav } from "../components/Nav";
@@ -8,7 +8,7 @@ import { Nav } from "../components/Nav";
 const TIERS = [
   {
     label: "WARM",
-    color: "#EEF083",
+    color: "#E4D474",
     cost: "10 AURA entry",
     desc: "These girls value realness over flash. No need to impress — just don't be cringe.",
     archetypes: [
@@ -125,7 +125,7 @@ const TIERS = [
 const CLOSER_TIPS = [
   {
     name: "FLIRT",
-    color: "#EEF083",
+    color: "#E4D474",
     when: "Your chat score is high — use it when the conversation went genuinely well.",
     rule: "Odds range from 15% to 90% based on your conversation score. With a bad chat, FLIRT is a coin flip into a wall. With a great chat, it's the highest payout in the game.",
     trigger: "Score strongly positive? Pick FLIRT. Score negative or flat? Don't.",
@@ -139,7 +139,7 @@ const CLOSER_TIPS = [
   },
   {
     name: "LEAVE",
-    color: "#91897C",
+    color: "#a09ab8",
     when: "The chat went badly and your score is negative.",
     rule: "You get 50% of your approach cost back. It doesn't count as a loss — your streak stays intact. Use it as a reset, not a failure.",
     trigger: "Negative chat score or you got a bad vibe? LEAVE. Protect the streak. Live to approach another day.",
@@ -156,7 +156,7 @@ const MESSAGE_BREAKDOWNS = [
   {
     archetype: "Coffee Barista",
     tier: "WARM",
-    color: "#EEF083",
+    color: "#E4D474",
     examples: [
       {
         msg: "Hey, you're really cute. Can I get your number?",
@@ -222,7 +222,7 @@ const MESSAGE_BREAKDOWNS = [
   {
     archetype: "Trail Runner",
     tier: "WARM",
-    color: "#EEF083",
+    color: "#E4D474",
     examples: [
       {
         msg: "Wow you run? I mostly just use the treadmill at my gym.",
@@ -291,7 +291,7 @@ const UNIVERSAL_DONTS = [
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="mb-4 font-mono text-xs font-black uppercase tracking-[0.22em] text-[#91897C]">
+    <p className="mb-4 font-mono text-xs font-black uppercase tracking-[0.22em] text-[#a09ab8]">
       {children}
     </p>
   );
@@ -301,15 +301,15 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 export default function TipsPage() {
   return (
-    <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
+    <div className="min-h-screen bg-[#24153E] text-[#E4D474]">
       <Nav />
       <main className="mx-auto max-w-5xl px-4 py-10 sm:px-8 space-y-14">
 
         {/* Header */}
         <div>
-          <p className="mb-1 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91897C]">Field Manual</p>
+          <p className="mb-1 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#a09ab8]">Field Manual</p>
           <h1 className="text-5xl font-black uppercase sm:text-6xl">Tips &amp; Tricks</h1>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-[#d8d4a1]">
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-[#ffffff]">
             Every girl scores you on what you actually say. Know your target, pick the right closer, and protect your streak. This is how you win.
           </p>
         </div>
@@ -320,19 +320,19 @@ export default function TipsPage() {
           <div className="grid gap-3 sm:grid-cols-3">
             {[
               { range: "+7 to +10", label: "She's into it", color: "#00FF9D", desc: "Deep domain knowledge, genuine curiosity, smart humor. She'll warm up fast." },
-              { range: "+1 to +6", label: "Decent",         color: "#EEF083", desc: "Polite and relevant. Not impressive but not damaging. Keep building." },
+              { range: "+1 to +6", label: "Decent",         color: "#E4D474", desc: "Polite and relevant. Not impressive but not damaging. Keep building." },
               { range: "-1 to -10", label: "Scored against you", color: "#ff4444", desc: "Generic lines, faking knowledge, cringe energy. You're losing ground." },
             ].map((s) => (
-              <div key={s.range} className="border bg-[#2f2922] p-5" style={{ borderColor: s.color + "44", borderTopColor: s.color, borderTopWidth: 2 }}>
+              <div key={s.range} className="border bg-[#2d1a4a] p-5" style={{ borderColor: s.color + "44", borderTopColor: s.color, borderTopWidth: 2 }}>
                 <p className="font-mono text-xl font-black" style={{ color: s.color }}>{s.range}</p>
-                <p className="mt-1 font-black uppercase text-sm text-[#EEF083]">{s.label}</p>
-                <p className="mt-2 text-sm leading-6 text-[#91897C]">{s.desc}</p>
+                <p className="mt-1 font-black uppercase text-sm text-[#E4D474]">{s.label}</p>
+                <p className="mt-2 text-sm leading-6 text-[#a09ab8]">{s.desc}</p>
               </div>
             ))}
           </div>
-          <div className="mt-3 border border-[#91897C]/30 bg-[#1a1710] px-5 py-4">
-            <p className="text-sm leading-6 text-[#d8d4a1]">
-              <span className="font-black text-[#EEF083]">4 messages.</span> Your total score across all 4 replies determines your win % on the closer buttons. A great opener can be ruined by one bad follow-up — and a slow start can be recovered with substance.
+          <div className="mt-3 border border-[#a09ab8]/30 bg-[#160c2c] px-5 py-4">
+            <p className="text-sm leading-6 text-[#ffffff]">
+              <span className="font-black text-[#E4D474]">4 messages.</span> Your total score across all 4 replies determines your win % on the closer buttons. A great opener can be ruined by one bad follow-up — and a slow start can be recovered with substance.
             </p>
           </div>
         </section>
@@ -340,24 +340,24 @@ export default function TipsPage() {
         {/* Message breakdowns */}
         <section>
           <SectionLabel>Message Breakdown — What You're Saying Wrong</SectionLabel>
-          <p className="mb-5 text-sm leading-6 text-[#d8d4a1]">
+          <p className="mb-5 text-sm leading-6 text-[#ffffff]">
             Real examples of bad, decent, and great openers — and exactly why each one scores the way it does.
           </p>
           <div className="space-y-5">
             {MESSAGE_BREAKDOWNS.map((b) => (
-              <div key={b.archetype} className="border border-[#91897C]/30 bg-[#2f2922]">
+              <div key={b.archetype} className="border border-[#a09ab8]/30 bg-[#2d1a4a]">
                 {/* Header */}
-                <div className="flex items-center gap-3 border-b border-[#91897C]/20 px-5 py-3">
+                <div className="flex items-center gap-3 border-b border-[#a09ab8]/20 px-5 py-3">
                   <span className="font-black uppercase text-sm" style={{ color: b.color }}>{b.archetype}</span>
                   <span className="font-mono text-[10px] border px-1.5 py-0.5 uppercase tracking-[0.16em]"
                     style={{ borderColor: b.color + "55", color: b.color }}>{b.tier}</span>
                 </div>
                 {/* Messages */}
-                <div className="divide-y divide-[#91897C]/15">
+                <div className="divide-y divide-[#a09ab8]/15">
                   {b.examples.map((ex, i) => {
                     const isGood = ex.score > 4;
                     const isBad  = ex.score < 0;
-                    const scoreColor = isGood ? "#00FF9D" : isBad ? "#ff4444" : "#EEF083";
+                    const scoreColor = isGood ? "#00FF9D" : isBad ? "#ff4444" : "#E4D474";
                     return (
                       <div key={i} className="px-5 py-4 space-y-2">
                         {/* Chat bubble */}
@@ -368,13 +368,13 @@ export default function TipsPage() {
                           >
                             {ex.score > 0 ? `+${ex.score}` : ex.score}
                           </div>
-                          <div className="flex-1 border border-[#91897C]/30 bg-[#1a1710] px-4 py-2.5">
-                            <p className="text-sm leading-6 text-[#EEF083]">&ldquo;{ex.msg}&rdquo;</p>
+                          <div className="flex-1 border border-[#a09ab8]/30 bg-[#160c2c] px-4 py-2.5">
+                            <p className="text-sm leading-6 text-[#E4D474]">&ldquo;{ex.msg}&rdquo;</p>
                           </div>
                         </div>
                         {/* Why */}
                         <div className="flex items-start gap-3 pl-10">
-                          <p className="text-sm leading-6 text-[#91897C]">
+                          <p className="text-sm leading-6 text-[#a09ab8]">
                             <span className="font-mono text-[10px] uppercase tracking-[0.14em] mr-2" style={{ color: scoreColor }}>Why:</span>
                             {ex.why}
                           </p>
@@ -396,36 +396,36 @@ export default function TipsPage() {
                 style={{ borderColor: tier.color, color: tier.color }}>
                 {tier.label}
               </span>
-              <span className="font-mono text-xs text-[#91897C]">{tier.cost}</span>
+              <span className="font-mono text-xs text-[#a09ab8]">{tier.cost}</span>
             </div>
-            <p className="mb-5 text-sm leading-6 text-[#d8d4a1]">{tier.desc}</p>
+            <p className="mb-5 text-sm leading-6 text-[#ffffff]">{tier.desc}</p>
             <div className="space-y-3">
               {tier.archetypes.map((a) => (
-                <div key={a.title} className="border border-[#91897C]/30 bg-[#2f2922]">
-                  <div className="flex items-center justify-between border-b border-[#91897C]/20 px-5 py-3">
+                <div key={a.title} className="border border-[#a09ab8]/30 bg-[#2d1a4a]">
+                  <div className="flex items-center justify-between border-b border-[#a09ab8]/20 px-5 py-3">
                     <p className="font-black uppercase text-sm" style={{ color: tier.color }}>{a.title}</p>
                   </div>
                   <div className="px-5 py-4 space-y-4">
-                    <p className="text-sm leading-6 text-[#d8d4a1]">{a.tip}</p>
+                    <p className="text-sm leading-6 text-[#ffffff]">{a.tip}</p>
                     <div className="grid gap-3 sm:grid-cols-2">
                       <div>
-                        <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#91897C]">Say this</p>
+                        <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#a09ab8]">Say this</p>
                         <div className="space-y-1.5">
                           {a.dos.map((d) => (
                             <div key={d} className="flex items-center gap-2">
-                              <span className="inline-block h-2.5 w-2.5 shrink-0 bg-[#EEF083]" />
-                              <span className="text-sm text-[#d8d4a1]">{d}</span>
+                              <span className="inline-block h-2.5 w-2.5 shrink-0 bg-[#E4D474]" />
+                              <span className="text-sm text-[#ffffff]">{d}</span>
                             </div>
                           ))}
                         </div>
                       </div>
                       <div>
-                        <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#91897C]">Avoid this</p>
+                        <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#a09ab8]">Avoid this</p>
                         <div className="space-y-1.5">
                           {a.donts.map((d) => (
                             <div key={d} className="flex items-center gap-2">
-                              <span className="inline-block h-2.5 w-2.5 shrink-0 bg-[#241F19] border border-[#91897C]/50" />
-                              <span className="text-sm text-[#91897C]">{d}</span>
+                              <span className="inline-block h-2.5 w-2.5 shrink-0 bg-[#24153E] border border-[#a09ab8]/50" />
+                              <span className="text-sm text-[#a09ab8]">{d}</span>
                             </div>
                           ))}
                         </div>
@@ -441,15 +441,15 @@ export default function TipsPage() {
         {/* Closer strategy */}
         <section>
           <SectionLabel>Closer Strategy</SectionLabel>
-          <p className="mb-5 text-sm leading-6 text-[#d8d4a1]">Picking the wrong closer on a good chat wastes AURA. Picking the right one on a bad chat still loses. Know when to use each.</p>
+          <p className="mb-5 text-sm leading-6 text-[#ffffff]">Picking the wrong closer on a good chat wastes AURA. Picking the right one on a bad chat still loses. Know when to use each.</p>
           <div className="grid gap-3 sm:grid-cols-3">
             {CLOSER_TIPS.map((c) => (
-              <div key={c.name} className="border-2 bg-[#2f2922] p-5 space-y-3" style={{ borderColor: c.color }}>
+              <div key={c.name} className="border-2 bg-[#2d1a4a] p-5 space-y-3" style={{ borderColor: c.color }}>
                 <p className="font-mono text-sm font-black" style={{ color: c.color }}>{c.name}</p>
-                <p className="text-sm leading-6 text-[#d8d4a1]">{c.rule}</p>
+                <p className="text-sm leading-6 text-[#ffffff]">{c.rule}</p>
                 <div className="border-t pt-3" style={{ borderTopColor: c.color + "33" }}>
                   <p className="font-mono text-[10px] uppercase tracking-[0.16em] mb-1" style={{ color: c.color }}>When to use</p>
-                  <p className="text-sm leading-5 text-[#91897C]">{c.trigger}</p>
+                  <p className="text-sm leading-5 text-[#a09ab8]">{c.trigger}</p>
                 </div>
               </div>
             ))}
@@ -459,15 +459,15 @@ export default function TipsPage() {
         {/* Streak play */}
         <section>
           <SectionLabel>Streak Multipliers</SectionLabel>
-          <p className="mb-5 text-sm leading-6 text-[#d8d4a1]">Win streaks stack your payout multiplier. A LEAVE doesn't break your streak — a loss does. Use LEAVE to preserve streaks when the chat goes badly.</p>
-          <div className="border border-[#91897C]/30 bg-[#2f2922] divide-y divide-[#91897C]/20">
+          <p className="mb-5 text-sm leading-6 text-[#ffffff]">Win streaks stack your payout multiplier. A LEAVE doesn't break your streak — a loss does. Use LEAVE to preserve streaks when the chat goes badly.</p>
+          <div className="border border-[#a09ab8]/30 bg-[#2d1a4a] divide-y divide-[#a09ab8]/20">
             {STREAK_TIPS.map((s) => (
               <div key={s.n} className="flex items-start gap-4 px-5 py-4">
                 <div className="shrink-0 text-center">
-                  <p className="font-mono text-2xl font-black text-[#EEF083]">{s.n}</p>
-                  <p className="font-mono text-[9px] uppercase text-[#91897C]">{s.boost}</p>
+                  <p className="font-mono text-2xl font-black text-[#E4D474]">{s.n}</p>
+                  <p className="font-mono text-[9px] uppercase text-[#a09ab8]">{s.boost}</p>
                 </div>
-                <p className="text-sm leading-6 text-[#d8d4a1] pt-0.5">{s.tip}</p>
+                <p className="text-sm leading-6 text-[#ffffff] pt-0.5">{s.tip}</p>
               </div>
             ))}
           </div>
@@ -476,25 +476,25 @@ export default function TipsPage() {
         {/* Universal don'ts */}
         <section className="pb-8">
           <SectionLabel>Universal Don'ts</SectionLabel>
-          <p className="mb-5 text-sm leading-6 text-[#d8d4a1]">These tank your score with every archetype, every tier, no exceptions.</p>
-          <div className="border border-[#91897C]/30 bg-[#2f2922] divide-y divide-[#91897C]/20">
+          <p className="mb-5 text-sm leading-6 text-[#ffffff]">These tank your score with every archetype, every tier, no exceptions.</p>
+          <div className="border border-[#a09ab8]/30 bg-[#2d1a4a] divide-y divide-[#a09ab8]/20">
             {UNIVERSAL_DONTS.map((d) => (
               <div key={d} className="flex items-center gap-3 px-5 py-3.5">
-                <span className="inline-block h-2.5 w-2.5 shrink-0 bg-[#241F19] border border-[#91897C]/50" />
-                <span className="text-sm text-[#d8d4a1]">{d}</span>
+                <span className="inline-block h-2.5 w-2.5 shrink-0 bg-[#24153E] border border-[#a09ab8]/50" />
+                <span className="text-sm text-[#ffffff]">{d}</span>
               </div>
             ))}
           </div>
 
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
-              className="border-2 border-[#EEF083] bg-[#EEF083] px-7 py-3.5 text-sm font-black uppercase tracking-wide text-[#241F19] shadow-[4px_4px_0_#91897C] transition hover:bg-transparent hover:text-[#EEF083]"
+              className="border-2 border-[#E4D474] bg-[#E4D474] px-7 py-3.5 text-sm font-black uppercase tracking-wide text-[#24153E] shadow-[4px_4px_0_#a09ab8] transition hover:bg-transparent hover:text-[#E4D474]"
               href="/map"
             >
               Play Now
             </Link>
             <Link
-              className="border-2 border-[#91897C] px-7 py-3.5 text-sm font-black uppercase tracking-wide text-[#EEF083] transition hover:border-[#EEF083]"
+              className="border-2 border-[#a09ab8] px-7 py-3.5 text-sm font-black uppercase tracking-wide text-[#E4D474] transition hover:border-[#E4D474]"
               href="/how-to-play"
             >
               How to Play

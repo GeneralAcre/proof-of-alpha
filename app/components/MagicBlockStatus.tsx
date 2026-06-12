@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { MAGICBLOCK_GAME_PLAN } from "../lib/magicblock";
@@ -23,15 +23,15 @@ type StatusState =
 
 function getLatencyTone(latencyMs?: number) {
   if (latencyMs === undefined) {
-    return "text-[#91897C]";
+    return "text-[#a09ab8]";
   }
 
   if (latencyMs < 500) {
-    return "text-[#EEF083]";
+    return "text-[#E4D474]";
   }
 
   if (latencyMs < 1400) {
-    return "text-[#d8d4a1]";
+    return "text-[#ffffff]";
   }
 
   return "text-[#ffb1a1]";
@@ -106,14 +106,14 @@ export function MagicBlockStatus() {
   }, [state]);
 
   return (
-    <section className="rounded-lg border border-[#91897C] bg-[#2f2922] p-5 md:col-span-2">
+    <section className="rounded-lg border border-[#a09ab8] bg-[#2d1a4a] p-5 md:col-span-2">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#EEF083]">MagicBlock engine</p>
-          <h2 className="mt-2 text-2xl font-black uppercase text-[#EEF083]">{headline}</h2>
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#E4D474]">MagicBlock engine</p>
+          <h2 className="mt-2 text-2xl font-black uppercase text-[#E4D474]">{headline}</h2>
         </div>
         <button
-          className="rounded-lg border border-[#91897C] px-4 py-3 text-sm font-black uppercase text-[#EEF083] transition hover:bg-[#EEF083] hover:text-[#241F19] disabled:opacity-60"
+          className="rounded-lg border border-[#a09ab8] px-4 py-3 text-sm font-black uppercase text-[#E4D474] transition hover:bg-[#E4D474] hover:text-[#24153E] disabled:opacity-60"
           disabled={state.status === "loading"}
           onClick={refreshStatus}
           type="button"
@@ -124,10 +124,10 @@ export function MagicBlockStatus() {
 
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
         {(state.data?.probes ?? []).map((probe) => (
-          <div key={probe.label} className="rounded-lg border border-[#91897C] bg-[#241F19]/70 p-4">
+          <div key={probe.label} className="rounded-lg border border-[#a09ab8] bg-[#24153E]/70 p-4">
             <div className="flex items-center justify-between gap-3">
-              <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#91897C]">{probe.label}</p>
-              <span className={`font-mono text-xs uppercase ${probe.ok ? "text-[#EEF083]" : "text-[#ffb1a1]"}`}>
+              <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#a09ab8]">{probe.label}</p>
+              <span className={`font-mono text-xs uppercase ${probe.ok ? "text-[#E4D474]" : "text-[#ffb1a1]"}`}>
                 {probe.ok ? "online" : "offline"}
               </span>
             </div>
@@ -139,22 +139,22 @@ export function MagicBlockStatus() {
       </div>
 
       {state.data?.probes.length ? null : (
-        <div className="mt-5 rounded-lg border border-[#91897C] bg-[#241F19]/70 p-4 text-sm leading-6 text-[#d8d4a1]">
+        <div className="mt-5 rounded-lg border border-[#a09ab8] bg-[#24153E]/70 p-4 text-sm leading-6 text-[#ffffff]">
           MagicBlock status will appear here after the first devnet check.
         </div>
       )}
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {MAGICBLOCK_GAME_PLAN.map((item) => (
-          <article key={item.label} className="rounded-lg border border-[#91897C] bg-[#241F19]/70 p-4">
-            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#EEF083]">{item.label}</p>
-            <p className="mt-2 text-sm leading-6 text-[#d8d4a1]">{item.detail}</p>
+          <article key={item.label} className="rounded-lg border border-[#a09ab8] bg-[#24153E]/70 p-4">
+            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#E4D474]">{item.label}</p>
+            <p className="mt-2 text-sm leading-6 text-[#ffffff]">{item.detail}</p>
           </article>
         ))}
       </div>
 
       {state.status === "error" ? (
-        <div className="mt-5 rounded-lg border border-[#ffb1a1] bg-[#241F19]/70 p-4 text-sm leading-6 text-[#ffb1a1]">
+        <div className="mt-5 rounded-lg border border-[#ffb1a1] bg-[#24153E]/70 p-4 text-sm leading-6 text-[#ffb1a1]">
           {state.error} The game UI stays responsive and staged locally instead of blocking on a slow RPC.
         </div>
       ) : null}

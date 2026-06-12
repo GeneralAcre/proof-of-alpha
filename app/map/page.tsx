@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -55,12 +55,12 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
   const canAfford     = aura >= area.unlockCost;
   const isBsolGate    = area.locked && area.unlockCost === 0; // bSOL-only, AURA can't unlock
 
-  const accent = (area.id === "islandDAO" && isUnlocked) ? "#9945FF" : isUnlocked ? "#EEF083" : "#91897C";
+  const accent = (area.id === "islandDAO" && isUnlocked) ? "#9945FF" : isUnlocked ? "#E4D474" : "#a09ab8";
 
   return (
     <div
       className={`relative flex flex-col justify-between p-4 pb-6 sm:p-8 ${cfg.colSpan}`}
-      style={{ backgroundColor: "#241F19", clipPath: cfg.clip, minHeight: "clamp(220px, 38vw, 290px)" }}
+      style={{ backgroundColor: "#24153E", clipPath: cfg.clip, minHeight: "clamp(220px, 38vw, 290px)" }}
     >
       {/* Grid overlay */}
       <svg
@@ -70,7 +70,7 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
       >
         <defs>
           <pattern id={`gp-${area.id}`} width="22" height="22" patternUnits="userSpaceOnUse">
-            <path d="M22 0L0 0 0 22" fill="none" stroke="#EEF083" strokeWidth="0.5" />
+            <path d="M22 0L0 0 0 22" fill="none" stroke="#E4D474" strokeWidth="0.5" />
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill={`url(#gp-${area.id})`} />
@@ -100,7 +100,7 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
               bSOL only
             </span>
           ) : (
-            <span className="font-mono text-xs uppercase tracking-wide text-[#91897C]">
+            <span className="font-mono text-xs uppercase tracking-wide text-[#a09ab8]">
               🔒 {area.unlockCost} AURA
             </span>
           )
@@ -118,7 +118,7 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
         >
           {isUnlocked ? area.name : "???"}
         </h3>
-        <p className="mt-2 font-mono text-[11px] sm:text-sm italic leading-4 sm:leading-5 text-[#91897C] line-clamp-2">
+        <p className="mt-2 font-mono text-[11px] sm:text-sm italic leading-4 sm:leading-5 text-[#a09ab8] line-clamp-2">
           {area.subtitle}
         </p>
       </div>
@@ -128,7 +128,7 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
         {isUnlocked ? (
           !addr ? (
             <button
-              className="border border-[#91897C]/50 px-4 py-2 sm:px-6 sm:py-3 font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest text-[#91897C] opacity-60 cursor-not-allowed touch-manipulation"
+              className="border border-[#a09ab8]/50 px-4 py-2 sm:px-6 sm:py-3 font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest text-[#a09ab8] opacity-60 cursor-not-allowed touch-manipulation"
               disabled
               type="button"
             >
@@ -136,7 +136,7 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
             </button>
           ) : (
             <button
-              className={`px-4 py-2 sm:px-6 sm:py-3 font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest text-[#241F19] transition hover:opacity-75 touch-manipulation ${area.id === "islandDAO" ? "bg-[#9945FF]" : "bg-[#EEF083]"}`}
+              className={`px-4 py-2 sm:px-6 sm:py-3 font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest text-[#24153E] transition hover:opacity-75 touch-manipulation ${area.id === "islandDAO" ? "bg-[#9945FF]" : "bg-[#E4D474]"}`}
               onClick={() => onEnter(area)}
               type="button"
             >
@@ -152,8 +152,8 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
           </Link>
         ) : (
           <button
-            className="border border-[#91897C]/50 px-4 py-2 sm:px-6 sm:py-3 font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest transition disabled:opacity-25 touch-manipulation"
-            style={{ color: canAfford ? "#EEF083" : "#91897C" }}
+            className="border border-[#a09ab8]/50 px-4 py-2 sm:px-6 sm:py-3 font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest transition disabled:opacity-25 touch-manipulation"
+            style={{ color: canAfford ? "#E4D474" : "#a09ab8" }}
             disabled={!addr || !canAfford}
             onClick={() => onUnlock(area)}
             type="button"
@@ -199,19 +199,19 @@ export default function MapPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0e0c09] text-[#EEF083]">
+    <div className="min-h-screen bg-[#000F08] text-[#E4D474]">
       <Nav />
 
       <main className="px-4 py-10 sm:px-8">
 
         {/* Wallet gate banner */}
         {!addr && (
-          <div className="mb-6 flex items-center justify-between gap-4 border border-[#EEF083]/30 bg-[#EEF083]/5 px-5 py-4">
+          <div className="mb-6 flex items-center justify-between gap-4 border border-[#E4D474]/30 bg-[#E4D474]/5 px-5 py-4">
             <div>
-              <p className="font-black uppercase text-sm text-[#EEF083]">Connect your wallet to play</p>
-              <p className="font-mono text-xs text-[#91897C] mt-0.5">You need a Solana wallet to enter any area.</p>
+              <p className="font-black uppercase text-sm text-[#E4D474]">Connect your wallet to play</p>
+              <p className="font-mono text-xs text-[#a09ab8] mt-0.5">You need a Solana wallet to enter any area.</p>
             </div>
-            <div className="shrink-0 font-mono text-[10px] uppercase tracking-widest text-[#91897C]">
+            <div className="shrink-0 font-mono text-[10px] uppercase tracking-widest text-[#a09ab8]">
               Use Connect in the nav
             </div>
           </div>
@@ -220,9 +220,9 @@ export default function MapPage() {
         {/* Header */}
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
-            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#91897C]">Proof of Alpha</p>
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#a09ab8]">Proof of Alpha</p>
             <h1 className="mt-1 text-5xl font-black uppercase sm:text-6xl">Select Area</h1>
-            <p className="mt-2 font-mono text-sm text-[#91897C]">7 areas. 4 open. 2 locked. 1 bSOL exclusive.</p>
+            <p className="mt-2 font-mono text-sm text-[#a09ab8]">7 areas. 4 open. 2 locked. 1 bSOL exclusive.</p>
           </div>
           <div className="flex items-center gap-3 shrink-0">
             {bsolHolder && (
@@ -232,9 +232,9 @@ export default function MapPage() {
               </div>
             )}
             {addr && (
-              <div className="border border-[#91897C]/30 px-4 py-2.5 text-right">
-                <p className="font-mono text-xs uppercase tracking-[0.16em] text-[#91897C]">Your AURA</p>
-                <p className="mt-0.5 font-mono text-2xl font-black leading-none text-[#EEF083]">{aura}</p>
+              <div className="border border-[#a09ab8]/30 px-4 py-2.5 text-right">
+                <p className="font-mono text-xs uppercase tracking-[0.16em] text-[#a09ab8]">Your AURA</p>
+                <p className="mt-0.5 font-mono text-2xl font-black leading-none text-[#E4D474]">{aura}</p>
               </div>
             )}
           </div>
@@ -256,10 +256,10 @@ export default function MapPage() {
         </div>
 
         {/* Legend */}
-        <div className="mt-8 flex flex-wrap gap-5 font-mono text-xs uppercase tracking-[0.14em] text-[#91897C]">
-          <span><span className="text-[#EEF083]">■</span> Warm — easy approach</span>
-          <span><span className="text-[#EEF083]">■</span> Cold — selective</span>
-          <span><span className="text-[#91897C]">■</span> Icy — elite only</span>
+        <div className="mt-8 flex flex-wrap gap-5 font-mono text-xs uppercase tracking-[0.14em] text-[#a09ab8]">
+          <span><span className="text-[#E4D474]">■</span> Warm — easy approach</span>
+          <span><span className="text-[#E4D474]">■</span> Cold — selective</span>
+          <span><span className="text-[#a09ab8]">■</span> Icy — elite only</span>
           <span><span className="text-[#9945FF]">■</span> DAO — bSOL holders only</span>
         </div>
 

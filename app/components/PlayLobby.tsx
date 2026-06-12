@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useState } from "react";
 import type { Wallet, WalletAccount } from "@wallet-standard/base";
@@ -37,7 +37,7 @@ export function PlayLobby({ characters }: PlayLobbyProps) {
 
   return (
     <div className="grid gap-5 md:grid-cols-2">
-      <section className="rounded-lg border border-[#91897C] bg-[#2f2922] p-5">
+      <section className="rounded-lg border border-[#a09ab8] bg-[#2d1a4a] p-5">
         <SolanaWalletConnect
           onAccountChange={(nextAccount, nextWallet) => {
             setAccount(nextAccount);
@@ -46,8 +46,8 @@ export function PlayLobby({ characters }: PlayLobbyProps) {
         />
       </section>
 
-      <section className="rounded-lg border border-[#91897C] bg-[#2f2922] p-5">
-        <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#EEF083]">Pick mode</p>
+      <section className="rounded-lg border border-[#a09ab8] bg-[#2d1a4a] p-5">
+        <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#E4D474]">Pick mode</p>
         <div className="mt-5 grid gap-3">
           {modes.map((nextMode) => {
             const isSelected = mode === nextMode.name;
@@ -56,15 +56,15 @@ export function PlayLobby({ characters }: PlayLobbyProps) {
               <button
                 className={`rounded-lg border px-4 py-3 text-left text-sm font-black uppercase transition ${
                   isSelected
-                    ? "border-[#EEF083] bg-[#EEF083] text-[#241F19]"
-                    : "border-[#91897C] bg-[#241F19]/70 text-[#EEF083] hover:border-[#EEF083]"
+                    ? "border-[#E4D474] bg-[#E4D474] text-[#24153E]"
+                    : "border-[#a09ab8] bg-[#24153E]/70 text-[#E4D474] hover:border-[#E4D474]"
                 }`}
                 key={nextMode.name}
                 onClick={() => setMode(nextMode.name)}
                 type="button"
               >
                 {nextMode.name}
-                <span className={`block text-xs font-semibold normal-case ${isSelected ? "text-[#241F19]" : "text-[#91897C]"}`}>
+                <span className={`block text-xs font-semibold normal-case ${isSelected ? "text-[#24153E]" : "text-[#a09ab8]"}`}>
                   {nextMode.detail}
                 </span>
               </button>
@@ -73,10 +73,10 @@ export function PlayLobby({ characters }: PlayLobbyProps) {
         </div>
       </section>
 
-      <section className="rounded-lg border border-[#91897C] bg-[#2f2922] p-5 md:col-span-2">
+      <section className="rounded-lg border border-[#a09ab8] bg-[#2d1a4a] p-5 md:col-span-2">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#EEF083]">Pick character</p>
-          <div className="rounded-md border border-[#91897C] bg-[#241F19]/70 px-3 py-2 font-mono text-xs uppercase text-[#d8d4a1]">
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#E4D474]">Pick character</p>
+          <div className="rounded-md border border-[#a09ab8] bg-[#24153E]/70 px-3 py-2 font-mono text-xs uppercase text-[#ffffff]">
             {wallet ? `${wallet.name} ready` : "Wallet required"}
           </div>
         </div>
@@ -89,8 +89,8 @@ export function PlayLobby({ characters }: PlayLobbyProps) {
               <button
                 className={`rounded-lg border p-4 text-left transition ${
                   isSelected
-                    ? "border-[#EEF083] bg-[#EEF083] text-[#241F19]"
-                    : "border-[#91897C] bg-[#241F19]/70 text-[#EEF083] hover:border-[#EEF083]"
+                    ? "border-[#E4D474] bg-[#E4D474] text-[#24153E]"
+                    : "border-[#a09ab8] bg-[#24153E]/70 text-[#E4D474] hover:border-[#E4D474]"
                 }`}
                 key={character.name}
                 onClick={() => setCharacterName(character.name)}
@@ -98,13 +98,13 @@ export function PlayLobby({ characters }: PlayLobbyProps) {
               >
                 <span
                   className={`flex h-16 items-center justify-center rounded-md border font-black uppercase ${
-                    isSelected ? "border-[#241F19] bg-[#241F19] text-[#EEF083]" : "border-[#EEF083] bg-[#EEF083]/10 text-[#EEF083]"
+                    isSelected ? "border-[#24153E] bg-[#24153E] text-[#E4D474]" : "border-[#E4D474] bg-[#E4D474]/10 text-[#E4D474]"
                   }`}
                 >
                   {character.name.slice(0, 2)}
                 </span>
                 <span className="mt-4 block text-lg font-black">{character.name}</span>
-                <span className={`mt-1 block text-sm ${isSelected ? "text-[#241F19]" : "text-[#d8d4a1]"}`}>{character.role}</span>
+                <span className={`mt-1 block text-sm ${isSelected ? "text-[#24153E]" : "text-[#ffffff]"}`}>{character.role}</span>
                 <span className="mt-3 block font-mono text-xs uppercase tracking-[0.12em]">{character.stat}</span>
               </button>
             );
@@ -112,18 +112,18 @@ export function PlayLobby({ characters }: PlayLobbyProps) {
         </div>
       </section>
 
-      <section className="rounded-lg border border-[#91897C] bg-[#2f2922] p-5 md:col-span-2">
+      <section className="rounded-lg border border-[#a09ab8] bg-[#2d1a4a] p-5 md:col-span-2">
         <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
           <div>
-            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#EEF083]">Lobby ticket</p>
-            <p className="mt-2 text-sm leading-6 text-[#d8d4a1]">
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#E4D474]">Lobby ticket</p>
+            <p className="mt-2 text-sm leading-6 text-[#ffffff]">
               {account
                 ? `${mode} as ${selectedCharacter?.name}. Entry is staged for Solana devnet plus MagicBlock ER.`
                 : "Authorize a Solana Mobile wallet to stage the devnet lobby entry."}
             </p>
           </div>
           <button
-            className="rounded-lg border border-[#EEF083] bg-[#EEF083] px-5 py-3 text-sm font-black uppercase text-[#241F19] transition hover:bg-[#f5f6a5] disabled:cursor-not-allowed disabled:border-[#91897C] disabled:bg-[#241F19]/70 disabled:text-[#91897C]"
+            className="rounded-lg border border-[#E4D474] bg-[#E4D474] px-5 py-3 text-sm font-black uppercase text-[#24153E] transition hover:bg-[#ece880] disabled:cursor-not-allowed disabled:border-[#a09ab8] disabled:bg-[#24153E]/70 disabled:text-[#a09ab8]"
             disabled={!canEnterLobby}
             onClick={() => setQueuedLobbyKey(lobbyKey)}
             type="button"
@@ -132,7 +132,7 @@ export function PlayLobby({ characters }: PlayLobbyProps) {
           </button>
         </div>
         {hasQueuedLobby ? (
-          <div className="mt-4 rounded-lg border border-[#EEF083] bg-[#EEF083]/10 p-4 font-mono text-xs uppercase tracking-[0.14em] text-[#EEF083]">
+          <div className="mt-4 rounded-lg border border-[#E4D474] bg-[#E4D474]/10 p-4 font-mono text-xs uppercase tracking-[0.14em] text-[#E4D474]">
             Ready for MagicBlock ER. Transaction signing stays off until the game program and escrow are implemented.
           </div>
         ) : null}

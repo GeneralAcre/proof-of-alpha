@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -50,10 +50,10 @@ export default function GuildDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
+      <div className="min-h-screen bg-[#24153E] text-[#E4D474]">
         <Nav />
         <main className="mx-auto max-w-5xl px-4 py-16 text-center">
-          <p className="font-mono text-xs uppercase animate-pulse text-[#91897C]">Loading…</p>
+          <p className="font-mono text-xs uppercase animate-pulse text-[#a09ab8]">Loading…</p>
         </main>
       </div>
     );
@@ -61,11 +61,11 @@ export default function GuildDetailPage() {
 
   if (!guild) {
     return (
-      <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
+      <div className="min-h-screen bg-[#24153E] text-[#E4D474]">
         <Nav />
         <main className="mx-auto max-w-5xl px-4 py-16 text-center">
-          <p className="font-mono text-xs uppercase text-[#91897C]">Gang not found.</p>
-          <Link href="/guilds" className="mt-4 inline-block font-mono text-xs text-[#EEF083] underline">Back to Gangs</Link>
+          <p className="font-mono text-xs uppercase text-[#a09ab8]">Gang not found.</p>
+          <Link href="/guilds" className="mt-4 inline-block font-mono text-xs text-[#E4D474] underline">Back to Gangs</Link>
         </main>
       </div>
     );
@@ -76,29 +76,29 @@ export default function GuildDetailPage() {
   const totalAura = getGuildAura(guild);
 
   return (
-    <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
+    <div className="min-h-screen bg-[#24153E] text-[#E4D474]">
       <Nav />
       <main className="mx-auto max-w-5xl px-4 py-10 sm:px-8 space-y-8">
 
-        <Link href="/guilds" className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#91897C] transition hover:text-[#EEF083]">
+        <Link href="/guilds" className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#a09ab8] transition hover:text-[#E4D474]">
           All Gangs
         </Link>
 
         {/* Guild card */}
-        <div className="border-2 border-[#EEF083] bg-[#2f2922] p-6 shadow-[8px_8px_0_#1a1710]">
+        <div className="border-2 border-[#E4D474] bg-[#2d1a4a] p-6 shadow-[8px_8px_0_#160c2c]">
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
               <div className="flex items-center gap-3 flex-wrap">
-                <span className="font-mono text-sm font-black border-2 border-[#EEF083] px-3 py-1 text-[#EEF083]">
+                <span className="font-mono text-sm font-black border-2 border-[#E4D474] px-3 py-1 text-[#E4D474]">
                   [{guild.tag}]
                 </span>
                 <h1 className="text-3xl font-black uppercase sm:text-4xl">{guild.name}</h1>
               </div>
-              <p className="mt-2 font-mono text-sm italic text-[#d8d4a1]">"{guild.motto}"</p>
+              <p className="mt-2 font-mono text-sm italic text-[#ffffff]">"{guild.motto}"</p>
             </div>
             {canJoin && (
               <button
-                className="shrink-0 border-2 border-[#EEF083] bg-[#EEF083] px-6 py-3 font-mono text-xs font-black uppercase text-[#241F19] transition hover:bg-transparent hover:text-[#EEF083] disabled:opacity-40"
+                className="shrink-0 border-2 border-[#E4D474] bg-[#E4D474] px-6 py-3 font-mono text-xs font-black uppercase text-[#24153E] transition hover:bg-transparent hover:text-[#E4D474] disabled:opacity-40"
                 disabled={acting}
                 onClick={handleJoin}
                 type="button"
@@ -108,7 +108,7 @@ export default function GuildDetailPage() {
             )}
             {isMyGuild && !guild.id.startsWith("seed_") && (
               <button
-                className="shrink-0 border border-[#91897C]/40 px-4 py-3 font-mono text-xs uppercase text-[#91897C] transition hover:border-red-400 hover:text-red-400"
+                className="shrink-0 border border-[#a09ab8]/40 px-4 py-3 font-mono text-xs uppercase text-[#a09ab8] transition hover:border-red-400 hover:text-red-400"
                 onClick={handleLeave}
                 type="button"
               >
@@ -118,18 +118,18 @@ export default function GuildDetailPage() {
           </div>
 
           {/* Stats */}
-          <div className="mt-6 grid grid-cols-3 divide-x divide-[#91897C]/30 border border-[#91897C]/30">
+          <div className="mt-6 grid grid-cols-3 divide-x divide-[#a09ab8]/30 border border-[#a09ab8]/30">
             <div className="px-4 py-3 text-center">
-              <p className="font-mono text-[9px] uppercase text-[#91897C]">Members</p>
+              <p className="font-mono text-[9px] uppercase text-[#a09ab8]">Members</p>
               <p className="mt-1 font-mono text-2xl font-black">{guild.members.length}</p>
             </div>
             <div className="px-4 py-3 text-center">
-              <p className="font-mono text-[9px] uppercase text-[#91897C]">Total AURA</p>
-              <p className="mt-1 font-mono text-2xl font-black text-[#EEF083]">{totalAura.toLocaleString()}</p>
+              <p className="font-mono text-[9px] uppercase text-[#a09ab8]">Total AURA</p>
+              <p className="mt-1 font-mono text-2xl font-black text-[#E4D474]">{totalAura.toLocaleString()}</p>
             </div>
             <div className="px-4 py-3 text-center">
-              <p className="font-mono text-[9px] uppercase text-[#91897C]">Avg AURA</p>
-              <p className="mt-1 font-mono text-2xl font-black text-[#d8d4a1]">
+              <p className="font-mono text-[9px] uppercase text-[#a09ab8]">Avg AURA</p>
+              <p className="mt-1 font-mono text-2xl font-black text-[#ffffff]">
                 {guild.members.length > 0 ? Math.round(totalAura / guild.members.length).toLocaleString() : "0"}
               </p>
             </div>
@@ -138,25 +138,25 @@ export default function GuildDetailPage() {
 
         {/* Member list */}
         <section>
-          <p className="mb-3 font-mono text-xs font-black uppercase tracking-[0.18em] text-[#91897C]">
+          <p className="mb-3 font-mono text-xs font-black uppercase tracking-[0.18em] text-[#a09ab8]">
             Roster — {guild.members.length} members
           </p>
-          <div className="border border-[#91897C]/30 bg-[#2f2922] divide-y divide-[#91897C]/15">
+          <div className="border border-[#a09ab8]/30 bg-[#2d1a4a] divide-y divide-[#a09ab8]/15">
             {guild.members.map((member, i) => {
               const isYou     = member === addr;
               const isFounder = member === guild.createdBy;
               return (
-                <div key={member} className={`flex items-center gap-3 px-4 py-3 ${isYou ? "bg-[#EEF083]/5" : ""}`}>
-                  <span className="font-mono text-[10px] text-[#91897C]/50 w-5">{i + 1}</span>
+                <div key={member} className={`flex items-center gap-3 px-4 py-3 ${isYou ? "bg-[#E4D474]/5" : ""}`}>
+                  <span className="font-mono text-[10px] text-[#a09ab8]/50 w-5">{i + 1}</span>
                   <div className="flex h-7 w-7 shrink-0 items-center justify-center border font-mono text-[9px] font-black"
-                    style={{ borderColor: isYou ? "#EEF083" : "#91897C", color: isYou ? "#EEF083" : "#91897C" }}>
+                    style={{ borderColor: isYou ? "#E4D474" : "#a09ab8", color: isYou ? "#E4D474" : "#a09ab8" }}>
                     {truncAddr(member).slice(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <p className="font-mono text-xs font-black" style={{ color: isYou ? "#EEF083" : "#d8d4a1" }}>
+                    <p className="font-mono text-xs font-black" style={{ color: isYou ? "#E4D474" : "#ffffff" }}>
                       {isYou ? "You" : truncAddr(member)}
                     </p>
-                    {isFounder && <p className="font-mono text-[8px] uppercase text-[#91897C]">Founder</p>}
+                    {isFounder && <p className="font-mono text-[8px] uppercase text-[#a09ab8]">Founder</p>}
                   </div>
                 </div>
               );
@@ -167,13 +167,13 @@ export default function GuildDetailPage() {
         {/* Invite link */}
         {isMyGuild && !guild.id.startsWith("seed_") && (
           <section>
-            <p className="mb-2 font-mono text-xs font-black uppercase tracking-[0.18em] text-[#91897C]">Invite Link</p>
-            <div className="flex items-center gap-2 border border-[#91897C]/40 bg-[#1a1710] px-4 py-3">
-              <span className="flex-1 font-mono text-xs text-[#d8d4a1] truncate">
+            <p className="mb-2 font-mono text-xs font-black uppercase tracking-[0.18em] text-[#a09ab8]">Invite Link</p>
+            <div className="flex items-center gap-2 border border-[#a09ab8]/40 bg-[#160c2c] px-4 py-3">
+              <span className="flex-1 font-mono text-xs text-[#ffffff] truncate">
                 {typeof window !== "undefined" ? `${window.location.origin}/guilds/${guild.id}` : `/guilds/${guild.id}`}
               </span>
               <button
-                className="shrink-0 border border-[#91897C] px-3 py-1.5 font-mono text-[9px] uppercase text-[#91897C] transition hover:border-[#EEF083] hover:text-[#EEF083]"
+                className="shrink-0 border border-[#a09ab8] px-3 py-1.5 font-mono text-[9px] uppercase text-[#a09ab8] transition hover:border-[#E4D474] hover:text-[#E4D474]"
                 onClick={() => {
                   if (typeof window !== "undefined")
                     navigator.clipboard.writeText(`${window.location.origin}/guilds/${guild.id}`).catch(() => {});
