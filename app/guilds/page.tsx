@@ -111,11 +111,15 @@ export default function GuildsPage() {
                 <span className="font-mono text-[10px] uppercase tracking-widest text-[#a09ab8]">Live</span>
               </div>
             )}
-            {addr && (
-              <div className="border border-[#a09ab8]/30 px-4 py-2 text-right">
-                <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#a09ab8]">Your AURA</p>
-                <p className="mt-0.5 font-mono text-xl font-black leading-none text-[#E4D474]">{auraBalance}</p>
-              </div>
+            {!myGuild && (
+              <button
+                className="border-2 border-[#E4D474] bg-[#E4D474] px-5 py-2.5 font-mono text-xs font-black uppercase tracking-widest text-[#24153E] shadow-[3px_3px_0_#a09ab8] transition hover:bg-transparent hover:text-[#E4D474] disabled:opacity-40 disabled:cursor-not-allowed touch-manipulation"
+                onClick={() => setCreating(true)}
+                type="button"
+                disabled={!addr || !canAffordCreate}
+              >
+                {!addr ? "Connect Wallet" : !canAffordCreate ? `Need ${GUILD_CREATE_COST} AURA` : "Create Gang"}
+              </button>
             )}
           </div>
         </div>
@@ -163,52 +167,11 @@ export default function GuildsPage() {
           </section>
         )}
 
-        {/* Create gang */}
-        {!myGuild && (
+        {/* Create gang form */}
+        {!myGuild && creating && (
           <section>
             <p className="mb-3 font-mono text-[10px] font-black uppercase tracking-[0.2em] text-[#a09ab8]">Start a Gang</p>
-
-            {!creating ? (
-              <div className="space-y-3">
-                {/* Cost breakdown */}
-                <div className="grid grid-cols-2 divide-x divide-[#a09ab8]/20 border border-[#a09ab8]/30 bg-[#160c2c]">
-                  <div className="px-5 py-4">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#a09ab8]">Cost to found</p>
-                    <p className="mt-1 font-mono text-2xl font-black text-[#a09ab8]">−{GUILD_CREATE_COST}</p>
-                    <p className="font-mono text-[10px] text-[#a09ab8]">AURA</p>
-                  </div>
-                  {addr ? (
-                    <div className="px-5 py-4">
-                      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#a09ab8]">Balance after</p>
-                      <p className={`mt-1 font-mono text-2xl font-black ${canAffordCreate ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>
-                        {canAffordCreate ? auraAfter : auraBalance}
-                      </p>
-                      <p className="font-mono text-[10px] text-[#a09ab8]">
-                        {canAffordCreate ? "AURA remaining" : `need ${GUILD_CREATE_COST - auraBalance} more`}
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="flex items-center px-5 py-4">
-                      <p className="font-mono text-xs text-[#a09ab8]">Connect wallet to see your balance</p>
-                    </div>
-                  )}
-                </div>
-
-                <button
-                  className="w-full border-2 border-[#E4D474] bg-[#E4D474] py-4 font-mono text-sm font-black uppercase tracking-widest text-[#24153E] shadow-[4px_4px_0_#a09ab8] transition hover:bg-transparent hover:text-[#E4D474] disabled:opacity-40 disabled:cursor-not-allowed touch-manipulation"
-                  onClick={() => setCreating(true)}
-                  type="button"
-                  disabled={!addr || !canAffordCreate}
-                >
-                  {!addr
-                    ? "Connect Wallet to Create"
-                    : !canAffordCreate
-                    ? `Need ${GUILD_CREATE_COST} AURA to Found`
-                    : "Create Gang — Spend " + GUILD_CREATE_COST + " AURA"}
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleCreate} className="border border-[#a09ab8]/60 bg-[#160c2c]">
+            <form onSubmit={handleCreate} className="border border-[#a09ab8]/60 bg-[#160c2c]">
                 <div className="border-b border-[#a09ab8]/30 px-5 py-4">
                   <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[#E4D474]">New Gang</p>
                   <p className="mt-0.5 font-mono text-[10px] text-[#a09ab8]">
@@ -284,7 +247,6 @@ export default function GuildsPage() {
                   </div>
                 </div>
               </form>
-            )}
           </section>
         )}
 
