@@ -94,7 +94,7 @@ function EndContent() {
   return (
     <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
       <Nav />
-      <main className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-5xl px-4 py-10 sm:px-8">
 
         {/* ── WINNER BANNER ── */}
         <section className={`mb-8 border-2 p-8 text-center shadow-[8px_8px_0_#91897C] ${won ? "border-[#EEF083] bg-[#EEF083]/5" : "border-[#91897C]"}`}>

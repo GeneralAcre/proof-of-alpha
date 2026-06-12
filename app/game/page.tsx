@@ -9,6 +9,7 @@ import { generateGirlSet, BOT_NAMES, TICKER_TEMPLATES, type Girl } from "../lib/
 import { sfx, initSounds } from "../lib/sounds";
 import { ARCHETYPES, type StatBlock } from "../lib/archetypes";
 import { getCharacterLevel } from "../lib/upgrades";
+import { syncPlayerStats } from "../lib/leaderboard";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -312,6 +313,12 @@ function GameContent() {
       setIsLoading(false);
     }
     setResults((prev) => [...prev, { girlId: currentGirl, totalScore, closer, auraEarned: aura, verdict: "", reaction: "neutral" }]);
+
+    // Sync to Supabase leaderboard (fire-and-forget)
+    const walletAddr = account?.address ? String(account.address) : null;
+    if (walletAddr && closer !== "leave") {
+      void syncPlayerStats(walletAddr, sessionAura + aura, win, win ? streak + 1 : 0);
+    }
   }
 
   function nextRound() {
@@ -446,46 +453,48 @@ function GameContent() {
                       <div>
                         {/* Name + round */}
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#91897C]">Round {i + 1}</span>
+                          <span className="font-mono text-sm uppercase tracking-[0.2em] text-[#91897C]">Round {i + 1}</span>
                         </div>
-                        <p className="text-2xl font-black uppercase text-[#EEF083] leading-none">{g.name}</p>
+                        <p className="text-3xl font-black uppercase text-[#EEF083] leading-none">{g.name}</p>
 
                         {/* Tagline */}
-                        <p className="mt-2 font-mono text-[11px] italic text-[#91897C] leading-5">
+                        <p className="mt-2 font-mono text-sm italic text-[#91897C] leading-5">
                           "{g.tagline}"
                         </p>
                       </div>
 
                       {/* Economy row */}
-                      <div className="mt-4 flex gap-4 border-t border-[#91897C]/20 pt-3">
+                      <div className="mt-4 flex gap-5 border-t border-[#91897C]/20 pt-3">
                         <div>
-                          <p className="font-mono text-[8px] uppercase tracking-wide text-[#91897C]">Entry</p>
-                          <p className="font-mono text-sm font-black text-[#ff6b6b]">−{g.approachCost}</p>
+                          <p className="font-mono text-xs uppercase tracking-wide text-[#91897C]">Entry</p>
+                          <p className="font-mono text-base font-black text-[#ff6b6b]">−{g.approachCost}</p>
                         </div>
                         <div>
-                          <p className="font-mono text-[8px] uppercase tracking-wide text-[#91897C]">Flirt</p>
-                          <p className="font-mono text-sm font-black text-[#EEF083]">
-                            +{flirtPreview}{streakMult > 1 && <span className="ml-0.5 text-[9px] text-[#91897C]">×{streakMult}</span>}
+                          <p className="font-mono text-xs uppercase tracking-wide text-[#91897C]">Flirt</p>
+                          <p className="font-mono text-base font-black text-[#EEF083]">
+                            +{flirtPreview}{streakMult > 1 && <span className="ml-0.5 text-xs text-[#91897C]">×{streakMult}</span>}
                           </p>
                         </div>
                         <div>
-                          <p className="font-mono text-[8px] uppercase tracking-wide text-[#91897C]">Flex</p>
-                          <p className="font-mono text-sm font-black text-[#d8d4a1]">
-                            +{flexPreview}{streakMult > 1 && <span className="ml-0.5 text-[9px] text-[#91897C]">×{streakMult}</span>}
+                          <p className="font-mono text-xs uppercase tracking-wide text-[#91897C]">Flex</p>
+                          <p className="font-mono text-base font-black text-[#d8d4a1]">
+                            +{flexPreview}{streakMult > 1 && <span className="ml-0.5 text-xs text-[#91897C]">×{streakMult}</span>}
                           </p>
                         </div>
                       </div>
 
                       {/* Hints */}
-                      <div className="mt-2 flex flex-wrap gap-x-3 gap-y-0.5">
+                      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
                         {g.wins.slice(0, 2).map((w) => (
-                          <span key={w} className="font-mono text-[8px] text-[#91897C]">
-                            <span className="text-[#EEF083]/50">+ </span>{w}
+                          <span key={w} className="inline-flex items-center gap-1.5 font-mono text-sm text-[#91897C]">
+                            <span className="inline-block h-3 w-3 shrink-0 bg-[#EEF083]" />
+                            {w}
                           </span>
                         ))}
                         {g.fails.slice(0, 1).map((f) => (
-                          <span key={f} className="font-mono text-[8px] text-[#91897C]">
-                            <span className="text-[#ff6b6b]/60">✗ </span>{f}
+                          <span key={f} className="inline-flex items-center gap-1.5 font-mono text-sm text-[#91897C]">
+                            <span className="inline-block h-3 w-3 shrink-0 bg-[#241F19] border border-[#91897C]/50" />
+                            {f}
                           </span>
                         ))}
                       </div>
@@ -701,6 +710,87 @@ function GameContent() {
     const isMiss    = !isLeave && auraEarned === 0;
     const isWin     = auraEarned > 0 && !isLeave;
 
+    // ── LOSS SCREEN ──────────────────────────────────────────────────────────
+    if (isMiss) {
+      return (
+        <div className="relative flex h-svh flex-col overflow-hidden bg-[#0a0906]">
+          {/* Loss background image */}
+          <Image
+            src="/loss-alpha.png"
+            alt="Loss"
+            fill
+            className="object-cover object-center"
+            sizes="100vw"
+            priority
+          />
+
+          {/* Dark overlay */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0906] via-[#0a0906]/70 to-[#0a0906]/20" />
+
+          {/* Content */}
+          <div className="relative z-10 flex h-full flex-col">
+            <Nav />
+
+            <div className="flex flex-1 flex-col items-center justify-end px-6 pb-12 text-center sm:justify-center sm:pb-0">
+
+              {/* Status label */}
+              <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-[#ff4444]">
+                Not Interested
+              </p>
+
+              {/* Big headline */}
+              <h1
+                className="mt-2 font-black uppercase leading-[0.82] tracking-tight text-white"
+                style={{ fontSize: "clamp(3rem, 12vw, 8rem)" }}
+              >
+                She
+                <br />
+                Left.
+              </h1>
+
+              {/* Her verdict */}
+              {isLoading ? (
+                <p className="mt-6 font-mono text-sm text-[#91897C] animate-pulse">Waiting…</p>
+              ) : (
+                <div className="mt-6 max-w-md border-l-2 border-[#ff4444]/60 pl-4 text-left">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#ff4444]/70">
+                    {girl.name} said:
+                  </p>
+                  <p className="mt-1 text-base leading-7 font-semibold text-[#d8d4a1]">
+                    &ldquo;{verdict || "..."}&rdquo;
+                  </p>
+                </div>
+              )}
+
+              {/* Stats row */}
+              {!isLoading && (
+                <div className="mt-6 flex gap-5 font-mono text-xs text-[#91897C]">
+                  <span>Odds: <span className="text-white">{lastWinChance}%</span></span>
+                  <span>Score: <span className="text-white">{totalScore > 0 ? `+${totalScore}` : totalScore}</span></span>
+                  <span>AURA: <span className="text-[#ff4444]">+0</span></span>
+                </div>
+              )}
+
+              {/* Next button */}
+              {!isLoading && (
+                <button
+                  className="mt-8 w-full max-w-sm border-2 border-white bg-white py-4 font-black uppercase tracking-widest text-[#0a0906] shadow-[6px_6px_0_rgba(0,0,0,0.5)] transition hover:bg-transparent hover:text-white touch-manipulation"
+                  onClick={nextRound}
+                  type="button"
+                >
+                  {girlQueue.filter((g) => g !== currentGirl).length > 0
+                    ? "Next Round"
+                    : `Cash Out — ${sessionAura} AURA`}
+                </button>
+              )}
+
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── WIN / LEAVE SCREEN ───────────────────────────────────────────────────
     return (
       <div className="flex h-svh flex-col bg-[#241F19] text-[#EEF083]">
         <Nav />
@@ -722,9 +812,7 @@ function GameContent() {
 
           {/* Verdict */}
           <div className={`w-full max-w-lg border-2 p-6 shadow-[8px_8px_0_#1a1710] mb-6 ${
-            isMiss  ? "border-[#ff4444] bg-[#ff4444]/5" :
-            isWin   ? "border-[#EEF083] bg-[#EEF083]/5" :
-                      "border-[#91897C]"
+            isWin ? "border-[#EEF083] bg-[#EEF083]/5" : "border-[#91897C]"
           }`}>
             {isLoading ? (
               <p className="font-mono text-sm text-[#91897C] animate-pulse">Waiting for her reaction…</p>
@@ -741,7 +829,6 @@ function GameContent() {
           {/* AURA result */}
           {!isLoading && (
             <div className="mb-6">
-              {isMiss  && <p className="mb-2 font-mono text-xs uppercase tracking-widest text-[#ff4444]">Missed — {lastWinChance}% chance</p>}
               {isLeave && <p className="mb-2 font-mono text-xs uppercase tracking-widest text-[#91897C]">Safe exit</p>}
               {isWin   && <p className="mb-2 font-mono text-xs uppercase tracking-widest text-[#00FF9D]">Win — {lastWinChance}% chance</p>}
               <p className={`text-6xl font-black tabular-nums ${auraEarned > 0 ? "text-[#EEF083]" : "text-[#91897C]"}`}>

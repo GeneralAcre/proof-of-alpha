@@ -100,7 +100,7 @@ export default function HowToPlayPage() {
   return (
     <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
       <Nav />
-      <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8 space-y-12">
+      <main className="mx-auto max-w-5xl px-4 py-10 sm:px-8 space-y-12">
 
         {/* HEADER */}
         <div>

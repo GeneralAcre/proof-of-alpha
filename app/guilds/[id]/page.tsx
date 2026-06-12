@@ -52,7 +52,7 @@ export default function GuildDetailPage() {
     return (
       <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
         <Nav />
-        <main className="mx-auto max-w-2xl px-4 py-16 text-center">
+        <main className="mx-auto max-w-5xl px-4 py-16 text-center">
           <p className="font-mono text-xs uppercase animate-pulse text-[#91897C]">Loading…</p>
         </main>
       </div>
@@ -63,7 +63,7 @@ export default function GuildDetailPage() {
     return (
       <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
         <Nav />
-        <main className="mx-auto max-w-2xl px-4 py-16 text-center">
+        <main className="mx-auto max-w-5xl px-4 py-16 text-center">
           <p className="font-mono text-xs uppercase text-[#91897C]">Gang not found.</p>
           <Link href="/guilds" className="mt-4 inline-block font-mono text-xs text-[#EEF083] underline">Back to Gangs</Link>
         </main>
@@ -78,7 +78,7 @@ export default function GuildDetailPage() {
   return (
     <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
       <Nav />
-      <main className="mx-auto max-w-2xl px-4 py-10 sm:px-6 space-y-8">
+      <main className="mx-auto max-w-5xl px-4 py-10 sm:px-8 space-y-8">
 
         <Link href="/guilds" className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#91897C] transition hover:text-[#EEF083]">
           All Gangs

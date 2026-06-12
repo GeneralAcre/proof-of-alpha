@@ -119,7 +119,7 @@ function CharacterSelectContent() {
     return (
       <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
         <Nav />
-        <main className="mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
+        <main className="mx-auto max-w-5xl px-4 py-6 sm:px-8">
 
           {/* Back */}
           <button
@@ -251,7 +251,7 @@ function CharacterSelectContent() {
   return (
     <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
       <Nav />
-      <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-5xl px-4 py-8 sm:px-8">
 
         <p className="mb-1 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91897C]">
           Step 2 of 3

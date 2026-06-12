@@ -29,12 +29,12 @@ const UNLOCK_KEY = (addr: string, id: string) => `poa_area_${addr}_${id}`;
 const DIFF_LABEL: Record<string, string> = { easy: "WARM", medium: "COLD", hard: "ICY" };
 
 const CARD_CFG: Record<string, { colSpan: string; clip: string }> = {
-  common:   { colSpan: "col-span-2",               clip: "polygon(0% 0%, 100% 0%, 100% 74%, 91% 100%, 0% 100%)"                                 },
-  frost:    { colSpan: "col-span-1",               clip: "polygon(15% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 18%)"                                 },
-  darkhall: { colSpan: "col-span-1",               clip: "polygon(0% 0%, 84% 0%, 100% 18%, 100% 100%, 0% 100%)"                                 },
-  mine:     { colSpan: "col-span-1 sm:col-span-2", clip: "polygon(0% 0%, 100% 0%, 100% 100%, 15% 100%, 0% 80%)"                                 },
-  vault:    { colSpan: "col-span-1",               clip: "polygon(10% 0%, 90% 0%, 100% 12%, 100% 88%, 90% 100%, 10% 100%, 0% 88%, 0% 12%)"     },
-  chamber:  { colSpan: "col-span-2",               clip: "polygon(0% 15%, 11% 0%, 100% 0%, 100% 85%, 89% 100%, 0% 100%)"                       },
+  common:   { colSpan: "col-span-2",               clip: "polygon(0% 0%, 88% 0%, 100% 14%, 100% 100%, 0% 100%)"           },
+  frost:    { colSpan: "col-span-1",               clip: "polygon(16% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 18%)"           },
+  darkhall: { colSpan: "col-span-1",               clip: "polygon(0% 0%, 82% 0%, 100% 20%, 100% 100%, 0% 100%)"           },
+  mine:     { colSpan: "col-span-1 sm:col-span-2", clip: "polygon(0% 18%, 14% 0%, 100% 0%, 100% 100%, 0% 100%)"           },
+  vault:    { colSpan: "col-span-1",               clip: "polygon(12% 0%, 88% 0%, 100% 14%, 100% 100%, 0% 100%, 0% 14%)"  },
+  chamber:  { colSpan: "col-span-2",               clip: "polygon(0% 0%, 86% 0%, 100% 18%, 100% 100%, 12% 100%, 0% 86%)"  },
 };
 
 function AreaCard({ area, aura, addr, onEnter, onUnlock }: {
@@ -53,8 +53,8 @@ function AreaCard({ area, aura, addr, onEnter, onUnlock }: {
 
   return (
     <div
-      className={`relative flex flex-col justify-between p-5 sm:p-6 ${cfg.colSpan}`}
-      style={{ backgroundColor: "#241F19", clipPath: cfg.clip, minHeight: 210 }}
+      className={`relative flex flex-col justify-between p-4 sm:p-8 ${cfg.colSpan}`}
+      style={{ backgroundColor: "#241F19", clipPath: cfg.clip, minHeight: "clamp(180px, 35vw, 280px)" }}
     >
       {/* Grid overlay */}
       <svg
@@ -76,13 +76,13 @@ function AreaCard({ area, aura, addr, onEnter, onUnlock }: {
       {/* Header */}
       <div className="relative z-10 flex items-center justify-between gap-2">
         <span
-          className="border px-1.5 py-0.5 font-mono text-[7px] font-black uppercase tracking-[0.22em]"
+          className="border px-2 py-0.5 font-mono text-[10px] font-black uppercase tracking-[0.22em]"
           style={{ borderColor: accent + "55", color: accent }}
         >
           {DIFF_LABEL[area.difficulty]}
         </span>
         {area.locked && !isUnlocked && (
-          <span className="font-mono text-[8px] uppercase tracking-wide text-[#91897C]">
+          <span className="font-mono text-xs uppercase tracking-wide text-[#91897C]">
             🔒 {area.unlockCost} AURA
           </span>
         )}
@@ -94,12 +94,12 @@ function AreaCard({ area, aura, addr, onEnter, onUnlock }: {
           className="font-black uppercase leading-[0.88] tracking-tight"
           style={{
             color: accent,
-            fontSize: "clamp(17px, 2.2vw + 6px, 27px)",
+            fontSize: "clamp(16px, 2.5vw + 6px, 36px)",
           }}
         >
           {isUnlocked ? area.name : "???"}
         </h3>
-        <p className="mt-2 font-mono text-[10px] italic leading-4 text-[#91897C]">
+        <p className="mt-2 font-mono text-[11px] sm:text-sm italic leading-4 sm:leading-5 text-[#91897C]">
           {area.subtitle}
         </p>
       </div>
@@ -108,7 +108,7 @@ function AreaCard({ area, aura, addr, onEnter, onUnlock }: {
       <div className="relative z-10 mt-6">
         {isUnlocked ? (
           <button
-            className="bg-[#EEF083] px-5 py-2.5 font-mono text-[10px] font-black uppercase tracking-widest text-[#241F19] transition hover:opacity-75 touch-manipulation"
+            className="bg-[#EEF083] px-4 py-2 sm:px-6 sm:py-3 font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest text-[#241F19] transition hover:opacity-75 touch-manipulation"
             onClick={() => onEnter(area)}
             type="button"
           >
@@ -116,7 +116,7 @@ function AreaCard({ area, aura, addr, onEnter, onUnlock }: {
           </button>
         ) : (
           <button
-            className="border border-[#91897C]/50 px-5 py-2.5 font-mono text-[10px] font-black uppercase tracking-widest transition disabled:opacity-25 touch-manipulation"
+            className="border border-[#91897C]/50 px-4 py-2 sm:px-6 sm:py-3 font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest transition disabled:opacity-25 touch-manipulation"
             style={{ color: canAfford ? "#EEF083" : "#91897C" }}
             disabled={!addr || !canAfford}
             onClick={() => onUnlock(area)}
@@ -164,25 +164,25 @@ export default function MapPage() {
     <div className="min-h-screen bg-[#0e0c09] text-[#EEF083]">
       <Nav />
 
-      <main className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+      <main className="px-4 py-10 sm:px-8">
 
         {/* Header */}
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#91897C]">Proof of Alpha</p>
-            <h1 className="mt-1 text-5xl font-black uppercase">Select Area</h1>
-            <p className="mt-2 font-mono text-xs text-[#91897C]">6 areas. 4 open. 2 locked.</p>
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#91897C]">Proof of Alpha</p>
+            <h1 className="mt-1 text-5xl font-black uppercase sm:text-6xl">Select Area</h1>
+            <p className="mt-2 font-mono text-sm text-[#91897C]">6 areas. 4 open. 2 locked.</p>
           </div>
           {addr && (
             <div className="shrink-0 border border-[#91897C]/30 px-4 py-2.5 text-right">
-              <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#91897C]">Your AURA</p>
+              <p className="font-mono text-xs uppercase tracking-[0.16em] text-[#91897C]">Your AURA</p>
               <p className="mt-0.5 font-mono text-2xl font-black leading-none text-[#EEF083]">{aura}</p>
             </div>
           )}
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-2 sm:gap-4 sm:grid-cols-3">
           {AREAS.map((area) => (
             <AreaCard
               key={area.id}
@@ -196,7 +196,7 @@ export default function MapPage() {
         </div>
 
         {/* Legend */}
-        <div className="mt-8 flex flex-wrap gap-5 font-mono text-[9px] uppercase tracking-[0.14em] text-[#91897C]">
+        <div className="mt-8 flex flex-wrap gap-5 font-mono text-xs uppercase tracking-[0.14em] text-[#91897C]">
           <span><span className="text-[#EEF083]">■</span> Warm — easy approach</span>
           <span><span className="text-[#EEF083]">■</span> Cold — selective</span>
           <span><span className="text-[#91897C]">■</span> Icy — elite only</span>

@@ -43,6 +43,12 @@ export function Nav() {
             How to Play
           </Link>
           <Link
+            href="/tips"
+            className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#91897C] transition hover:text-[#EEF083]"
+          >
+            Tips
+          </Link>
+          <Link
             href="/leaderboard"
             className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#91897C] transition hover:text-[#EEF083]"
           >
@@ -154,6 +160,13 @@ export function Nav() {
               onClick={() => setMenuOpen(false)}
             >
               How to Play
+            </Link>
+            <Link
+              href="/tips"
+              className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#91897C] transition hover:text-[#EEF083]"
+              onClick={() => setMenuOpen(false)}
+            >
+              Tips
             </Link>
             <Link
               href="/leaderboard"

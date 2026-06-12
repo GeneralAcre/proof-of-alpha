@@ -31,7 +31,7 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen bg-[#241F19] text-[#EEF083]">
       <Nav />
-      <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8 space-y-6">
+      <main className="mx-auto max-w-5xl px-4 py-8 sm:px-8 space-y-6">
 
         <div>
           <p className="mb-2 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91897C]">
@@ -216,7 +216,7 @@ export default function SettingsPage() {
             className="font-mono text-xs uppercase text-[#91897C] transition hover:text-[#EEF083]"
             href="/"
           >
-            ← Back
+            Back
           </Link>
         </div>
 

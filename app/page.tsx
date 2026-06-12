@@ -95,6 +95,7 @@ function Storyboard({ onDone }: { onDone: () => void }) {
             src="/charecter/alpha-charecter.png"
             alt="Alpha"
             fill
+            sizes="(max-width: 640px) 100vw, 42vw"
             className="object-cover object-top"
             priority
           />

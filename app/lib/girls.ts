@@ -382,9 +382,7 @@ function pickRandom<T>(arr: readonly T[]): T {
 export function generateGirlSet(filterDifficulty?: Difficulty): Girl[] {
   const usedNames = new Set<string>();
 
-  const pick = (difficulty: Difficulty): Girl => {
-    const pool = GIRL_ARCHETYPES.filter((a) => a.difficulty === difficulty);
-    const arch = pickRandom(pool);
+  const toGirl = (arch: GirlArchetype): Girl => {
     let name: string;
     do { name = pickRandom(GIRL_NAMES); } while (usedNames.has(name));
     usedNames.add(name);
@@ -392,14 +390,14 @@ export function generateGirlSet(filterDifficulty?: Difficulty): Girl[] {
       id: arch.id,
       name,
       initials: name.slice(0, 3).toUpperCase(),
-      accentColor: pickRandom(ACCENT_COLORS[difficulty]),
+      accentColor: pickRandom(ACCENT_COLORS[arch.difficulty]),
       image: arch.image,
       title: arch.title,
       tagline: arch.tagline,
       personality: arch.personality,
       wins: arch.wins,
       fails: arch.fails,
-      difficulty,
+      difficulty: arch.difficulty,
       approachCost: arch.approachCost,
       winThreshold: arch.winThreshold,
       flirtWin: arch.flirtWin,
@@ -408,8 +406,15 @@ export function generateGirlSet(filterDifficulty?: Difficulty): Girl[] {
   };
 
   if (filterDifficulty) {
-    return [filterDifficulty, filterDifficulty, filterDifficulty].map(pick);
+    // Shuffle the pool and take 3 unique archetypes — no duplicate IDs
+    const pool = GIRL_ARCHETYPES.filter((a) => a.difficulty === filterDifficulty);
+    const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 3);
+    return shuffled.map(toGirl);
   }
+
+  // Default: one of each difficulty
+  const pick = (difficulty: Difficulty) =>
+    toGirl(pickRandom(GIRL_ARCHETYPES.filter((a) => a.difficulty === difficulty)));
   return (["easy", "medium", "hard"] as Difficulty[]).map(pick);
 }
 
