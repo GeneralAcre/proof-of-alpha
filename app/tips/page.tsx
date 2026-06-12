@@ -225,7 +225,7 @@ export default function TipsPage() {
 
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
-              href="/map"
+              href="/character-select"
               className="border-2 border-[#E4D474] bg-[#E4D474] px-7 py-3.5 text-sm font-black uppercase tracking-wide text-[#24153E] shadow-[4px_4px_0_rgba(0,0,0,0.3)] transition hover:bg-transparent hover:text-[#E4D474] touch-manipulation"
             >
               Play Now

@@ -221,7 +221,7 @@ export default function HowToPlayPage() {
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               className="border-2 border-[#E4D474] bg-[#E4D474] px-7 py-3.5 text-sm font-black uppercase tracking-wide text-[#24153E] shadow-[4px_4px_0_#a09ab8] transition hover:bg-transparent hover:text-[#E4D474]"
-              href="/map"
+              href="/character-select"
             >
               Play Now
             </Link>

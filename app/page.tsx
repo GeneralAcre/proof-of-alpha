@@ -279,7 +279,7 @@ export default function Home() {
                 <div className="flex flex-wrap gap-3">
                   <Link
                     className="border-2 border-[#E4D474] bg-[#E4D474] px-8 py-3.5 font-black uppercase tracking-[0.14em] text-[#24153E] shadow-[5px_5px_0_#a09ab8] transition hover:bg-transparent hover:text-[#E4D474] touch-manipulation"
-                    href="/map"
+                    href="/character-select"
                   >
                     Play Now
                   </Link>
