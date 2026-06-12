@@ -31,7 +31,7 @@ export function Nav() {
 
         {/* Logo */}
         <Link href="/">
-          <Image src="/logo.svg" alt="Proof of Alpha" width={28} height={28} />
+          <Image src="/logo.svg" alt="Proof of Alpha" width={40} height={40} />
         </Link>
 
         {/* Desktop centre links */}
@@ -47,6 +47,12 @@ export function Nav() {
             className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#91897C] transition hover:text-[#EEF083]"
           >
             Tips
+          </Link>
+          <Link
+            href="/saura"
+            className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#9945FF] transition hover:text-[#b47aff]"
+          >
+            Staking
           </Link>
           <Link
             href="/leaderboard"
@@ -167,6 +173,13 @@ export function Nav() {
               onClick={() => setMenuOpen(false)}
             >
               Tips
+            </Link>
+            <Link
+              href="/saura"
+              className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#9945FF] transition hover:text-[#b47aff]"
+              onClick={() => setMenuOpen(false)}
+            >
+              Staking
             </Link>
             <Link
               href="/leaderboard"

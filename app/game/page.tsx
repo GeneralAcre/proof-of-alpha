@@ -10,6 +10,7 @@ import { sfx, initSounds } from "../lib/sounds";
 import { ARCHETYPES, type StatBlock } from "../lib/archetypes";
 import { getCharacterLevel } from "../lib/upgrades";
 import { syncPlayerStats } from "../lib/leaderboard";
+import { hasBsol } from "../lib/solblaze";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -188,6 +189,11 @@ function GameContent() {
   const params      = useSearchParams();
   const { truncatedAddress, account } = useWallet();
 
+  // Wallet guard — redirect to map if not connected
+  useEffect(() => {
+    if (!account) router.replace("/map");
+  }, [account, router]);
+
   const archetypeId = params.get("archetype") ?? "alpha";
   const diffParam = params.get("difficulty") as "easy" | "medium" | "hard" | null;
 
@@ -230,6 +236,7 @@ function GameContent() {
 
   useEffect(() => { initSounds(); }, []);
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
+
 
   function pushTicker(text: string) {
     setTicker((prev) => [{ id: tickerCount, text }, ...prev.slice(0, 15)]);
@@ -439,7 +446,7 @@ function GameContent() {
                         className="object-cover object-top grayscale transition duration-300 hover:grayscale-0"
                         sizes="(max-width: 640px) 112px, 144px"
                       />
-                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#2f2922]/70 to-transparent" />
+                      <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#2f2922]/70 to-transparent" />
                       {/* Difficulty badge over portrait */}
                       <div className="absolute bottom-2 left-2">
                         <span className="font-mono text-[7px] font-black uppercase tracking-[0.2em] border border-[#EEF083]/40 bg-[#241F19]/80 px-1.5 py-0.5 text-[#EEF083]/70">
@@ -725,7 +732,7 @@ function GameContent() {
           />
 
           {/* Dark overlay */}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0906] via-[#0a0906]/70 to-[#0a0906]/20" />
+          <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#0a0906] via-[#0a0906]/70 to-[#0a0906]/20" />
 
           {/* Content */}
           <div className="relative z-10 flex h-full flex-col">

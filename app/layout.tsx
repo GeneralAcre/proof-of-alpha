@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Bebas_Neue, Geist_Mono } from "next/font/google";
 import { SolanaMobileWalletProvider } from "./components/SolanaMobileWalletProvider";
 import { WalletProvider } from "./components/WalletProvider";
+import { WalletGate } from "./components/WalletGate";
 import "./globals.css";
 
 const bebasNeue = Bebas_Neue({
@@ -32,7 +33,9 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-[#241F19]">
         <SolanaMobileWalletProvider />
-        <WalletProvider>{children}</WalletProvider>
+        <WalletProvider>
+          <WalletGate>{children}</WalletGate>
+        </WalletProvider>
       </body>
     </html>
   );

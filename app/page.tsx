@@ -5,6 +5,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { Nav } from "./components/Nav";
 
+// ─── Partner logos ────────────────────────────────────────────────────────────
+
+const PARTNERS = [
+  { name: "islandDAO", src: "/project/islanddao-wordmark-light.png" },
+  { name: "Phantom",   src: "/project/Phantom-Logo-White.png" },
+  { name: "SolBlaze",  src: "/project/solblaze_grayscale_transparent.png" },
+  { name: "Solflare",  src: "/project/solflare-logo.png" },
+];
+
 // ─── Storyboard panels ───────────────────────────────────────────────────────
 
 const PANELS = [
@@ -218,40 +227,114 @@ export default function Home() {
 
         <div className="relative z-10">
           <Nav />
-          <section className="flex min-h-[calc(100vh-64px)] items-center">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <p className="mb-6 inline-block bg-[#EEF083] px-3 py-1.5 font-mono text-xs font-black uppercase tracking-[0.18em] text-[#241F19]">
-                AURA-powered · Solana devnet
-              </p>
-              <h1 className="glitch mb-8 text-[clamp(3.5rem,12vw,10rem)] font-black uppercase leading-[0.82] tracking-tight">
-                Proof
-                <br />
-                of Alpha.
-              </h1>
-              <p className="mb-4 max-w-2xl text-lg font-semibold leading-8 text-[#d8d4a1] sm:text-xl">
-                Pick your archetype. Spend AURA to approach. Charm her in 4 messages
-                or get shut down on-chain.
-              </p>
-              <p className="mb-10 max-w-lg font-mono text-sm leading-6 text-[#91897C]">
-                Every opener, every flex, every number close — recorded on Solana.
-                Buy AURA in the store. Earn it back by winning.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <Link
-                  className="border-2 border-[#EEF083] bg-[#EEF083] px-8 py-4 text-lg font-black uppercase tracking-[0.14em] text-[#241F19] shadow-[6px_6px_0_#91897C] transition hover:bg-transparent hover:text-[#EEF083] touch-manipulation"
-                  href="/map"
+
+          {/* ── Partner marquee ── */}
+          <section className="overflow-hidden border-b border-[#91897C]/25 bg-[#161310]">
+            <div className="flex items-center">
+              <div className="shrink-0 border-r border-[#91897C]/25 px-5 py-4">
+                <p className="font-mono text-[9px] uppercase tracking-[0.28em] text-[#91897C]">Built with</p>
+              </div>
+              <div className="overflow-hidden flex-1">
+                <div
+                  className="flex items-center whitespace-nowrap py-4"
+                  style={{ animation: "ticker 10s linear infinite" }}
                 >
-                  Play Now
-                </Link>
-                <Link
-                  className="border-2 border-[#91897C] px-8 py-4 text-lg font-black uppercase tracking-[0.14em] text-[#EEF083] shadow-[6px_6px_0_#91897C] transition hover:border-[#EEF083] touch-manipulation"
-                  href="/store"
-                >
-                  Buy AURA
-                </Link>
+                  {Array.from({ length: 8 }, () => PARTNERS).flat().map((p, i) => (
+                    <span key={i} className="inline-flex shrink-0 items-center px-12">
+                      <Image
+                        src={p.src}
+                        alt={p.name}
+                        height={0}
+                        width={0}
+                        sizes="200px"
+                        className="h-8 w-auto object-contain brightness-200 opacity-90 transition-opacity hover:opacity-100"
+                      />
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           </section>
+
+          {/* ── Hero ── */}
+          <section className="mx-auto max-w-6xl px-6 py-16 sm:py-24 lg:px-12">
+            <div className="flex flex-col gap-12 lg:flex-row lg:items-center lg:gap-16">
+
+              {/* Left — text */}
+              <div className="flex-1">
+                <p className="mb-5 inline-block bg-[#EEF083] px-3 py-1.5 font-mono text-xs font-black uppercase tracking-[0.18em] text-[#241F19]">
+                  AURA-powered · Solana devnet
+                </p>
+                <h1 className="glitch mb-6 font-black uppercase leading-[0.85] tracking-tight text-[clamp(3rem,9vw,7rem)]">
+                  Proof
+                  <br />
+                  of Alpha.
+                </h1>
+                <p className="mb-3 max-w-lg text-base leading-8 text-[#d8d4a1] sm:text-lg">
+                  Pick your archetype. Spend AURA to approach. Charm her in 4 messages or get shut down on-chain.
+                </p>
+                <p className="mb-8 max-w-md font-mono text-sm leading-6 text-[#91897C]">
+                  Every opener, every flex, every close — recorded on Solana. Earn AURA back by winning.
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <Link
+                    className="border-2 border-[#EEF083] bg-[#EEF083] px-8 py-3.5 font-black uppercase tracking-[0.14em] text-[#241F19] shadow-[5px_5px_0_#91897C] transition hover:bg-transparent hover:text-[#EEF083] touch-manipulation"
+                    href="/map"
+                  >
+                    Play Now
+                  </Link>
+                  <Link
+                    className="border-2 border-[#91897C] px-8 py-3.5 font-black uppercase tracking-[0.14em] text-[#EEF083] shadow-[5px_5px_0_#91897C] transition hover:border-[#EEF083] touch-manipulation"
+                    href="/store"
+                  >
+                    Buy AURA
+                  </Link>
+                </div>
+              </div>
+
+              {/* Right — character */}
+              <div className="relative mx-auto w-64 shrink-0 sm:w-80 lg:w-96">
+                <div className="relative overflow-hidden border border-[#91897C]/30" style={{ aspectRatio: "3/4" }}>
+                  <Image
+                    src="/charecter/alpha-charecter.png"
+                    alt="Alpha"
+                    fill
+                    className="object-cover object-top"
+                    sizes="(max-width: 640px) 256px, (max-width: 1024px) 320px, 384px"
+                    priority
+                  />
+                  <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#241F19]/60 to-transparent" />
+                  <div className="absolute bottom-4 left-4 border border-[#EEF083]/30 bg-[#241F19]/70 px-3 py-1.5 backdrop-blur-sm">
+                    <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#91897C]">Your guide</p>
+                    <p className="font-mono text-xs font-black text-[#EEF083]">Alpha</p>
+                  </div>
+                </div>
+                {/* Decorative corner */}
+                <div className="absolute -right-2 -top-2 h-8 w-8 border-r-2 border-t-2 border-[#EEF083]/40" />
+                <div className="absolute -bottom-2 -left-2 h-8 w-8 border-b-2 border-l-2 border-[#EEF083]/40" />
+              </div>
+            </div>
+          </section>
+
+          {/* ── Feature row ── */}
+          <section className="border-t border-[#91897C]/20">
+            <div className="mx-auto max-w-6xl px-6 py-12 lg:px-12">
+              <div className="grid grid-cols-1 gap-px bg-[#91897C]/15 sm:grid-cols-3">
+                {[
+                  { n: "15", label: "Girl Archetypes", sub: "5 per difficulty tier" },
+                  { n: "4",  label: "Messages",        sub: "Then pick your closer" },
+                  { n: "3×", label: "Max Streak Boost", sub: "Win streaks multiply AURA" },
+                ].map((f) => (
+                  <div key={f.n} className="bg-[#241F19] px-8 py-8">
+                    <p className="font-black text-[clamp(2.5rem,5vw,4rem)] leading-none text-[#EEF083]">{f.n}</p>
+                    <p className="mt-1 font-black uppercase text-sm text-[#EEF083]">{f.label}</p>
+                    <p className="mt-1 font-mono text-xs text-[#91897C]">{f.sub}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
         </div>
       </div>
     </>
