@@ -34,7 +34,7 @@ export function Footer() {
     <footer className="border-t border-[#a09ab8]/20 bg-[#160c2c]">
 
       {/* ── Top grid ── */}
-      <div className="mx-auto max-w-7xl grid grid-cols-1 gap-10 px-6 py-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+      <div className="mx-auto max-w-7xl grid grid-cols-1 gap-10 px-6 py-12 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
 
         {/* Contact */}
         <div>
@@ -88,35 +88,6 @@ export function Footer() {
                 </Link>
               </li>
             ))}
-          </ul>
-        </div>
-
-        {/* Legal */}
-        <div>
-          <p className="mb-5 font-mono text-[10px] font-black uppercase tracking-[0.22em] text-[#a09ab8]">
-            Legal &amp; Info
-          </p>
-          <ul className="space-y-3">
-            <li>
-              <span className="font-mono text-sm text-[#ffffff]/70">
-                Open Source
-              </span>
-            </li>
-            <li>
-              <span className="font-mono text-sm text-[#ffffff]/70">
-                No Financial Advice
-              </span>
-            </li>
-            <li>
-              <Link
-                href="https://github.com/GeneralAcre/proof-of-alpha"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-mono text-sm text-[#ffffff]/70 transition hover:text-[#E4D474]"
-              >
-                MIT License
-              </Link>
-            </li>
           </ul>
         </div>
 
