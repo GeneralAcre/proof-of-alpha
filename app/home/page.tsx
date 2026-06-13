@@ -14,10 +14,6 @@ const PARTNERS = [
 export default function HomePage() {
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#24153E] text-[#E4D474]">
-      <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(228,212,116,0.06)_1px,transparent_1px),linear-gradient(rgba(228,212,116,0.04)_1px,transparent_1px)] bg-[size:44px_44px]" />
-        <div className="absolute inset-0 scanlines" />
-      </div>
 
       <div className="relative z-10">
         <Nav />
