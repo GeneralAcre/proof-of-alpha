@@ -4,128 +4,7 @@ import { useState, useEffect } from "react";
 import { Nav } from "../components/Nav";
 import { useWallet } from "../components/WalletProvider";
 import { ARCHETYPES, getCurrentRank, getNextRank, getRankProgress } from "../lib/archetypes";
-import { getUnlocked, saveUnlock } from "../lib/unlocks";
-import { getCharacterLevel, saveCharacterLevel, levelUpCost, MAX_LEVEL } from "../lib/upgrades";
-import type { StatKey } from "../lib/upgrades";
-import { sfx, initSounds } from "../lib/sounds";
 import type { MatchRecord } from "../end/page";
-import type { Archetype } from "../lib/archetypes";
-
-const STAT_LABELS: { key: StatKey; label: string }[] = [
-  { key: "aggression", label: "AGG" },
-  { key: "defense",    label: "DEF" },
-  { key: "bluff",      label: "BLF" },
-  { key: "greed",      label: "GRD" },
-];
-
-function UpgradePanel({
-  a, aura, fullAddress, upgradeRev, onLevelUp,
-}: {
-  a: Archetype;
-  aura: number;
-  fullAddress: string | null;
-  upgradeRev: number;
-  onLevelUp: (archetypeId: string, currentLevel: number) => void;
-}) {
-  void upgradeRev;
-  const level   = getCharacterLevel(fullAddress, a.id);
-  const maxed   = level >= MAX_LEVEL;
-  const cost    = levelUpCost(level);
-  const canAfford = aura >= cost;
-  const cur     = a.levels[level - 1];
-  const next    = !maxed ? a.levels[level] : null;
-
-  return (
-    <div className="mt-3 border border-[#E4D474]/40 bg-[#24153E] p-3">
-      {/* Level header */}
-      <div className="mb-3 flex items-center justify-between">
-        <p className="font-mono text-xs font-bold uppercase tracking-[0.15em] text-[#E4D474]">
-          {a.name}
-        </p>
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-xs text-[#a09ab8]">LVL</span>
-          <span className="font-mono text-lg font-black text-[#E4D474] leading-none">{level}</span>
-          <span className="font-mono text-xs text-[#a09ab8]">/ {MAX_LEVEL}</span>
-        </div>
-      </div>
-
-      {/* Level progress pips */}
-      <div className="mb-3 flex gap-0.5">
-        {Array.from({ length: MAX_LEVEL }, (_, i) => (
-          <div key={i} className={`h-1.5 flex-1 ${i < level ? "bg-[#E4D474]" : "bg-[#a09ab8]/20"}`} />
-        ))}
-      </div>
-
-      {/* Current stats + next level diff */}
-      <div className="mb-3 space-y-1.5">
-        {STAT_LABELS.map(({ key, label }) => {
-          const val      = cur[key];
-          const cap      = a.statCaps[key];
-          const nextVal  = next?.[key] ?? val;
-          const gaining  = nextVal > val;
-          return (
-            <div key={key} className="flex items-center gap-2">
-              <span className="w-7 font-mono text-[9px] uppercase tracking-wide text-[#a09ab8]">{label}</span>
-              <div className="flex flex-1 gap-0.5">
-                {Array.from({ length: 10 }, (_, i) => (
-                  <div
-                    key={i}
-                    className={`h-2 flex-1 transition-all ${
-                      i < val  ? "bg-[#E4D474]/70"
-                      : i < nextVal && !maxed ? "bg-[#E4D474]/25"
-                      : i < cap ? "bg-[#a09ab8]/20"
-                      : "bg-transparent"
-                    }`}
-                  />
-                ))}
-              </div>
-              <span className="w-10 text-right font-mono text-[10px] text-[#E4D474]">
-                {val}
-                {gaining && <span className="text-[#E4D474]/50"> {nextVal}</span>}
-                <span className="text-[#a09ab8]">/{cap}</span>
-              </span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Level up button */}
-      {maxed ? (
-        <div className="border border-[#E4D474]/30 py-2 text-center font-mono text-xs uppercase tracking-widest text-[#E4D474]/50">
-          Max Level
-        </div>
-      ) : (
-        <>
-          <button
-            type="button"
-            disabled={!canAfford}
-            onClick={() => onLevelUp(a.id, level)}
-            className={`w-full border-2 py-2.5 font-mono text-xs font-bold uppercase tracking-widest transition touch-manipulation ${
-              canAfford
-                ? "border-[#E4D474] bg-[#E4D474] text-[#24153E] hover:bg-transparent hover:text-[#E4D474]"
-                : "border-[#a09ab8]/40 text-[#a09ab8]/40 cursor-not-allowed"
-            }`}
-          >
-            Level Up — LVL {level + 1}
-          </button>
-          <p className="mt-1.5 text-center font-mono text-[10px] text-[#a09ab8]">
-            Cost: <span className={canAfford ? "text-[#E4D474]" : "text-red-400"}>{cost} AURA</span>
-            {!canAfford && (
-              <> · <a href="/store" className="text-[#E4D474] underline">Buy AURA</a></>
-            )}
-          </p>
-        </>
-      )}
-    </div>
-  );
-}
-
-const BADGES = [
-  { name: "First Win",        desc: "Win your first match" },
-  { name: "Streak x5",        desc: "5 wins in a row" },
-  { name: "Gigachad NFT",     desc: "Reach 2,500 AURA to mint" },
-  { name: "100 Eliminations", desc: "Eliminate 100 players" },
-];
 
 type Stats = {
   matches: number; wins: number; losses: number;
@@ -151,13 +30,8 @@ export default function ProfilePage() {
   const [records, setRecords] = useState<MatchRecord[]>([]);
   const [copied,  setCopied]  = useState(false);
   const [copiedAddr, setCopiedAddr] = useState(false);
-  const [unlocked, setUnlocked] = useState<Set<string>>(new Set(["alpha", "beta"]));
-  const [selectedArchId, setSelectedArchId] = useState<string | null>(null);
-  const [upgradeRev, setUpgradeRev] = useState(0);
 
   const fullAddress = account ? String(account.address) : null;
-
-  useEffect(() => { initSounds(); }, []);
 
   useEffect(() => {
     const auraKey = fullAddress ? `poa_aura_${fullAddress}` : "poa_aura_anonymous";
@@ -167,7 +41,6 @@ export default function ProfilePage() {
       const raw = localStorage.getItem(matchKey);
       if (raw) setRecords(JSON.parse(raw) as MatchRecord[]);
     } catch {}
-    setUnlocked(getUnlocked(fullAddress));
   }, [fullAddress]);
 
   const stats = computeStats(records);
@@ -190,29 +63,6 @@ export default function ProfilePage() {
     navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
-  }
-
-  function handleUnlock(archetypeId: string, cost: number) {
-    if (aura < cost) return;
-    const newAura = aura - cost;
-    const auraKey = fullAddress ? `poa_aura_${fullAddress}` : "poa_aura_anonymous";
-    try { localStorage.setItem(auraKey, String(newAura)); } catch {}
-    setAura(newAura);
-    saveUnlock(fullAddress, archetypeId);
-    setUnlocked(getUnlocked(fullAddress));
-    sfx.unlock();
-  }
-
-  function handleLevelUp(archetypeId: string, currentLevel: number) {
-    const cost = levelUpCost(currentLevel);
-    if (aura < cost) return;
-    const newAura = aura - cost;
-    const auraKey = fullAddress ? `poa_aura_${fullAddress}` : "poa_aura_anonymous";
-    try { localStorage.setItem(auraKey, String(newAura)); } catch {}
-    setAura(newAura);
-    saveCharacterLevel(fullAddress, archetypeId, currentLevel + 1);
-    setUpgradeRev((r) => r + 1);
-    sfx.unlock();
   }
 
   return (
@@ -272,8 +122,7 @@ export default function ProfilePage() {
           </div>
         </section>
 
-        <div className="grid gap-6 lg:grid-cols-[1fr_260px]">
-          <div className="space-y-6">
+        <div className="space-y-6">
 
             {/* ── STATS ── */}
             <section className="border border-[#a09ab8] bg-[#2d1a4a] shadow-[4px_4px_0_#a09ab8]">
@@ -334,82 +183,6 @@ export default function ProfilePage() {
                 </div>
               )}
             </section>
-          </div>
-
-          <div className="space-y-5">
-
-            {/* ── ARCHETYPE COLLECTION ── */}
-            <section className="border border-[#a09ab8] bg-[#2d1a4a] p-4 shadow-[4px_4px_0_#a09ab8]">
-              <p className="mb-3 font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#a09ab8]">Collection</p>
-
-              {/* Character grid */}
-              <div className="grid grid-cols-3 gap-2">
-                {ARCHETYPES.map((a) => {
-                  const owned = unlocked.has(a.id);
-                  const canAfford = aura >= a.unlockCost;
-                  const isSelected = selectedArchId === a.id;
-                  return (
-                    <div key={a.id}>
-                      {owned ? (
-                        <button
-                          type="button"
-                          onClick={() => setSelectedArchId(isSelected ? null : a.id)}
-                          className={`w-full border p-2 text-center transition touch-manipulation ${
-                            isSelected
-                              ? "border-[#E4D474] bg-[#E4D474] text-[#24153E]"
-                              : "border-[#E4D474] bg-[#E4D474]/5 text-[#E4D474] hover:bg-[#E4D474]/15"
-                          }`}
-                        >
-                          <p className="font-mono text-sm font-bold">{a.initials}</p>
-                          <p className="mt-0.5 font-mono text-[9px] uppercase tracking-wide">Upgrade</p>
-                        </button>
-                      ) : (
-                        <div className="border border-[#a09ab8] p-2 text-center">
-                          <p className="font-mono text-sm font-bold text-[#E4D474]/40">{a.initials}</p>
-                          <p className="mt-0.5 text-[10px] text-[#a09ab8]">{a.unlockCost.toLocaleString()}</p>
-                          <button
-                            className={`mt-1.5 w-full border px-1 py-1.5 font-mono text-[10px] uppercase transition touch-manipulation ${
-                              canAfford
-                                ? "border-[#E4D474] text-[#E4D474] hover:bg-[#E4D474] hover:text-[#24153E]"
-                                : "border-[#a09ab8]/40 text-[#a09ab8]/40 cursor-not-allowed"
-                            }`}
-                            disabled={!canAfford}
-                            onClick={() => handleUnlock(a.id, a.unlockCost)}
-                            type="button"
-                          >
-                            {canAfford ? "Unlock" : "Need AURA"}
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Upgrade panel — shown when an owned character is selected */}
-              {selectedArchId && <UpgradePanel
-                a={ARCHETYPES.find((x) => x.id === selectedArchId)!}
-                aura={aura}
-                fullAddress={fullAddress}
-                upgradeRev={upgradeRev}
-                onLevelUp={handleLevelUp}
-              />}
-            </section>
-
-            {/* ── BADGES ── */}
-            <section className="border border-[#a09ab8] bg-[#2d1a4a] p-4 shadow-[4px_4px_0_#a09ab8]">
-              <p className="mb-3 font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#a09ab8]">On-chain Badges</p>
-              {BADGES.map(({ name, desc }) => (
-                <div key={name} className="mb-2 flex items-center gap-3 border border-[#a09ab8] p-3 opacity-40 last:mb-0">
-                  <div className="h-6 w-6 shrink-0 border border-[#a09ab8]" />
-                  <div>
-                    <p className="text-xs font-bold uppercase text-[#E4D474]">{name}</p>
-                    <p className="text-[10px] text-[#a09ab8]">{desc}</p>
-                  </div>
-                </div>
-              ))}
-            </section>
-          </div>
         </div>
       </main>
     </div>
