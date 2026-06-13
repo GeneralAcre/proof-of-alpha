@@ -1,55 +1,212 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 
+const NAV_LINKS = [
+  { label: "Home",        href: "/home" },
+  { label: "Profile",     href: "/profile" },
+  { label: "Leaderboard", href: "/leaderboard" },
+  { label: "Gangs",       href: "/guilds" },
+  { label: "Store",       href: "/store" },
+  { label: "Staking",     href: "/saura" },
+];
+
+const PROGRAM_ID = "9UfB3hW...KkFD";
+
 export function Footer() {
+  const [name,    setName]    = useState("");
+  const [email,   setEmail]   = useState("");
+  const [message, setMessage] = useState("");
+  const [sent,    setSent]    = useState(false);
+
+  function handleSend(e: React.FormEvent) {
+    e.preventDefault();
+    if (!name.trim() || !email.trim() || !message.trim()) return;
+    const mailto = `mailto:acreforcoding@gmail.com?subject=POA Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(message)}%0A%0AFrom: ${encodeURIComponent(email)}`;
+    window.location.href = mailto;
+    setSent(true);
+    setName(""); setEmail(""); setMessage("");
+    setTimeout(() => setSent(false), 3000);
+  }
+
   return (
-    <footer className="border-t border-[#a09ab8]/20 bg-[#24153E] px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
+    <footer className="border-t border-[#a09ab8]/20 bg-[#160c2c]">
 
-        {/* Brand */}
+      {/* ── Top grid ── */}
+      <div className="mx-auto max-w-7xl grid grid-cols-1 gap-10 px-6 py-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+
+        {/* Contact */}
         <div>
-          <p className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#E4D474]">
-            Proof of Alpha
+          <p className="mb-5 font-mono text-[10px] font-black uppercase tracking-[0.22em] text-[#a09ab8]">
+            Contact &amp; Support
           </p>
-          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-[#a09ab8]">
-            On-chain PvP on Solana
-          </p>
+          <form onSubmit={handleSend} className="space-y-3">
+            <input
+              className="w-full border-b border-[#a09ab8]/30 bg-transparent pb-2 font-mono text-xs text-[#E4D474] placeholder-[#a09ab8]/40 outline-none focus:border-[#E4D474] transition"
+              placeholder="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              type="text"
+            />
+            <input
+              className="w-full border-b border-[#a09ab8]/30 bg-transparent pb-2 font-mono text-xs text-[#E4D474] placeholder-[#a09ab8]/40 outline-none focus:border-[#E4D474] transition"
+              placeholder="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              type="email"
+            />
+            <textarea
+              className="w-full border-b border-[#a09ab8]/30 bg-transparent pb-2 font-mono text-xs text-[#E4D474] placeholder-[#a09ab8]/40 outline-none focus:border-[#E4D474] transition resize-none"
+              placeholder="message"
+              rows={3}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
+            <button
+              type="submit"
+              className="mt-2 w-full border border-[#E4D474] bg-[#E4D474] py-3 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#160c2c] transition hover:bg-transparent hover:text-[#E4D474]"
+            >
+              {sent ? "Sent!" : "Send"}
+            </button>
+          </form>
         </div>
 
-        {/* Links */}
-        <div className="flex items-center gap-4">
-          <Link
-            href="https://x.com/created_alpha"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 border border-[#a09ab8]/30 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.15em] text-[#a09ab8] transition hover:border-[#E4D474] hover:text-[#E4D474]"
-          >
-            {/* X logo */}
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-            </svg>
-            Twitter
-          </Link>
-
-          <Link
-            href="https://github.com/GeneralAcre/proof-of-alpha"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 border border-[#a09ab8]/30 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.15em] text-[#a09ab8] transition hover:border-[#E4D474] hover:text-[#E4D474]"
-          >
-            {/* GitHub logo */}
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.341-3.369-1.341-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z" />
-            </svg>
-            GitHub
-          </Link>
+        {/* Navigation */}
+        <div>
+          <p className="mb-5 font-mono text-[10px] font-black uppercase tracking-[0.22em] text-[#a09ab8]">
+            Navigation
+          </p>
+          <ul className="space-y-3">
+            {NAV_LINKS.map(({ label, href }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  className="font-mono text-sm text-[#ffffff]/70 transition hover:text-[#E4D474]"
+                >
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        {/* Copyright */}
-        <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#a09ab8]/50">
-          © 2025 Proof of Alpha
-        </p>
+        {/* Legal */}
+        <div>
+          <p className="mb-5 font-mono text-[10px] font-black uppercase tracking-[0.22em] text-[#a09ab8]">
+            Legal &amp; Info
+          </p>
+          <ul className="space-y-3">
+            <li>
+              <span className="font-mono text-sm text-[#ffffff]/70">
+                Open Source
+              </span>
+            </li>
+            <li>
+              <span className="font-mono text-sm text-[#ffffff]/70">
+                No Financial Advice
+              </span>
+            </li>
+            <li>
+              <Link
+                href="https://github.com/GeneralAcre/proof-of-alpha"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-sm text-[#ffffff]/70 transition hover:text-[#E4D474]"
+              >
+                MIT License
+              </Link>
+            </li>
+          </ul>
+        </div>
 
+        {/* Social */}
+        <div>
+          <p className="mb-5 font-mono text-[10px] font-black uppercase tracking-[0.22em] text-[#a09ab8]">
+            Social
+          </p>
+          <div className="flex gap-3">
+            <Link
+              href="https://x.com/created_alpha"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-10 w-10 items-center justify-center border border-[#a09ab8]/30 text-[#a09ab8] transition hover:border-[#E4D474] hover:text-[#E4D474]"
+              aria-label="Twitter / X"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+            </Link>
+            <Link
+              href="https://github.com/GeneralAcre/proof-of-alpha"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-10 w-10 items-center justify-center border border-[#a09ab8]/30 text-[#a09ab8] transition hover:border-[#E4D474] hover:text-[#E4D474]"
+              aria-label="GitHub"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.341-3.369-1.341-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z" />
+              </svg>
+            </Link>
+          </div>
+        </div>
       </div>
+
+      {/* ── Mid bar: Built on / Program / Type ── */}
+      <div className="border-t border-[#a09ab8]/15">
+        <div className="mx-auto max-w-7xl grid grid-cols-3 divide-x divide-[#a09ab8]/15 px-6 py-6">
+
+          <div className="flex flex-col items-center gap-2 pr-4">
+            <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#a09ab8]">Built On</p>
+            {/* Solana logo */}
+            <svg width="32" height="26" viewBox="0 0 397 311" fill="none">
+              <path d="M64.6 237.9a8.65 8.65 0 0 1 6.1-2.5h317.4c3.8 0 5.7 4.6 3 7.3l-49.4 49.4a8.65 8.65 0 0 1-6.1 2.5H18.2c-3.8 0-5.7-4.6-3-7.3l49.4-49.4z" fill="url(#sa)"/>
+              <path d="M64.6 2.5A8.93 8.93 0 0 1 70.7 0h317.4c3.8 0 5.7 4.6 3 7.3L341.7 56.7a8.65 8.65 0 0 1-6.1 2.5H18.2c-3.8 0-5.7-4.6-3-7.3L64.6 2.5z" fill="url(#sb)"/>
+              <path d="M335.8 119.2a8.65 8.65 0 0 0-6.1-2.5H12.3c-3.8 0-5.7 4.6-3 7.3l49.4 49.4a8.65 8.65 0 0 0 6.1 2.5h317.4c3.8 0 5.7-4.6 3-7.3l-49.4-49.4z" fill="url(#sc)"/>
+              <defs>
+                <linearGradient id="sa" x1="360.9" y1="-6.4" x2="141.2" y2="341.6" gradientUnits="userSpaceOnUse"><stop stopColor="#00FFA3"/><stop offset="1" stopColor="#DC1FFF"/></linearGradient>
+                <linearGradient id="sb" x1="264.8" y1="-53" x2="45.1" y2="294.9" gradientUnits="userSpaceOnUse"><stop stopColor="#00FFA3"/><stop offset="1" stopColor="#DC1FFF"/></linearGradient>
+                <linearGradient id="sc" x1="312.5" y1="-29.9" x2="92.8" y2="318.1" gradientUnits="userSpaceOnUse"><stop stopColor="#00FFA3"/><stop offset="1" stopColor="#DC1FFF"/></linearGradient>
+              </defs>
+            </svg>
+          </div>
+
+          <div className="flex flex-col items-center gap-2 px-4">
+            <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#a09ab8]">Devnet Program</p>
+            <p className="font-mono text-sm font-black text-[#E4D474]">{PROGRAM_ID}</p>
+          </div>
+
+          <div className="flex flex-col items-center gap-2 pl-4">
+            <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#a09ab8]">Game Type</p>
+            <p className="font-mono text-sm font-black text-[#E4D474]">PvP / Bluffing</p>
+          </div>
+
+        </div>
+      </div>
+
+      {/* ── Bottom bar ── */}
+      <div className="border-t border-[#a09ab8]/15 bg-[#0d0820]">
+        <div className="mx-auto max-w-7xl px-6 py-6 text-center space-y-4">
+          <p className="font-mono text-xs text-[#a09ab8]/60 leading-6 max-w-2xl mx-auto">
+            Proof of Alpha is a fully on-chain 6-player PvP bluffing game on Solana — bet, bluff, and outlast your opponents to climb the leaderboard and earn AURA.
+          </p>
+          <div className="inline-flex items-center gap-3 border border-[#a09ab8]/20 px-6 py-2.5">
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#a09ab8]/50">Powered by</span>
+            <svg width="20" height="16" viewBox="0 0 397 311" fill="none">
+              <path d="M64.6 237.9a8.65 8.65 0 0 1 6.1-2.5h317.4c3.8 0 5.7 4.6 3 7.3l-49.4 49.4a8.65 8.65 0 0 1-6.1 2.5H18.2c-3.8 0-5.7-4.6-3-7.3l49.4-49.4z" fill="url(#fa)"/>
+              <path d="M64.6 2.5A8.93 8.93 0 0 1 70.7 0h317.4c3.8 0 5.7 4.6 3 7.3L341.7 56.7a8.65 8.65 0 0 1-6.1 2.5H18.2c-3.8 0-5.7-4.6-3-7.3L64.6 2.5z" fill="url(#fb)"/>
+              <path d="M335.8 119.2a8.65 8.65 0 0 0-6.1-2.5H12.3c-3.8 0-5.7 4.6-3 7.3l49.4 49.4a8.65 8.65 0 0 0 6.1 2.5h317.4c3.8 0 5.7-4.6 3-7.3l-49.4-49.4z" fill="url(#fc)"/>
+              <defs>
+                <linearGradient id="fa" x1="360.9" y1="-6.4" x2="141.2" y2="341.6" gradientUnits="userSpaceOnUse"><stop stopColor="#00FFA3"/><stop offset="1" stopColor="#DC1FFF"/></linearGradient>
+                <linearGradient id="fb" x1="264.8" y1="-53" x2="45.1" y2="294.9" gradientUnits="userSpaceOnUse"><stop stopColor="#00FFA3"/><stop offset="1" stopColor="#DC1FFF"/></linearGradient>
+                <linearGradient id="fc" x1="312.5" y1="-29.9" x2="92.8" y2="318.1" gradientUnits="userSpaceOnUse"><stop stopColor="#00FFA3"/><stop offset="1" stopColor="#DC1FFF"/></linearGradient>
+              </defs>
+            </svg>
+            <span className="font-mono text-sm font-black uppercase tracking-[0.25em] text-white">Solana</span>
+          </div>
+        </div>
+      </div>
+
     </footer>
   );
 }
