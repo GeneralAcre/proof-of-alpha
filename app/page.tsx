@@ -284,7 +284,7 @@ function HomeContent() {
                 <p className="mb-8 max-w-md font-mono text-sm leading-6 text-[#a09ab8]">
                   Every opener, every flex, every close — recorded on Solana. Earn AURA back by winning.
                 </p>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-row gap-3">
                   <Link
                     className="border-2 border-[#E4D474] bg-[#E4D474] px-8 py-3.5 font-black uppercase tracking-[0.14em] text-[#24153E] shadow-[5px_5px_0_#a09ab8] transition hover:bg-transparent hover:text-[#E4D474] touch-manipulation"
                     href="/character-select"
