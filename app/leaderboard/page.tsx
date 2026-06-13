@@ -113,10 +113,12 @@ export default function LeaderboardPage() {
 
             {!loading && sortedPlayers.map((p, i) => {
               const isMe = p.address === addr;
+              const g = guilds.find((g) => g.members.includes(p.address));
               return (
-                <div
+                <Link
                   key={p.address}
-                  className={`grid grid-cols-[36px_1fr_64px_80px] items-center gap-4 px-4 py-3 border-b border-[#a09ab8]/10 last:border-0 ${isMe ? "bg-[#E4D474]/5" : ""}`}
+                  href={`/profile/${p.address}`}
+                  className={`grid grid-cols-[36px_1fr_64px_80px] items-center gap-4 px-4 py-3 border-b border-[#a09ab8]/10 last:border-0 transition hover:bg-[#E4D474]/5 ${isMe ? "bg-[#E4D474]/5" : ""}`}
                 >
                   <span className="font-mono text-sm font-black" style={{
                     color: i === 0 ? "#E4D474" : i === 1 ? "#aaa" : i === 2 ? "#a09ab8" : "#a09ab8"
@@ -134,12 +136,9 @@ export default function LeaderboardPage() {
                         {isMe ? truncatedAddress : truncAddr(p.address)}
                         {isMe && <span className="ml-1.5 font-mono text-[8px] border border-[#E4D474]/40 px-1">YOU</span>}
                       </p>
-                      {(() => {
-                        const g = guilds.find((g) => g.members.includes(p.address));
-                        return g ? (
-                          <p className="font-mono text-[9px] text-[#a09ab8] truncate">[{g.tag}] {g.name}</p>
-                        ) : null;
-                      })()}
+                      {g && (
+                        <p className="font-mono text-[9px] text-[#a09ab8] truncate">[{g.tag}] {g.name}</p>
+                      )}
                     </div>
                   </div>
 
@@ -147,7 +146,7 @@ export default function LeaderboardPage() {
                   <span className="text-right font-mono text-sm font-black text-[#E4D474]">
                     {tab === "streak" ? `${p.best_streak}×` : p.aura.toLocaleString()}
                   </span>
-                </div>
+                </Link>
               );
             })}
 

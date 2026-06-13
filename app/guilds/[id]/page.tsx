@@ -146,7 +146,11 @@ export default function GuildDetailPage() {
               const isYou     = member === addr;
               const isFounder = member === guild.createdBy;
               return (
-                <div key={member} className={`flex items-center gap-3 px-4 py-3 ${isYou ? "bg-[#E4D474]/5" : ""}`}>
+                <Link
+                  key={member}
+                  href={`/profile/${member}`}
+                  className={`flex items-center gap-3 px-4 py-3 transition hover:bg-[#E4D474]/5 ${isYou ? "bg-[#E4D474]/5" : ""}`}
+                >
                   <span className="font-mono text-[10px] text-[#a09ab8]/50 w-5">{i + 1}</span>
                   <div className="flex h-7 w-7 shrink-0 items-center justify-center border font-mono text-[9px] font-black"
                     style={{ borderColor: isYou ? "#E4D474" : "#a09ab8", color: isYou ? "#E4D474" : "#a09ab8" }}>
@@ -158,7 +162,7 @@ export default function GuildDetailPage() {
                     </p>
                     {isFounder && <p className="font-mono text-[8px] uppercase text-[#a09ab8]">Founder</p>}
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>

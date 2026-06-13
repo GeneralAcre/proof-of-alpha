@@ -33,6 +33,16 @@ export async function syncPlayerStats(
   });
 }
 
+export async function loadPlayerProfile(address: string): Promise<PlayerRow | null> {
+  if (!supabaseReady) return null;
+  const { data } = await supabase
+    .from("players")
+    .select("*")
+    .eq("address", address)
+    .maybeSingle();
+  return (data as PlayerRow) ?? null;
+}
+
 export async function loadLeaderboard(sortBy: "aura" | "best_streak" = "aura"): Promise<PlayerRow[]> {
   if (!supabaseReady) return [];
   const { data } = await supabase
