@@ -3,6 +3,7 @@ import { Bebas_Neue, Geist_Mono } from "next/font/google";
 import { SolanaMobileWalletProvider } from "./components/SolanaMobileWalletProvider";
 import { WalletProvider } from "./components/WalletProvider";
 import { WalletGate } from "./components/WalletGate";
+import { Footer } from "./components/Footer";
 import "./globals.css";
 
 const bebasNeue = Bebas_Neue({
@@ -34,7 +35,12 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-[#24153E]">
         <SolanaMobileWalletProvider />
         <WalletProvider>
-          <WalletGate>{children}</WalletGate>
+          <WalletGate>
+            <div className="flex flex-col flex-1">
+              {children}
+              <Footer />
+            </div>
+          </WalletGate>
         </WalletProvider>
       </body>
     </html>
