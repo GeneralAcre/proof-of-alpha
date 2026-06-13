@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 const NAV_LINKS = [
   { label: "Home",        href: "/home" },
@@ -129,17 +130,7 @@ export function Footer() {
 
           <div className="flex flex-col items-center gap-2 pr-4">
             <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#a09ab8]">Built On</p>
-            {/* Solana logo */}
-            <svg width="32" height="26" viewBox="0 0 397 311" fill="none">
-              <path d="M64.6 237.9a8.65 8.65 0 0 1 6.1-2.5h317.4c3.8 0 5.7 4.6 3 7.3l-49.4 49.4a8.65 8.65 0 0 1-6.1 2.5H18.2c-3.8 0-5.7-4.6-3-7.3l49.4-49.4z" fill="url(#sa)"/>
-              <path d="M64.6 2.5A8.93 8.93 0 0 1 70.7 0h317.4c3.8 0 5.7 4.6 3 7.3L341.7 56.7a8.65 8.65 0 0 1-6.1 2.5H18.2c-3.8 0-5.7-4.6-3-7.3L64.6 2.5z" fill="url(#sb)"/>
-              <path d="M335.8 119.2a8.65 8.65 0 0 0-6.1-2.5H12.3c-3.8 0-5.7 4.6-3 7.3l49.4 49.4a8.65 8.65 0 0 0 6.1 2.5h317.4c3.8 0 5.7-4.6 3-7.3l-49.4-49.4z" fill="url(#sc)"/>
-              <defs>
-                <linearGradient id="sa" x1="360.9" y1="-6.4" x2="141.2" y2="341.6" gradientUnits="userSpaceOnUse"><stop stopColor="#00FFA3"/><stop offset="1" stopColor="#DC1FFF"/></linearGradient>
-                <linearGradient id="sb" x1="264.8" y1="-53" x2="45.1" y2="294.9" gradientUnits="userSpaceOnUse"><stop stopColor="#00FFA3"/><stop offset="1" stopColor="#DC1FFF"/></linearGradient>
-                <linearGradient id="sc" x1="312.5" y1="-29.9" x2="92.8" y2="318.1" gradientUnits="userSpaceOnUse"><stop stopColor="#00FFA3"/><stop offset="1" stopColor="#DC1FFF"/></linearGradient>
-              </defs>
-            </svg>
+            <Image src="/solanaWordMark.png" alt="Solana" width={120} height={20} className="object-contain" />
           </div>
 
           <div className="flex flex-col items-center gap-2 px-4">
@@ -163,17 +154,7 @@ export function Footer() {
           </p>
           <div className="inline-flex items-center gap-3 border border-[#a09ab8]/20 px-6 py-2.5">
             <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#a09ab8]/50">Powered by</span>
-            <svg width="20" height="16" viewBox="0 0 397 311" fill="none">
-              <path d="M64.6 237.9a8.65 8.65 0 0 1 6.1-2.5h317.4c3.8 0 5.7 4.6 3 7.3l-49.4 49.4a8.65 8.65 0 0 1-6.1 2.5H18.2c-3.8 0-5.7-4.6-3-7.3l49.4-49.4z" fill="url(#fa)"/>
-              <path d="M64.6 2.5A8.93 8.93 0 0 1 70.7 0h317.4c3.8 0 5.7 4.6 3 7.3L341.7 56.7a8.65 8.65 0 0 1-6.1 2.5H18.2c-3.8 0-5.7-4.6-3-7.3L64.6 2.5z" fill="url(#fb)"/>
-              <path d="M335.8 119.2a8.65 8.65 0 0 0-6.1-2.5H12.3c-3.8 0-5.7 4.6-3 7.3l49.4 49.4a8.65 8.65 0 0 0 6.1 2.5h317.4c3.8 0 5.7-4.6 3-7.3l-49.4-49.4z" fill="url(#fc)"/>
-              <defs>
-                <linearGradient id="fa" x1="360.9" y1="-6.4" x2="141.2" y2="341.6" gradientUnits="userSpaceOnUse"><stop stopColor="#00FFA3"/><stop offset="1" stopColor="#DC1FFF"/></linearGradient>
-                <linearGradient id="fb" x1="264.8" y1="-53" x2="45.1" y2="294.9" gradientUnits="userSpaceOnUse"><stop stopColor="#00FFA3"/><stop offset="1" stopColor="#DC1FFF"/></linearGradient>
-                <linearGradient id="fc" x1="312.5" y1="-29.9" x2="92.8" y2="318.1" gradientUnits="userSpaceOnUse"><stop stopColor="#00FFA3"/><stop offset="1" stopColor="#DC1FFF"/></linearGradient>
-              </defs>
-            </svg>
-            <span className="font-mono text-sm font-black uppercase tracking-[0.25em] text-white">Solana</span>
+            <Image src="/solanaWordMark.png" alt="Solana" width={80} height={14} className="object-contain" />
           </div>
         </div>
       </div>
