@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Nav } from "../components/Nav";
 import { useWallet } from "../components/WalletProvider";
-import { generateGirlSet, BOT_NAMES, TICKER_TEMPLATES, type Girl } from "../lib/girls";
+import { generateGirlSet, type Girl } from "../lib/girls";
 import { sfx, initSounds } from "../lib/sounds";
 import { ARCHETYPES, type StatBlock } from "../lib/archetypes";
 import { getCharacterLevel } from "../lib/upgrades";
@@ -80,20 +80,6 @@ function calcAura(closer: Closer, totalScore: number, girl: Girl, streak: number
   const won = Math.random() * 100 < winChance;
   const payout = closer === "flirt" ? girl.flirtWin : girl.flexWin;
   return { aura: won ? Math.round(payout * mult) : 0, win: won, winChance };
-}
-
-// ─── Ticker seed ─────────────────────────────────────────────────────────────
-
-function seedTicker(): TickerEntry[] {
-  const entries: TickerEntry[] = [];
-  const girls = ["Bia (Influencer)", "Rin (Gym Girl)", "Luna (Crypto Degen)"];
-  for (let i = 0; i < 8; i++) {
-    const name = BOT_NAMES[i % BOT_NAMES.length];
-    const girl = girls[i % 3];
-    const pts  = Math.floor(Math.random() * 400) + 20;
-    entries.push({ id: i, text: TICKER_TEMPLATES[i % TICKER_TEMPLATES.length](name, girl, pts) });
-  }
-  return entries;
 }
 
 // ─── Coach tip system ─────────────────────────────────────────────────────────
@@ -227,7 +213,7 @@ function GameContent() {
   const [sessionAura,    setSessionAura]    = useState(STARTING_AURA);
   const [streak,         setStreak]         = useState(0);
   const [lastWinChance,  setLastWinChance]  = useState(0);
-  const [ticker,         setTicker]         = useState<TickerEntry[]>(() => seedTicker());
+  const [ticker,         setTicker]         = useState<TickerEntry[]>([]);
   const [tickerCount,    setTickerCount]    = useState(100);
 
   const chatEndRef = useRef<HTMLDivElement>(null);

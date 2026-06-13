@@ -418,14 +418,3 @@ export function generateGirlSet(filterDifficulty?: Difficulty): Girl[] {
   return (["easy", "medium", "hard"] as Difficulty[]).map(pick);
 }
 
-// ─── Ambient ticker ───────────────────────────────────────────────────────────
-
-export const TICKER_TEMPLATES = [
-  (name: string, girl: string, pts: number) => `[${name}] tried to FLEX on ${girl}. She said: "At least you're consistent." +${pts} AURA.`,
-  (name: string, girl: string, pts: number) => `[${name}] attempted to FLIRT with ${girl}. She blocked on sight. +${pts} AURA.`,
-  (name: string, girl: string, pts: number) => `[${name}] pulled the LEAVE on ${girl}. She respected it. +${pts} AURA.`,
-  (name: string, girl: string) => `[${name}] opened with a pickup line on ${girl}. Immediate -50 Aura detected.`,
-  (name: string, girl: string, pts: number) => `[${name}] went full Sigma on ${girl}. The room went quiet. +${pts} AURA.`,
-];
-
-export const BOT_NAMES = ["DEGEN_7X", "CHAD_88", "0xWojak", "SIGMA_KID", "RUGPULL_BOB", "NFTBRO", "GIGACHAD_42"];

@@ -15,41 +15,6 @@ export const GUILD_CREATE_COST = 500;
 
 const AURA_KEY = (addr: string) => `poa_aura_${addr}`;
 
-// ─── Seed guilds ──────────────────────────────────────────────────────────────
-
-const SEED_GUILDS: Guild[] = [
-  {
-    id: "seed_grind",
-    name: "Grind Guild",
-    tag: "GRD",
-    motto: "No days off.",
-    members: Array.from({ length: 7 }, (_, i) => `seed_grd_${i}`),
-    createdBy: "seed_grd_0",
-    createdAt: Date.now() - 86400000 * 15,
-    cachedAura: 21000,
-  },
-  {
-    id: "seed_alpha",
-    name: "Alpha Legion",
-    tag: "ALP",
-    motto: "Born to lead. Built to dominate.",
-    members: Array.from({ length: 5 }, (_, i) => `seed_alp_${i}`),
-    createdBy: "seed_alp_0",
-    createdAt: Date.now() - 86400000 * 30,
-    cachedAura: 12400,
-  },
-  {
-    id: "seed_sigma",
-    name: "Sigma Wolves",
-    tag: "SGW",
-    motto: "We move alone but hunt together.",
-    members: Array.from({ length: 3 }, (_, i) => `seed_sgw_${i}`),
-    createdBy: "seed_sgw_0",
-    createdAt: Date.now() - 86400000 * 20,
-    cachedAura: 8750,
-  },
-];
-
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function getLocalAura(addr: string): number {
@@ -82,12 +47,11 @@ function rowToGuild(g: GangRow): Guild {
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 export async function loadGuilds(): Promise<Guild[]> {
-  if (!supabaseReady) return [...SEED_GUILDS];
+  if (!supabaseReady) return [];
   const { data } = await supabase
     .from("gangs")
     .select("*, gang_members(address, aura_snapshot)");
-  const realGuilds = (data as GangRow[] ?? []).map(rowToGuild);
-  return [...SEED_GUILDS, ...realGuilds];
+  return (data as GangRow[] ?? []).map(rowToGuild);
 }
 
 export async function getPlayerGuildId(addr: string): Promise<string | null> {

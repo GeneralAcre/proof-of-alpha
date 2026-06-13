@@ -9,14 +9,6 @@ import { ARCHETYPES, getCurrentRank } from "../lib/archetypes";
 
 const ROUND_MODIFIERS = ["Standard", "Greed Mode", "Chaos Mode", "Scarcity", "Final Stand"];
 
-const BOTS = [
-  { addr: "Bot_7xKm", archetype: "NPC",      rank: "Beta"  },
-  { addr: "Bot_B2Qs", archetype: "Doomer",   rank: "NPC"   },
-  { addr: "Bot_Vn4L", archetype: "Wojak",    rank: "Alpha" },
-  { addr: "Bot_P8Hj", archetype: "Sigma",    rank: "Beta"  },
-  { addr: "Bot_F3Dz", archetype: "Gigachad", rank: "Sigma" },
-];
-
 function generateRoomCode() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let s = "";
@@ -79,13 +71,6 @@ function LobbyContent() {
       archetype: archetype.name,
       rank: myRank.name,
     },
-    ...BOTS.slice(0, 5).map((b) => ({
-      filled: true,
-      isHuman: false,
-      addr: b.addr,
-      archetype: b.archetype,
-      rank: b.rank,
-    })),
   ];
 
   return (
