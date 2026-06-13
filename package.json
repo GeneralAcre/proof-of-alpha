@@ -9,11 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^3.0.69",
-    "@anthropic-ai/sdk": "^0.104.1",
     "@base-ui/react": "^1.5.0",
-    "@coral-xyz/anchor": "^0.32.1",
-    "@magicblock-labs/ephemeral-rollups-kit": "^0.15.1",
     "@solana-mobile/wallet-standard-mobile": "^0.5.3",
     "@solana/wallet-standard-chains": "^1.1.1",
     "@solana/web3.js": "^1.98.4",
@@ -21,7 +17,6 @@
     "@wallet-standard/app": "^1.1.1",
     "@wallet-standard/base": "^1.1.1",
     "@wallet-standard/features": "^1.1.1",
-    "ai": "^6.0.199",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.17.0",

@@ -1,21 +1,12 @@
 import { Connection, PublicKey } from "@solana/web3.js";
-import { MAGICBLOCK_ENDPOINTS } from "./magicblock";
+
+const RPC = process.env.NEXT_PUBLIC_RPC ?? "https://api.devnet.solana.com";
 
 export const PROGRAM_ID = new PublicKey(
   process.env.NEXT_PUBLIC_PROGRAM_ID ?? "9UfB3hWQzQCFg47qjXnTigK2QTSkzSrApx5Z1tq1KkFD",
 );
 
-/** Solana devnet — used for player accounts and AURA settlement */
-export const connection = new Connection(
-  MAGICBLOCK_ENDPOINTS.baseRpc,
-  { commitment: "confirmed" },
-);
-
-/** MagicBlock Ephemeral Rollup — reserved for future multiplayer */
-export const erConnection = new Connection(
-  MAGICBLOCK_ENDPOINTS.erRpc,
-  { commitment: "confirmed" },
-);
+export const connection = new Connection(RPC, { commitment: "confirmed" });
 
 // ─── PDA derivation ───────────────────────────────────────────────────────────
 
