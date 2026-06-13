@@ -159,7 +159,7 @@ export function Footer() {
       <div className="border-t border-[#a09ab8]/15 bg-[#0d0820]">
         <div className="mx-auto max-w-7xl px-6 py-6 text-center space-y-4">
           <p className="font-mono text-xs text-[#a09ab8]/60 leading-6 max-w-2xl mx-auto">
-            Proof of Alpha is a fully on-chain 6-player PvP bluffing game on Solana — bet, bluff, and outlast your opponents to climb the leaderboard and earn AURA.
+            Proof of Alpha is a fully on-chain dating-practice game on Solana — chat, flirt, and build your rizz to earn AURA and climb the leaderboard.
           </p>
           <div className="inline-flex items-center gap-3 border border-[#a09ab8]/20 px-6 py-2.5">
             <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#a09ab8]/50">Powered by</span>
