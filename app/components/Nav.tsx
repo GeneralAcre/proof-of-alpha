@@ -36,48 +36,22 @@ export function Nav() {
 
         {/* Desktop centre links */}
         <div className="hidden items-center gap-7 sm:flex">
-          <Link
-            href="/home"
-            className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#a09ab8] transition hover:text-[#E4D474]"
-          >
-            Home
-          </Link>
-          <Link
-            href="/test"
-            className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#9945FF] transition hover:text-[#b47aff]"
-          >
-            Rizz Test
-          </Link>
-          <Link
-            href="/profile"
-            className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#a09ab8] transition hover:text-[#E4D474]"
-          >
-            Profile
-          </Link>
-          <Link
-            href="/leaderboard"
-            className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#a09ab8] transition hover:text-[#E4D474]"
-          >
-            Leaderboard
-          </Link>
-          <Link
-            href="/guilds"
-            className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#a09ab8] transition hover:text-[#E4D474]"
-          >
-            Gangs
-          </Link>
-          <Link
-            href="/store"
-            className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#E4D474] transition hover:text-[#ece880]"
-          >
-            Store
-          </Link>
-          <Link
-            href="/saura"
-            className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#9945FF] transition hover:text-[#b47aff]"
-          >
-            Staking
-          </Link>
+          {[
+            { href: "/home",        label: "Home" },
+            { href: "/profile",     label: "Profile" },
+            { href: "/leaderboard", label: "Leaderboard" },
+            { href: "/guilds",      label: "Gangs" },
+            { href: "/store",       label: "Store" },
+            { href: "/saura",       label: "Staking" },
+          ].map(({ href, label }) => (
+            <Link
+              key={href}
+              href={href}
+              className="font-mono text-[11px] uppercase tracking-[0.18em] text-white transition hover:text-[#E4D474]"
+            >
+              {label}
+            </Link>
+          ))}
         </div>
 
         {/* Right — wallet + mobile menu toggle */}
@@ -163,55 +137,23 @@ export function Nav() {
       {menuOpen && (
         <div className="border-t border-[#a09ab8]/30 bg-[#24153E] px-4 pb-4 pt-3 sm:hidden">
           <div className="flex flex-col gap-1">
-            <Link
-              href="/home"
-              className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#a09ab8] transition hover:text-[#E4D474]"
-              onClick={() => setMenuOpen(false)}
-            >
-              Home
-            </Link>
-            <Link
-              href="/test"
-              className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#9945FF] transition hover:text-[#b47aff]"
-              onClick={() => setMenuOpen(false)}
-            >
-              Rizz Test
-            </Link>
-            <Link
-              href="/profile"
-              className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#a09ab8] transition hover:text-[#E4D474]"
-              onClick={() => setMenuOpen(false)}
-            >
-              Profile
-            </Link>
-            <Link
-              href="/leaderboard"
-              className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#a09ab8] transition hover:text-[#E4D474]"
-              onClick={() => setMenuOpen(false)}
-            >
-              Leaderboard
-            </Link>
-            <Link
-              href="/guilds"
-              className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#a09ab8] transition hover:text-[#E4D474]"
-              onClick={() => setMenuOpen(false)}
-            >
-              Gangs
-            </Link>
-            <Link
-              href="/store"
-              className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#E4D474] transition hover:text-[#ece880]"
-              onClick={() => setMenuOpen(false)}
-            >
-              Store
-            </Link>
-            <Link
-              href="/saura"
-              className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#9945FF] transition hover:text-[#b47aff]"
-              onClick={() => setMenuOpen(false)}
-            >
-              Staking
-            </Link>
+            {[
+              { href: "/home",        label: "Home" },
+              { href: "/profile",     label: "Profile" },
+              { href: "/leaderboard", label: "Leaderboard" },
+              { href: "/guilds",      label: "Gangs" },
+              { href: "/store",       label: "Store" },
+              { href: "/saura",       label: "Staking" },
+            ].map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-white transition hover:text-[#E4D474]"
+                onClick={() => setMenuOpen(false)}
+              >
+                {label}
+              </Link>
+            ))}
             {account && (
               <span className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#a09ab8]">
                 {truncatedAddress}

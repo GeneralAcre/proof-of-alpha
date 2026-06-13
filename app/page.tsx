@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Nav } from "./components/Nav";
+import { RizzTestModal, hasSeenRizzTest } from "./components/RizzTestModal";
 
 // ─── Partner logos ────────────────────────────────────────────────────────────
 
@@ -185,7 +186,11 @@ function HomeContent() {
     }
     return "lobby";
   });
-  const onStoryboardDone = useCallback(() => setScreen("home"), []);
+  const [showRizzModal, setShowRizzModal] = useState(false);
+  const onStoryboardDone = useCallback(() => {
+    setScreen("home");
+    if (!hasSeenRizzTest()) setShowRizzModal(true);
+  }, []);
 
   // ── Lobby — big background picture + Start ──────────────────────────────────
   if (screen === "lobby") {
@@ -220,6 +225,7 @@ function HomeContent() {
   return (
     <>
       {screen === "storyboard" && <Storyboard onDone={onStoryboardDone} />}
+      {showRizzModal && <RizzTestModal onClose={() => setShowRizzModal(false)} />}
 
       {/* Landing page — fades in after storyboard */}
       <div
