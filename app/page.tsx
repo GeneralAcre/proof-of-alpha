@@ -232,7 +232,7 @@ export default function Home() {
           <section className="overflow-hidden border-b border-[#a09ab8]/25 bg-[#0a0820]">
             <div className="flex items-center">
               <div className="shrink-0 border-r border-[#a09ab8]/25 px-3 py-3 sm:px-5 sm:py-4">
-                <p className="font-mono text-[8px] uppercase tracking-[0.2em] text-[#a09ab8]">Built with</p>
+                <p className="font-mono text-xs uppercase tracking-[0.2em] text-white font-black">Built with</p>
               </div>
               <div className="overflow-hidden flex-1">
                 <div
