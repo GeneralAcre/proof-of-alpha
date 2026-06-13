@@ -30,14 +30,14 @@ export function Nav() {
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
 
         {/* Logo */}
-        <Link href="/?skip=1">
+        <Link href="/home">
           <Image src="/logo.svg" alt="Proof of Alpha" width={40} height={40} />
         </Link>
 
         {/* Desktop centre links */}
         <div className="hidden items-center gap-7 sm:flex">
           <Link
-            href="/?skip=1"
+            href="/home"
             className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#a09ab8] transition hover:text-[#E4D474]"
           >
             Home
@@ -158,7 +158,7 @@ export function Nav() {
         <div className="border-t border-[#a09ab8]/30 bg-[#24153E] px-4 pb-4 pt-3 sm:hidden">
           <div className="flex flex-col gap-1">
             <Link
-              href="/?skip=1"
+              href="/home"
               className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#a09ab8] transition hover:text-[#E4D474]"
               onClick={() => setMenuOpen(false)}
             >
