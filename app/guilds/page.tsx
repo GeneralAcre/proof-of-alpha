@@ -104,75 +104,57 @@ export default function GuildsPage() {
               Form a gang, climb the leaderboard together.
             </p>
           </div>
-          <div className="flex items-center gap-3 shrink-0">
-            {supabaseReady && (
-              <div className="flex items-center gap-2 border border-[#a09ab8]/30 px-3 py-2">
-                <span className="h-2 w-2 rounded-full bg-[#E4D474] animate-pulse" />
-                <span className="font-mono text-[10px] uppercase tracking-widest text-[#a09ab8]">Live</span>
-              </div>
-            )}
-            <button
-              className="border-2 border-[#E4D474] bg-[#E4D474] px-5 py-2.5 font-mono text-xs font-black uppercase tracking-widest text-[#24153E] shadow-[3px_3px_0_#a09ab8] transition hover:bg-transparent hover:text-[#E4D474] disabled:opacity-40 disabled:cursor-not-allowed touch-manipulation"
-              onClick={() => setCreating(true)}
-              type="button"
-              disabled={!addr || !canCreate}
-            >
-              {!addr
-                ? "Connect Wallet"
-                : !canCreate
-                ? `Need ${BSOL_CREATE_REQUIRED} bSOL`
-                : "Create Gang"}
-            </button>
-          </div>
+          {supabaseReady && (
+            <div className="flex items-center gap-2 border border-[#a09ab8]/30 px-3 py-2">
+              <span className="h-2 w-2 rounded-full bg-[#E4D474] animate-pulse" />
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[#a09ab8]">Live</span>
+            </div>
+          )}
         </div>
 
-        {/* My gang panel */}
-        {myGuild && (
+        {/* Create Gang — always visible, locked when no bSOL */}
+        {!creating && (
           <section>
-            <p className="mb-3 font-mono text-[10px] font-black uppercase tracking-[0.2em] text-[#a09ab8]">Your Gang</p>
-            <div className="border-2 border-[#E4D474] bg-[#2d1a4a] p-5 sm:p-6 shadow-[6px_6px_0_#160c2c]">
-              <div className="flex flex-wrap items-start justify-between gap-4">
+            <p className="mb-3 font-mono text-[10px] font-black uppercase tracking-[0.2em] text-[#a09ab8]">Found a Gang</p>
+            <button
+              type="button"
+              onClick={() => canCreate && setCreating(true)}
+              className={`relative w-full text-left border px-5 py-5 transition ${
+                canCreate
+                  ? "border-[#E4D474] bg-[#2d1a4a] shadow-[4px_4px_0_#a09ab8] hover:bg-[#3a2060] cursor-pointer"
+                  : "border-[#a09ab8]/20 bg-[#160c2c] cursor-not-allowed"
+              }`}
+            >
+              <div className="flex items-center justify-between gap-4">
                 <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="border border-[#E4D474] px-2 py-0.5 font-mono text-xs font-black text-[#E4D474]">
-                      [{myGuild.tag}]
-                    </span>
-                    <h2 className="text-2xl font-black uppercase sm:text-3xl">{myGuild.name}</h2>
-                  </div>
-                  {myGuild.motto && (
-                    <p className="mt-1 font-mono text-sm italic text-[#a09ab8]">"{myGuild.motto}"</p>
-                  )}
-                  <div className="mt-3 flex flex-wrap gap-5 font-mono text-sm text-[#a09ab8]">
-                    <span><span className="font-black text-[#E4D474]">{myGuild.members.length}</span> members</span>
-                    <span><span className="font-black text-[#E4D474]">{getGuildAura(myGuild).toLocaleString()}</span> AURA</span>
-                  </div>
+                  <p className={`font-mono text-sm font-black uppercase tracking-widest ${canCreate ? "text-[#E4D474]" : "text-[#a09ab8]/40"}`}>
+                    Create Gang
+                  </p>
+                  <p className={`mt-0.5 font-mono text-[10px] ${canCreate ? "text-[#a09ab8]" : "text-[#a09ab8]/30"}`}>
+                    {canCreate
+                      ? `You qualify · ${bsol.toFixed(4)} bSOL held`
+                      : `Requires ${BSOL_CREATE_REQUIRED} bSOL to found a gang`}
+                  </p>
                 </div>
-                <div className="flex gap-2 shrink-0">
-                  <Link
-                    href={`/guilds/${myGuild.id}`}
-                    className="border border-[#a09ab8] px-4 py-2.5 font-mono text-xs uppercase tracking-wide text-[#a09ab8] transition hover:border-[#E4D474] hover:text-[#E4D474] touch-manipulation"
-                  >
-                    View
-                  </Link>
-                  {!myGuild.id.startsWith("seed_") && (
-                    <button
-                      className="border border-[#a09ab8]/40 px-4 py-2.5 font-mono text-xs uppercase tracking-wide text-[#a09ab8]/50 transition hover:border-red-400 hover:text-red-400 touch-manipulation"
-                      onClick={handleLeave}
-                      type="button"
-                    >
-                      Leave
-                    </button>
-                  )}
-                </div>
+                {!canCreate && (
+                  <span className="shrink-0 border border-[#a09ab8]/20 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-[#a09ab8]/30">
+                    Locked
+                  </span>
+                )}
+                {canCreate && (
+                  <span className="shrink-0 border-2 border-[#E4D474] bg-[#E4D474] px-4 py-2 font-mono text-xs font-black uppercase tracking-widest text-[#24153E]">
+                    + Create
+                  </span>
+                )}
               </div>
-            </div>
+            </button>
           </section>
         )}
 
         {/* Create gang form */}
         {creating && (
           <section>
-            <p className="mb-3 font-mono text-[10px] font-black uppercase tracking-[0.2em] text-[#a09ab8]">Start a Gang</p>
+            <p className="mb-3 font-mono text-[10px] font-black uppercase tracking-[0.2em] text-[#a09ab8]">Found a Gang</p>
             <form onSubmit={handleCreate} className="border border-[#a09ab8]/60 bg-[#160c2c]">
               <div className="border-b border-[#a09ab8]/30 px-5 py-4">
                 <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[#E4D474]">New Gang</p>
@@ -249,6 +231,49 @@ export default function GuildsPage() {
                 </div>
               </div>
             </form>
+          </section>
+        )}
+
+        {/* My gang panel */}
+        {myGuild && (
+          <section>
+            <p className="mb-3 font-mono text-[10px] font-black uppercase tracking-[0.2em] text-[#a09ab8]">Your Gang</p>
+            <div className="border-2 border-[#E4D474] bg-[#2d1a4a] p-5 sm:p-6 shadow-[6px_6px_0_#160c2c]">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="border border-[#E4D474] px-2 py-0.5 font-mono text-xs font-black text-[#E4D474]">
+                      [{myGuild.tag}]
+                    </span>
+                    <h2 className="text-2xl font-black uppercase sm:text-3xl">{myGuild.name}</h2>
+                  </div>
+                  {myGuild.motto && (
+                    <p className="mt-1 font-mono text-sm italic text-[#a09ab8]">"{myGuild.motto}"</p>
+                  )}
+                  <div className="mt-3 flex flex-wrap gap-5 font-mono text-sm text-[#a09ab8]">
+                    <span><span className="font-black text-[#E4D474]">{myGuild.members.length}</span> members</span>
+                    <span><span className="font-black text-[#E4D474]">{getGuildAura(myGuild).toLocaleString()}</span> AURA</span>
+                  </div>
+                </div>
+                <div className="flex gap-2 shrink-0">
+                  <Link
+                    href={`/guilds/${myGuild.id}`}
+                    className="border border-[#a09ab8] px-4 py-2.5 font-mono text-xs uppercase tracking-wide text-[#a09ab8] transition hover:border-[#E4D474] hover:text-[#E4D474] touch-manipulation"
+                  >
+                    View
+                  </Link>
+                  {!myGuild.id.startsWith("seed_") && (
+                    <button
+                      className="border border-[#a09ab8]/40 px-4 py-2.5 font-mono text-xs uppercase tracking-wide text-[#a09ab8]/50 transition hover:border-red-400 hover:text-red-400 touch-manipulation"
+                      onClick={handleLeave}
+                      type="button"
+                    >
+                      Leave
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
           </section>
         )}
 
