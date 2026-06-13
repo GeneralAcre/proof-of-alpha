@@ -37,6 +37,12 @@ export function Nav() {
         {/* Desktop centre links */}
         <div className="hidden items-center gap-7 sm:flex">
           <Link
+            href="/profile"
+            className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#a09ab8] transition hover:text-[#E4D474]"
+          >
+            Profile
+          </Link>
+          <Link
             href="/saura"
             className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#9945FF] transition hover:text-[#b47aff]"
           >
@@ -68,12 +74,9 @@ export function Nav() {
           {account ? (
             /* Connected state */
             <>
-              <Link
-                href="/profile"
-                className="hidden border border-[#a09ab8]/50 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-[#a09ab8] transition hover:border-[#E4D474] hover:text-[#E4D474] sm:block"
-              >
+              <span className="hidden border border-[#a09ab8]/50 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-[#a09ab8] sm:block">
                 {truncatedAddress}
-              </Link>
+              </span>
               <button
                 className="border border-[#a09ab8]/50 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-[#a09ab8] transition hover:border-red-400 hover:text-red-400 touch-manipulation"
                 onClick={disconnect}
@@ -149,6 +152,13 @@ export function Nav() {
         <div className="border-t border-[#a09ab8]/30 bg-[#24153E] px-4 pb-4 pt-3 sm:hidden">
           <div className="flex flex-col gap-1">
             <Link
+              href="/profile"
+              className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#a09ab8] transition hover:text-[#E4D474]"
+              onClick={() => setMenuOpen(false)}
+            >
+              Profile
+            </Link>
+            <Link
               href="/saura"
               className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#9945FF] transition hover:text-[#b47aff]"
               onClick={() => setMenuOpen(false)}
@@ -177,13 +187,9 @@ export function Nav() {
               Store
             </Link>
             {account && (
-              <Link
-                href="/profile"
-                className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#a09ab8] transition hover:text-[#E4D474]"
-                onClick={() => setMenuOpen(false)}
-              >
+              <span className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#a09ab8]">
                 {truncatedAddress}
-              </Link>
+              </span>
             )}
           </div>
         </div>
