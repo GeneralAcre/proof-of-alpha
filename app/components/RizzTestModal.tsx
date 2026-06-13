@@ -142,7 +142,7 @@ export function RizzTestModal({ onClose }: { onClose: () => void }) {
           <button
             type="button"
             onClick={handleClose}
-            className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#a09ab8] transition hover:text-[#E4D474]"
+            className="border border-[#a09ab8]/40 px-3 py-1 font-mono text-[10px] font-black uppercase tracking-[0.15em] text-[#E4D474] transition hover:border-[#E4D474]"
           >
             Skip
           </button>
@@ -155,7 +155,7 @@ export function RizzTestModal({ onClose }: { onClose: () => void }) {
             <>
               {/* Progress */}
               <div>
-                <div className="mb-1.5 flex justify-between font-mono text-[9px] uppercase tracking-widest text-[#a09ab8]">
+                <div className="mb-1.5 flex justify-between font-mono text-xs font-black uppercase tracking-widest text-[#a09ab8]">
                   <span>{current + 1} / {QUESTIONS.length}</span>
                   <span>{Math.round(progress)}%</span>
                 </div>
@@ -170,7 +170,7 @@ export function RizzTestModal({ onClose }: { onClose: () => void }) {
                 <p className="mt-1 text-sm leading-6 text-[#ffffff]">{QUESTIONS[current].scenario}</p>
               </div>
 
-              <p className="text-xl font-black uppercase">{QUESTIONS[current].question}</p>
+              <p className="text-xl font-black uppercase text-[#E4D474]">{QUESTIONS[current].question}</p>
 
               {/* Options */}
               <div className="space-y-2">
