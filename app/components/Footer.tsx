@@ -36,10 +36,10 @@ export function Footer() {
     <footer className="border-t border-[#a09ab8]/20 bg-[#160c2c]">
 
       {/* ── Top grid ── */}
-      <div className="mx-auto max-w-7xl grid grid-cols-1 gap-10 px-6 py-12 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+      <div className="mx-auto max-w-7xl grid grid-cols-2 gap-10 px-6 py-12 lg:grid-cols-3 lg:gap-8">
 
         {/* Contact */}
-        <div>
+        <div className="col-span-2 lg:col-span-1">
           <p className="mb-5 font-mono text-xs font-black uppercase tracking-[0.22em] text-[#a09ab8]">
             Contact &amp; Support
           </p>
