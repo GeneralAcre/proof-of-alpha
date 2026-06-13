@@ -70,7 +70,7 @@ export default function StorePage() {
   }, [walletAddr]);
 
   async function handleBuy(pack: Pack) {
-    if (!account || !selectedWallet) return;
+    if (!account || !selectedWallet || !walletAddr) return;
 
     setBuyState((s) => ({ ...s, [pack.id]: "signing" }));
     setErrors((e) => ({ ...e, [pack.id]: "" }));
@@ -79,13 +79,24 @@ export default function StorePage() {
       setBuyState((s) => ({ ...s, [pack.id]: "confirming" }));
       const sig = await sendSolPayment(selectedWallet, account, pack.sol);
 
-      // Award AURA locally after confirmed on-chain payment
-      const next = balance + pack.aura;
+      // Server verifies the on-chain payment before awarding AURA
+      const res = await fetch("/api/store-purchase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ playerWallet: walletAddr, packId: pack.id, txSignature: sig }),
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error((body as { error?: string }).error ?? "Server rejected purchase");
+      }
+
+      const { aura } = await res.json() as { aura: number };
+      const next = balance + aura;
       try { localStorage.setItem(auraKey(walletAddr), String(next)); } catch {}
       setBalance(next);
       setTxSigs((t) => ({ ...t, [pack.id]: sig }));
       setBuyState((s) => ({ ...s, [pack.id]: "done" }));
-
       setTimeout(() => setBuyState((s) => ({ ...s, [pack.id]: "idle" })), 6000);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Transaction failed";
