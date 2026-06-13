@@ -285,9 +285,9 @@ export default function Home() {
                   </Link>
                   <Link
                     className="border-2 border-[#a09ab8] px-8 py-3.5 font-black uppercase tracking-[0.14em] text-[#E4D474] shadow-[5px_5px_0_#a09ab8] transition hover:border-[#E4D474] touch-manipulation"
-                    href="/store"
+                    href="/how-to-play"
                   >
-                    Buy AURA
+                    How to Play
                   </Link>
                 </div>
               </div>

@@ -37,12 +37,6 @@ export function Nav() {
         {/* Desktop centre links */}
         <div className="hidden items-center gap-7 sm:flex">
           <Link
-            href="/how-to-play"
-            className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#a09ab8] transition hover:text-[#E4D474]"
-          >
-            How to Play
-          </Link>
-          <Link
             href="/tips"
             className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#a09ab8] transition hover:text-[#E4D474]"
           >
@@ -160,13 +154,6 @@ export function Nav() {
       {menuOpen && (
         <div className="border-t border-[#a09ab8]/30 bg-[#24153E] px-4 pb-4 pt-3 sm:hidden">
           <div className="flex flex-col gap-1">
-            <Link
-              href="/how-to-play"
-              className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#a09ab8] transition hover:text-[#E4D474]"
-              onClick={() => setMenuOpen(false)}
-            >
-              How to Play
-            </Link>
             <Link
               href="/tips"
               className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#a09ab8] transition hover:text-[#E4D474]"
