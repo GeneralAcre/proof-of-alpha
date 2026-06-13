@@ -178,12 +178,10 @@ export function RizzTestModal({ onClose }: { onClose: () => void }) {
                   <button
                     key={i}
                     type="button"
-                    onClick={() => chosen === null && setChosen(i)}
+                    onClick={() => setChosen(i)}
                     className={`w-full border px-4 py-3 text-left transition touch-manipulation ${
                       chosen === i
                         ? "border-[#E4D474] bg-[#E4D474]/10 text-[#E4D474]"
-                        : chosen !== null
-                        ? "border-[#a09ab8]/15 text-[#a09ab8]/40 cursor-default"
                         : "border-[#a09ab8]/30 text-[#ffffff] hover:border-[#E4D474] hover:text-[#E4D474]"
                     }`}
                   >
