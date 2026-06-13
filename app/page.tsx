@@ -289,6 +289,12 @@ export default function Home() {
                   >
                     How to Play
                   </Link>
+                  <Link
+                    className="border border-[#a09ab8]/50 px-8 py-3.5 font-black uppercase tracking-[0.14em] text-[#a09ab8] transition hover:border-[#E4D474] hover:text-[#E4D474] touch-manipulation"
+                    href="/tips"
+                  >
+                    Tips
+                  </Link>
                 </div>
               </div>
 
