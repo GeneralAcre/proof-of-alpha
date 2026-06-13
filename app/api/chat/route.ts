@@ -1,11 +1,15 @@
 import { GIRL_ARCHETYPES, type Difficulty } from "../../lib/girls";
 
 // ─── Model config per difficulty ──────────────────────────────────────────────
+// Same model for all tiers — difficulty comes from girl's system prompt + win thresholds.
+// Temperature varies: low = predictable (easy girls forgive), high = unpredictable (hard girls punish).
+
+const MODEL = "meta-llama/llama-3.1-8b-instruct";
 
 const MODEL_CONFIG: Record<Difficulty, { model: string; temperature: number }> = {
-  easy:   { model: "meta-llama/llama-3.1-8b-instruct", temperature: 0.5 },
-  medium: { model: "qwen/qwen-2.5-7b-instruct",        temperature: 0.9 },
-  hard:   { model: "meta-llama/llama-3.3-70b-instruct",         temperature: 1.0 },
+  easy:   { model: MODEL, temperature: 0.5 },
+  medium: { model: MODEL, temperature: 0.8 },
+  hard:   { model: MODEL, temperature: 1.0 },
 };
 
 const OR_BASE = "https://openrouter.ai/api/v1/chat/completions";
