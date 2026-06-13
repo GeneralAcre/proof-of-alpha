@@ -30,7 +30,7 @@ export function Nav() {
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
 
         {/* Logo */}
-        <Link href="/">
+        <Link href="/?skip=1">
           <Image src="/logo.svg" alt="Proof of Alpha" width={40} height={40} />
         </Link>
 
@@ -41,12 +41,6 @@ export function Nav() {
             className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#a09ab8] transition hover:text-[#E4D474]"
           >
             Profile
-          </Link>
-          <Link
-            href="/saura"
-            className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#9945FF] transition hover:text-[#b47aff]"
-          >
-            Staking
           </Link>
           <Link
             href="/leaderboard"
@@ -65,6 +59,12 @@ export function Nav() {
             className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#E4D474] transition hover:text-[#ece880]"
           >
             Store
+          </Link>
+          <Link
+            href="/saura"
+            className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#9945FF] transition hover:text-[#b47aff]"
+          >
+            Staking
           </Link>
         </div>
 
@@ -159,13 +159,6 @@ export function Nav() {
               Profile
             </Link>
             <Link
-              href="/saura"
-              className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#9945FF] transition hover:text-[#b47aff]"
-              onClick={() => setMenuOpen(false)}
-            >
-              Staking
-            </Link>
-            <Link
               href="/leaderboard"
               className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#a09ab8] transition hover:text-[#E4D474]"
               onClick={() => setMenuOpen(false)}
@@ -185,6 +178,13 @@ export function Nav() {
               onClick={() => setMenuOpen(false)}
             >
               Store
+            </Link>
+            <Link
+              href="/saura"
+              className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#9945FF] transition hover:text-[#b47aff]"
+              onClick={() => setMenuOpen(false)}
+            >
+              Staking
             </Link>
             {account && (
               <span className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#a09ab8]">

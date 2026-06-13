@@ -1,8 +1,9 @@
 ﻿"use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Nav } from "./components/Nav";
 
 // ─── Partner logos ────────────────────────────────────────────────────────────
@@ -177,8 +178,10 @@ function Storyboard({ onDone }: { onDone: () => void }) {
 
 type Screen = "lobby" | "storyboard" | "home";
 
-export default function Home() {
-  const [screen, setScreen] = useState<Screen>("lobby");
+function HomeContent() {
+  const params = useSearchParams();
+  const skip = params.get("skip") === "1";
+  const [screen, setScreen] = useState<Screen>(skip ? "home" : "lobby");
   const onStoryboardDone = useCallback(() => setScreen("home"), []);
 
   // ── Lobby — big background picture + Start ──────────────────────────────────
@@ -338,5 +341,13 @@ export default function Home() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#24153E]" />}>
+      <HomeContent />
+    </Suspense>
   );
 }
