@@ -11,11 +11,11 @@ export type Guild = {
   cachedAura: number;  // sum of member aura snapshots
 };
 
-export const GUILD_CREATE_COST = 500;
-
-const AURA_KEY = (addr: string) => `poa_aura_${addr}`;
+export const BSOL_CREATE_REQUIRED = 0.1; // minimum bSOL to hold to found a gang
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+
+const AURA_KEY = (addr: string) => `poa_aura_${addr}`;
 
 function getLocalAura(addr: string): number {
   try { return Number(localStorage.getItem(AURA_KEY(addr)) ?? "0") || 0; } catch { return 0; }
@@ -85,16 +85,9 @@ export async function createGuild(
 ): Promise<{ guild: Guild } | { error: string }> {
   if (!supabaseReady) return { error: "Database not configured." };
 
-  const balance = getLocalAura(addr);
-  if (balance < GUILD_CREATE_COST) {
-    return { error: `Need ${GUILD_CREATE_COST} AURA to found a gang. You have ${balance}.` };
-  }
-
   await leaveGuild(addr);
 
-  const auraAfter = balance - GUILD_CREATE_COST;
-  try { localStorage.setItem(AURA_KEY(addr), String(auraAfter)); } catch {}
-
+  const aura = getLocalAura(addr);
   const id = `guild_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
 
   const { error: gangErr } = await supabase.from("gangs").insert({
@@ -109,7 +102,7 @@ export async function createGuild(
   await supabase.from("gang_members").insert({
     address: addr,
     gang_id: id,
-    aura_snapshot: auraAfter,
+    aura_snapshot: aura,
   });
 
   return {
@@ -121,7 +114,7 @@ export async function createGuild(
       members: [addr],
       createdBy: addr,
       createdAt: Date.now(),
-      cachedAura: auraAfter,
+      cachedAura: aura,
     },
   };
 }

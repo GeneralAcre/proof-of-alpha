@@ -1,18 +1,18 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Nav } from "../components/Nav";
 import { useWallet } from "../components/WalletProvider";
 import { supabase, supabaseReady } from "../lib/supabase";
+import { getBsolBalance } from "../lib/solblaze";
 import {
   loadGuilds,
   getGuildAura,
   createGuild,
   joinGuild,
   leaveGuild,
-  getPlayerAuraBalance,
-  GUILD_CREATE_COST,
+  BSOL_CREATE_REQUIRED,
   type Guild,
 } from "../lib/guilds";
 
@@ -20,17 +20,17 @@ export default function GuildsPage() {
   const { account } = useWallet();
   const addr = account ? String(account.address) : null;
 
-  const [guilds,      setGuilds]      = useState<Guild[]>([]);
-  const [myGuild,     setMyGuild]     = useState<Guild | null>(null);
-  const [auraBalance, setAuraBalance] = useState(0);
-  const [loading,     setLoading]     = useState(true);
-  const [creating,    setCreating]    = useState(false);
-  const [submitting,  setSubmitting]  = useState(false);
-  const [name,        setName]        = useState("");
-  const [tag,         setTag]         = useState("");
-  const [motto,       setMotto]       = useState("");
-  const [error,       setError]       = useState("");
-  const [joining,     setJoining]     = useState<string | null>(null);
+  const [guilds,     setGuilds]     = useState<Guild[]>([]);
+  const [myGuild,    setMyGuild]    = useState<Guild | null>(null);
+  const [bsol,       setBsol]       = useState(0);
+  const [loading,    setLoading]    = useState(true);
+  const [creating,   setCreating]   = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [name,       setName]       = useState("");
+  const [tag,        setTag]        = useState("");
+  const [motto,      setMotto]      = useState("");
+  const [error,      setError]      = useState("");
+  const [joining,    setJoining]    = useState<string | null>(null);
 
   async function refresh() {
     const all = await loadGuilds();
@@ -38,7 +38,8 @@ export default function GuildsPage() {
     setGuilds(sorted);
     if (addr) {
       setMyGuild(sorted.find((g) => g.members.includes(addr)) ?? null);
-      setAuraBalance(getPlayerAuraBalance(addr));
+      const bal = await getBsolBalance(addr);
+      setBsol(bal);
     }
     setLoading(false);
   }
@@ -86,9 +87,8 @@ export default function GuildsPage() {
     await refresh();
   }
 
-  const canJoin = (g: Guild) => !g.id.startsWith("seed_");
-  const canAffordCreate = auraBalance >= GUILD_CREATE_COST;
-  const auraAfter = auraBalance - GUILD_CREATE_COST;
+  const canJoin   = (g: Guild) => !g.id.startsWith("seed_");
+  const canCreate = bsol >= BSOL_CREATE_REQUIRED;
 
   return (
     <div className="min-h-screen bg-[#24153E] text-[#E4D474]">
@@ -116,9 +116,13 @@ export default function GuildsPage() {
                 className="border-2 border-[#E4D474] bg-[#E4D474] px-5 py-2.5 font-mono text-xs font-black uppercase tracking-widest text-[#24153E] shadow-[3px_3px_0_#a09ab8] transition hover:bg-transparent hover:text-[#E4D474] disabled:opacity-40 disabled:cursor-not-allowed touch-manipulation"
                 onClick={() => setCreating(true)}
                 type="button"
-                disabled={!addr || !canAffordCreate}
+                disabled={!addr || !canCreate}
               >
-                {!addr ? "Connect Wallet" : !canAffordCreate ? `Need ${GUILD_CREATE_COST} AURA` : "Create Gang"}
+                {!addr
+                  ? "Connect Wallet"
+                  : !canCreate
+                  ? `Need ${BSOL_CREATE_REQUIRED} bSOL`
+                  : "Create Gang"}
               </button>
             )}
           </div>
@@ -172,81 +176,81 @@ export default function GuildsPage() {
           <section>
             <p className="mb-3 font-mono text-[10px] font-black uppercase tracking-[0.2em] text-[#a09ab8]">Start a Gang</p>
             <form onSubmit={handleCreate} className="border border-[#a09ab8]/60 bg-[#160c2c]">
-                <div className="border-b border-[#a09ab8]/30 px-5 py-4">
-                  <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[#E4D474]">New Gang</p>
-                  <p className="mt-0.5 font-mono text-[10px] text-[#a09ab8]">
-                    Costs {GUILD_CREATE_COST} AURA · You have {auraBalance} · Balance after: {auraAfter}
-                  </p>
-                </div>
+              <div className="border-b border-[#a09ab8]/30 px-5 py-4">
+                <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[#E4D474]">New Gang</p>
+                <p className="mt-0.5 font-mono text-[10px] text-[#a09ab8]">
+                  Requires {BSOL_CREATE_REQUIRED} bSOL · Your balance: {bsol.toFixed(4)} bSOL
+                </p>
+              </div>
 
-                <div className="p-5 sm:p-6 space-y-4">
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div>
-                      <label className="mb-1.5 block font-mono text-[10px] uppercase tracking-[0.18em] text-[#a09ab8]">
-                        Gang Name
-                      </label>
-                      <input
-                        className="w-full border border-[#a09ab8] bg-[#24153E] px-3 py-3 font-mono text-sm text-[#E4D474] outline-none focus:border-[#E4D474] touch-manipulation"
-                        maxLength={32}
-                        placeholder="Alpha Legion"
-                        autoComplete="off"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="mb-1.5 block font-mono text-[10px] uppercase tracking-[0.18em] text-[#a09ab8]">
-                        Tag <span className="normal-case">(2–4 chars)</span>
-                      </label>
-                      <input
-                        className="w-full border border-[#a09ab8] bg-[#24153E] px-3 py-3 font-mono text-sm uppercase text-[#E4D474] outline-none focus:border-[#E4D474] touch-manipulation"
-                        maxLength={4}
-                        placeholder="ALP"
-                        autoComplete="off"
-                        value={tag}
-                        onChange={(e) => setTag(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""))}
-                      />
-                    </div>
-                  </div>
-
+              <div className="p-5 sm:p-6 space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <label className="mb-1.5 block font-mono text-[10px] uppercase tracking-[0.18em] text-[#a09ab8]">
-                      Motto <span className="normal-case text-[#a09ab8]/60">(optional)</span>
+                      Gang Name
                     </label>
                     <input
                       className="w-full border border-[#a09ab8] bg-[#24153E] px-3 py-3 font-mono text-sm text-[#E4D474] outline-none focus:border-[#E4D474] touch-manipulation"
-                      maxLength={60}
-                      placeholder="Real ones only."
+                      maxLength={32}
+                      placeholder="Alpha Legion"
                       autoComplete="off"
-                      value={motto}
-                      onChange={(e) => setMotto(e.target.value)}
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
                     />
                   </div>
-
-                  {error && (
-                    <p className="border border-[#a09ab8]/30 bg-[#a09ab8]/5 px-4 py-3 font-mono text-xs text-[#a09ab8]">
-                      {error}
-                    </p>
-                  )}
-
-                  <div className="flex gap-3 pt-1">
-                    <button
-                      className="flex-1 border-2 border-[#E4D474] bg-[#E4D474] py-3 font-mono text-sm font-black uppercase tracking-wide text-[#24153E] transition hover:bg-transparent hover:text-[#E4D474] disabled:opacity-50 touch-manipulation"
-                      type="submit"
-                      disabled={submitting}
-                    >
-                      {submitting ? "Founding…" : `Found Gang — −${GUILD_CREATE_COST} AURA`}
-                    </button>
-                    <button
-                      className="border border-[#a09ab8]/50 px-5 py-3 font-mono text-sm uppercase text-[#a09ab8] transition hover:border-[#E4D474] hover:text-[#E4D474] touch-manipulation"
-                      onClick={() => { setCreating(false); setError(""); }}
-                      type="button"
-                    >
-                      Cancel
-                    </button>
+                  <div>
+                    <label className="mb-1.5 block font-mono text-[10px] uppercase tracking-[0.18em] text-[#a09ab8]">
+                      Tag <span className="normal-case">(2–4 chars)</span>
+                    </label>
+                    <input
+                      className="w-full border border-[#a09ab8] bg-[#24153E] px-3 py-3 font-mono text-sm uppercase text-[#E4D474] outline-none focus:border-[#E4D474] touch-manipulation"
+                      maxLength={4}
+                      placeholder="ALP"
+                      autoComplete="off"
+                      value={tag}
+                      onChange={(e) => setTag(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""))}
+                    />
                   </div>
                 </div>
-              </form>
+
+                <div>
+                  <label className="mb-1.5 block font-mono text-[10px] uppercase tracking-[0.18em] text-[#a09ab8]">
+                    Motto <span className="normal-case text-[#a09ab8]/60">(optional)</span>
+                  </label>
+                  <input
+                    className="w-full border border-[#a09ab8] bg-[#24153E] px-3 py-3 font-mono text-sm text-[#E4D474] outline-none focus:border-[#E4D474] touch-manipulation"
+                    maxLength={60}
+                    placeholder="Real ones only."
+                    autoComplete="off"
+                    value={motto}
+                    onChange={(e) => setMotto(e.target.value)}
+                  />
+                </div>
+
+                {error && (
+                  <p className="border border-[#a09ab8]/30 bg-[#a09ab8]/5 px-4 py-3 font-mono text-xs text-[#a09ab8]">
+                    {error}
+                  </p>
+                )}
+
+                <div className="flex gap-3 pt-1">
+                  <button
+                    className="flex-1 border-2 border-[#E4D474] bg-[#E4D474] py-3 font-mono text-sm font-black uppercase tracking-wide text-[#24153E] transition hover:bg-transparent hover:text-[#E4D474] disabled:opacity-50 touch-manipulation"
+                    type="submit"
+                    disabled={submitting}
+                  >
+                    {submitting ? "Founding…" : "Found Gang"}
+                  </button>
+                  <button
+                    className="border border-[#a09ab8]/50 px-5 py-3 font-mono text-sm uppercase text-[#a09ab8] transition hover:border-[#E4D474] hover:text-[#E4D474] touch-manipulation"
+                    onClick={() => { setCreating(false); setError(""); }}
+                    type="button"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </form>
           </section>
         )}
 
