@@ -111,20 +111,18 @@ export default function GuildsPage() {
                 <span className="font-mono text-[10px] uppercase tracking-widest text-[#a09ab8]">Live</span>
               </div>
             )}
-            {!myGuild && (
-              <button
-                className="border-2 border-[#E4D474] bg-[#E4D474] px-5 py-2.5 font-mono text-xs font-black uppercase tracking-widest text-[#24153E] shadow-[3px_3px_0_#a09ab8] transition hover:bg-transparent hover:text-[#E4D474] disabled:opacity-40 disabled:cursor-not-allowed touch-manipulation"
-                onClick={() => setCreating(true)}
-                type="button"
-                disabled={!addr || !canCreate}
-              >
-                {!addr
-                  ? "Connect Wallet"
-                  : !canCreate
-                  ? `Need ${BSOL_CREATE_REQUIRED} bSOL`
-                  : "Create Gang"}
-              </button>
-            )}
+            <button
+              className="border-2 border-[#E4D474] bg-[#E4D474] px-5 py-2.5 font-mono text-xs font-black uppercase tracking-widest text-[#24153E] shadow-[3px_3px_0_#a09ab8] transition hover:bg-transparent hover:text-[#E4D474] disabled:opacity-40 disabled:cursor-not-allowed touch-manipulation"
+              onClick={() => setCreating(true)}
+              type="button"
+              disabled={!addr || !canCreate}
+            >
+              {!addr
+                ? "Connect Wallet"
+                : !canCreate
+                ? `Need ${BSOL_CREATE_REQUIRED} bSOL`
+                : "Create Gang"}
+            </button>
           </div>
         </div>
 
@@ -172,7 +170,7 @@ export default function GuildsPage() {
         )}
 
         {/* Create gang form */}
-        {!myGuild && creating && (
+        {creating && (
           <section>
             <p className="mb-3 font-mono text-[10px] font-black uppercase tracking-[0.2em] text-[#a09ab8]">Start a Gang</p>
             <form onSubmit={handleCreate} className="border border-[#a09ab8]/60 bg-[#160c2c]">
