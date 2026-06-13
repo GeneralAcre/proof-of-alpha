@@ -632,7 +632,7 @@ function GameContent() {
               disabled={isLoading || msgCount >= MAX_MSGS}
               maxLength={200}
               onChange={(e) => setDraft(e.target.value)}
-              placeholder={msgCount >= MAX_MSGS ? "Choose your closer ↓" : `Message ${girl.name}…`}
+              placeholder={msgCount >= MAX_MSGS ? "Choose your closer" : `Message ${girl.name}…`}
               type="text"
               value={draft}
             />

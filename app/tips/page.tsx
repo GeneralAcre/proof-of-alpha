@@ -48,7 +48,7 @@ const CLOSERS = [
     name: "FLIRT",
     range: "15 – 90%",
     use: "Chat went well — score strongly positive",
-    avoid: "Score flat or negative → you're gambling",
+    avoid: "Score flat or negative — you're gambling",
   },
   {
     name: "FLEX",

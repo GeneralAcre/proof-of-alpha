@@ -122,7 +122,7 @@ export default function PlayerProfilePage({ params }: { params: Promise<{ addr: 
                 <div className="mt-4">
                   <div className="mb-1.5 flex justify-between font-mono text-[10px] uppercase text-[#a09ab8]">
                     <span>{aura.toLocaleString()} AURA</span>
-                    {nextRank && <span>→ {nextRank.name}</span>}
+                    {nextRank && <span>/ {nextRank.name}</span>}
                   </div>
                   <div className="h-1.5 w-full border border-[#a09ab8] bg-[#24153E]">
                     <div className="h-full bg-[#E4D474]" style={{ width: `${progress}%` }} />
