@@ -43,6 +43,12 @@ export function Nav() {
             Home
           </Link>
           <Link
+            href="/test"
+            className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#9945FF] transition hover:text-[#b47aff]"
+          >
+            Rizz Test
+          </Link>
+          <Link
             href="/profile"
             className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#a09ab8] transition hover:text-[#E4D474]"
           >
@@ -163,6 +169,13 @@ export function Nav() {
               onClick={() => setMenuOpen(false)}
             >
               Home
+            </Link>
+            <Link
+              href="/test"
+              className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#9945FF] transition hover:text-[#b47aff]"
+              onClick={() => setMenuOpen(false)}
+            >
+              Rizz Test
             </Link>
             <Link
               href="/profile"
