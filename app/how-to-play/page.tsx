@@ -231,6 +231,12 @@ export default function HowToPlayPage() {
             >
               Browse Archetypes
             </Link>
+            <Link
+              className="border border-[#a09ab8]/50 px-7 py-3.5 text-sm font-black uppercase tracking-wide text-[#a09ab8] transition hover:border-[#E4D474] hover:text-[#E4D474]"
+              href="/tips"
+            >
+              Tips
+            </Link>
           </div>
         </section>
 
