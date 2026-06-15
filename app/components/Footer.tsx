@@ -14,7 +14,7 @@ const NAV_LINKS = [
   { label: "Staking",     href: "/saura" },
 ];
 
-const PROGRAM_ID = "9UfB3hW...KkFD";
+const PROGRAM_ID = "DkwFvvR...toU";
 
 export function Footer() {
   const [name,    setName]    = useState("");
@@ -135,13 +135,13 @@ export function Footer() {
           </div>
 
           <div className="flex flex-col items-center gap-2 px-4">
-            <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#a09ab8]">Devnet Program</p>
+            <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#a09ab8]">Mainnet Program</p>
             <p className="font-mono text-sm font-black text-[#E4D474]">{PROGRAM_ID}</p>
           </div>
 
           <div className="flex flex-col items-center gap-2 pl-4">
             <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#a09ab8]">Game Type</p>
-            <p className="font-mono text-sm font-black text-[#E4D474]">PvP / Bluffing</p>
+            <p className="font-mono text-sm font-black text-[#E4D474]">Flirt / Rizz</p>
           </div>
 
         </div>
