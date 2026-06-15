@@ -58,9 +58,12 @@ function EndContent() {
   const won         = (params.get("won") ?? "false") === "true";
   const elims       = Number(params.get("elims") ?? "0");
   const mode        = params.get("mode") ?? "multiplayer";
+  const earnedParam = Number(params.get("earned") ?? "0");
   const archetype   = ARCHETYPES.find((a) => a.id === archetypeId) ?? ARCHETYPES[0];
 
-  const breakdown   = buildBreakdown(won, elims, mode);
+  const breakdown = mode === "rizz"
+    ? [{ reason: "Rizz session", points: earnedParam }]
+    : buildBreakdown(won, elims, mode);
   const totalEarned = breakdown.reduce((s, r) => s + r.points, 0);
 
   const [prevAura, setPrevAura] = useState(0);

@@ -8,6 +8,7 @@ import { ARCHETYPES, type Archetype } from "../lib/archetypes";
 import { getUnlocked } from "../lib/unlocks";
 import { getCharacterLevel, saveCharacterLevel, levelUpCost, MAX_LEVEL } from "../lib/upgrades";
 import { useWallet } from "../components/WalletProvider";
+import { getOrInitAura, saveAura } from "../lib/aura";
 
 const LAST_PICKED_KEY = "poa_last_archetype";
 
@@ -66,7 +67,7 @@ function CharacterSelectContent() {
     const levels: Record<string, number> = {};
     for (const a of ARCHETYPES) levels[a.id] = getCharacterLevel(walletAddr, a.id);
     setCharLevels(levels);
-    try { setAura(Number(localStorage.getItem(auraStorageKey(walletAddr)) ?? "0") || 0); } catch {}
+    setAura(getOrInitAura(walletAddr));
   }, [walletAddr]);
 
   const [selectedId, setSelectedId] = useState<string>(() =>
@@ -88,7 +89,7 @@ function CharacterSelectContent() {
     const cost = levelUpCost(currentLevel);
     if (aura < cost) return;
     const newAura = aura - cost;
-    try { localStorage.setItem(auraStorageKey(walletAddr), String(newAura)); } catch {}
+    saveAura(walletAddr, newAura);
     setAura(newAura);
     const newLevel = currentLevel + 1;
     saveCharacterLevel(walletAddr, archetypeId, newLevel);

@@ -13,6 +13,7 @@ import { syncPlayerStats } from "../lib/leaderboard";
 import { hasBsol } from "../lib/solblaze";
 import { calcWinChance, getStreakMultiplier } from "../lib/game-logic";
 import { initPlayerOnChain } from "../lib/solana-client";
+import { getOrInitAura, STARTING_AURA } from "../lib/aura";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -39,10 +40,6 @@ const DIFF_STYLE = {
   medium: { label: "OK",       color: "#E4D474" },
   hard:   { label: "ALPHA",    color: "#E4D474" },
 } as const;
-
-// ─── AURA economy ─────────────────────────────────────────────────────────────
-
-const STARTING_AURA = 200;
 
 // ─── Coach tip system ─────────────────────────────────────────────────────────
 
@@ -173,16 +170,32 @@ function GameContent() {
   const [auraEarned,     setAuraEarned]     = useState(0);
   const [results,        setResults]        = useState<RoundResult[]>([]);
   const [sessionAura,    setSessionAura]    = useState(STARTING_AURA);
+  const [initialAura,    setInitialAura]    = useState(STARTING_AURA);
+  const [awardStatus,    setAwardStatus]    = useState<"idle" | "pending" | "ok" | "error">("idle");
   const [streak,         setStreak]         = useState(0);
   const [lastWinChance,  setLastWinChance]  = useState(0);
   const [ticker,         setTicker]         = useState<TickerEntry[]>([]);
   const [tickerCount,    setTickerCount]    = useState(100);
 
-  const chatEndRef = useRef<HTMLDivElement>(null);
-  const inputRef   = useRef<HTMLInputElement>(null);
-  const MAX_MSGS   = 4;
+  const chatEndRef          = useRef<HTMLDivElement>(null);
+  const inputRef            = useRef<HTMLInputElement>(null);
+  const pendingAwardRef     = useRef<string | null>(null);
+  const sessionInitialized  = useRef(false);
+  const MAX_MSGS            = 4;
 
   useEffect(() => { initSounds(); }, []);
+
+  // Load the player's real AURA as the session starting balance.
+  // getOrInitAura returns 200 and persists it for brand-new players.
+  useEffect(() => {
+    if (sessionInitialized.current) return;
+    const addr = account?.address ? String(account.address) : null;
+    if (!addr) return;
+    const start = getOrInitAura(addr);
+    setSessionAura(start);
+    setInitialAura(start);
+    sessionInitialized.current = true;
+  }, [account]);
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
 
@@ -283,31 +296,12 @@ function GameContent() {
       if (win) setStreak((s) => s + 1);
       else if (closer !== "leave") setStreak(0);
 
-      // On-chain AURA award — fire-and-forget, handles init if needed
+      // On-chain AURA award — block next-round navigation until TX confirms
       if (data.token && walletAddr) {
-        void (async () => {
-          try {
-            let awardRes = await fetch("/api/award-aura", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ token: data.token }),
-            });
-            if (awardRes.status === 402 && selectedWallet && account) {
-              // PlayerAura PDA not initialized yet — init then retry
-              await initPlayerOnChain(selectedWallet, account);
-              awardRes = await fetch("/api/award-aura", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token: data.token }),
-              });
-            }
-            if (!awardRes.ok) {
-              console.warn("[award-aura]", await awardRes.text());
-            }
-          } catch (err) {
-            console.error("[award-aura]", err);
-          }
-        })();
+        pendingAwardRef.current = data.token;
+        void runAward(data.token);
+      } else {
+        setAwardStatus("ok");
       }
 
       // Supabase leaderboard sync (fire-and-forget)
@@ -333,10 +327,11 @@ function GameContent() {
   }
 
   function nextRound() {
+    setAwardStatus("idle");
     const remaining = girlQueue.filter((g) => g !== currentGirl);
     if (remaining.length === 0) {
-      const won = sessionAura > STARTING_AURA;
-      router.push(`/end?won=${won}&archetype=${archetypeId}&earned=${sessionAura}&elims=0&mode=rizz`);
+      const won = sessionAura > initialAura;
+      router.push(`/end?won=${won}&archetype=${archetypeId}&earned=${sessionAura - initialAura}&elims=0&mode=rizz`);
       return;
     }
     setGirlQueue(remaining);
@@ -344,6 +339,34 @@ function GameContent() {
     setMessages([]); setDraft(""); setTotalScore(0); setMsgCount(0);
     setSelectedCloser(null); setVerdict(""); setReaction("neutral"); setAuraEarned(0);
     setPhase("lobby");
+  }
+
+  async function runAward(token: string) {
+    setAwardStatus("pending");
+    try {
+      let res = await fetch("/api/award-aura", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+      if (res.status === 402 && selectedWallet && account) {
+        await initPlayerOnChain(selectedWallet, account);
+        res = await fetch("/api/award-aura", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token }),
+        });
+      }
+      if (res.ok) {
+        setAwardStatus("ok");
+      } else {
+        console.warn("[award-aura]", await res.text());
+        setAwardStatus("error");
+      }
+    } catch (err) {
+      console.error("[award-aura]", err);
+      setAwardStatus("error");
+    }
   }
 
   function startApproach(girlId: string) {
@@ -382,7 +405,7 @@ function GameContent() {
               </h1>
               <div className="shrink-0 text-right border border-[#a09ab8]/40 px-4 py-2">
                 <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#a09ab8]">AURA</p>
-                <p className={`font-mono text-2xl font-black leading-none ${sessionAura >= STARTING_AURA ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>
+                <p className={`font-mono text-2xl font-black leading-none ${sessionAura >= initialAura ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>
                   {sessionAura}
                 </p>
               </div>
@@ -531,8 +554,8 @@ function GameContent() {
             <button
               className="mt-6 w-full border-2 border-[#E4D474] bg-[#E4D474] py-4 text-lg font-black uppercase text-[#24153E] shadow-[6px_6px_0_#a09ab8] transition hover:bg-transparent hover:text-[#E4D474] touch-manipulation"
               onClick={() => {
-                const won = sessionAura > STARTING_AURA;
-                router.push(`/end?won=${won}&archetype=${archetypeId}&earned=${sessionAura}&elims=0&mode=rizz`);
+                const won = sessionAura > initialAura;
+                router.push(`/end?won=${won}&archetype=${archetypeId}&earned=${sessionAura - initialAura}&elims=0&mode=rizz`);
               }}
               type="button"
             >
@@ -585,7 +608,7 @@ function GameContent() {
             </div>
             <div className="border border-[#a09ab8]/50 px-3 py-1.5 text-center min-w-13">
               <p className="font-mono text-[8px] uppercase text-[#a09ab8]">AURA</p>
-              <p className={`font-mono text-sm font-black ${sessionAura >= STARTING_AURA ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>
+              <p className={`font-mono text-sm font-black ${sessionAura >= initialAura ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>
                 {sessionAura}
               </p>
             </div>
@@ -784,15 +807,32 @@ function GameContent() {
 
               {/* Next button */}
               {!isLoading && (
-                <button
-                  className="mt-8 w-full max-w-sm border-2 border-white bg-white py-4 font-black uppercase tracking-widest text-[#000F08] shadow-[6px_6px_0_rgba(0,0,0,0.5)] transition hover:bg-transparent hover:text-white touch-manipulation"
-                  onClick={nextRound}
-                  type="button"
-                >
-                  {girlQueue.filter((g) => g !== currentGirl).length > 0
-                    ? "Next Round"
-                    : `Cash Out — ${sessionAura} AURA`}
-                </button>
+                <>
+                  {awardStatus === "error" && (
+                    <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.15em] text-[#a09ab8]">
+                      On-chain sync failed.{" "}
+                      <button
+                        type="button"
+                        onClick={() => pendingAwardRef.current && void runAward(pendingAwardRef.current)}
+                        className="text-[#E4D474] underline"
+                      >
+                        Retry
+                      </button>
+                    </p>
+                  )}
+                  <button
+                    disabled={awardStatus === "pending"}
+                    className="mt-8 w-full max-w-sm border-2 border-white bg-white py-4 font-black uppercase tracking-widest text-[#000F08] shadow-[6px_6px_0_rgba(0,0,0,0.5)] transition hover:bg-transparent hover:text-white touch-manipulation disabled:opacity-50 disabled:cursor-wait"
+                    onClick={nextRound}
+                    type="button"
+                  >
+                    {awardStatus === "pending"
+                      ? "Confirming on-chain..."
+                      : girlQueue.filter((g) => g !== currentGirl).length > 0
+                        ? "Next Round"
+                        : `Cash Out — ${sessionAura} AURA`}
+                  </button>
+                </>
               )}
 
             </div>
@@ -847,7 +887,7 @@ function GameContent() {
               </p>
               <p className="mt-1 font-mono text-xs uppercase tracking-widest text-[#a09ab8]">AURA</p>
               <p className="mt-3 font-mono text-sm text-[#a09ab8]">
-                Balance: <span className={`font-black ${sessionAura >= STARTING_AURA ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>{sessionAura}</span>
+                Balance: <span className={`font-black ${sessionAura >= initialAura ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>{sessionAura}</span>
               </p>
             </div>
           )}
@@ -862,15 +902,32 @@ function GameContent() {
           )}
 
           {!isLoading && (
-            <button
-              className="w-full max-w-lg border-2 border-[#E4D474] bg-[#E4D474] py-4 font-black uppercase tracking-widest text-[#24153E] shadow-[6px_6px_0_#a09ab8] transition hover:bg-transparent hover:text-[#E4D474] touch-manipulation"
-              onClick={nextRound}
-              type="button"
-            >
-              {girlQueue.filter((g) => g !== currentGirl).length > 0
-                ? "Next Round"
-                : `Cash Out — ${sessionAura} AURA`}
-            </button>
+            <>
+              {awardStatus === "error" && (
+                <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.15em] text-[#a09ab8]">
+                  On-chain sync failed.{" "}
+                  <button
+                    type="button"
+                    onClick={() => pendingAwardRef.current && void runAward(pendingAwardRef.current)}
+                    className="text-[#E4D474] underline"
+                  >
+                    Retry
+                  </button>
+                </p>
+              )}
+              <button
+                disabled={awardStatus === "pending"}
+                className="w-full max-w-lg border-2 border-[#E4D474] bg-[#E4D474] py-4 font-black uppercase tracking-widest text-[#24153E] shadow-[6px_6px_0_#a09ab8] transition hover:bg-transparent hover:text-[#E4D474] touch-manipulation disabled:opacity-50 disabled:cursor-wait"
+                onClick={nextRound}
+                type="button"
+              >
+                {awardStatus === "pending"
+                  ? "Confirming on-chain..."
+                  : girlQueue.filter((g) => g !== currentGirl).length > 0
+                    ? "Next Round"
+                    : `Cash Out — ${sessionAura} AURA`}
+              </button>
+            </>
           )}
         </main>
       </div>

@@ -125,28 +125,6 @@ export function Footer() {
         </div>
       </div>
 
-      {/* ── Mid bar: Built on / Program / Type ── */}
-      <div className="border-t border-[#a09ab8]/15">
-        <div className="mx-auto max-w-7xl grid grid-cols-3 divide-x divide-[#a09ab8]/15 px-6 py-6">
-
-          <div className="flex flex-col items-center gap-2 pr-4">
-            <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#a09ab8]">Built On</p>
-            <Image src="/solanaWordMark.png" alt="Solana" width={120} height={20} className="object-contain" />
-          </div>
-
-          <div className="flex flex-col items-center gap-2 px-4">
-            <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#a09ab8]">Mainnet Program</p>
-            <p className="font-mono text-sm font-black text-[#E4D474]">{PROGRAM_ID}</p>
-          </div>
-
-          <div className="flex flex-col items-center gap-2 pl-4">
-            <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#a09ab8]">Game Type</p>
-            <p className="font-mono text-sm font-black text-[#E4D474]">Flirt / Rizz</p>
-          </div>
-
-        </div>
-      </div>
-
       {/* ── Bottom bar ── */}
       <div className="border-t border-[#a09ab8]/15 bg-[#0d0820]">
         <div className="mx-auto max-w-7xl px-6 py-6 text-center space-y-4">

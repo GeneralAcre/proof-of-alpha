@@ -1,9 +1,12 @@
 ﻿"use client";
 
 import { useState, useEffect } from "react";
+import { PublicKey } from "@solana/web3.js";
 import { Nav } from "../components/Nav";
 import { useWallet } from "../components/WalletProvider";
 import { ARCHETYPES, getCurrentRank, getNextRank, getRankProgress } from "../lib/archetypes";
+import { fetchPlayerAura } from "../lib/solana-client";
+import { getOrInitAura, auraKey, saveAura } from "../lib/aura";
 import type { MatchRecord } from "../end/page";
 
 type Stats = {
@@ -26,21 +29,36 @@ function computeStats(records: MatchRecord[]): Stats {
 
 export default function ProfilePage() {
   const { account, truncatedAddress } = useWallet();
-  const [aura,    setAura]    = useState(0);
-  const [records, setRecords] = useState<MatchRecord[]>([]);
-  const [copied,  setCopied]  = useState(false);
-  const [copiedAddr, setCopiedAddr] = useState(false);
+  const [aura,        setAura]        = useState(0);
+  const [auraLoading, setAuraLoading] = useState(false);
+  const [records,     setRecords]     = useState<MatchRecord[]>([]);
+  const [copied,      setCopied]      = useState(false);
+  const [copiedAddr,  setCopiedAddr]  = useState(false);
 
   const fullAddress = account ? String(account.address) : null;
 
   useEffect(() => {
-    const auraKey = fullAddress ? `poa_aura_${fullAddress}` : "poa_aura_anonymous";
     const matchKey = fullAddress ? `poa_matches_${fullAddress}` : "poa_matches_anonymous";
-    try { setAura(Number(localStorage.getItem(auraKey) ?? "0") || 0); } catch {}
+
+    // Show cached value immediately (initialises to 200 for brand-new players)
+    setAura(getOrInitAura(fullAddress));
     try {
       const raw = localStorage.getItem(matchKey);
       if (raw) setRecords(JSON.parse(raw) as MatchRecord[]);
     } catch {}
+
+    // Fetch on-chain balance as the authoritative source
+    if (fullAddress) {
+      setAuraLoading(true);
+      fetchPlayerAura(new PublicKey(fullAddress))
+        .then((state) => {
+          if (state && state.balance > 0) {
+            setAura(state.balance);
+            saveAura(fullAddress, state.balance);
+          }
+        })
+        .finally(() => setAuraLoading(false));
+    }
   }, [fullAddress]);
 
   const stats = computeStats(records);
@@ -109,7 +127,8 @@ export default function ProfilePage() {
             <span className="text-[#a09ab8]">AURA</span>
             <span className="font-bold text-[#E4D474]">
               {aura.toLocaleString()} AURA
-              {nextRank && (
+              {auraLoading && <span className="font-normal text-[#a09ab8]"> · syncing...</span>}
+              {nextRank && !auraLoading && (
                 <span className="font-normal text-[#a09ab8]"> / {rank.next?.toLocaleString()} to {nextRank.name}</span>
               )}
             </span>
