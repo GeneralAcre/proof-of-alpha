@@ -14,6 +14,7 @@ import { hasBsol } from "../lib/solblaze";
 import { calcWinChance, getStreakMultiplier } from "../lib/game-logic";
 import { initPlayerOnChain } from "../lib/solana-client";
 import { getOrInitAura, STARTING_AURA } from "../lib/aura";
+import { hapticTap, hapticWin, hapticLoss, hapticSuccess } from "../lib/haptics";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -313,8 +314,8 @@ function GameContent() {
       const closerLabel = closer === "flirt" ? "FLIRT" : closer === "flex" ? "FLEX" : "LEAVE";
       pushTicker(`[${addrLabel}] tried to ${closerLabel} ${g.title}. She said: "${data.verdict}". ${aura > 0 ? `+${aura} AURA.` : "0 AURA. Devastating."}`);
 
-      if (data.reaction === "impressed" || aura > 100) sfx.roundWin();
-      else if (aura === 0 && closer !== "leave") sfx.matchLoss();
+      if (data.reaction === "impressed" || aura > 100) { sfx.roundWin(); void hapticWin(); }
+      else if (aura === 0 && closer !== "leave") { sfx.matchLoss(); void hapticLoss(); }
       else sfx.moveConfirm();
     } catch {
       setVerdict("I have to go.");
@@ -359,6 +360,7 @@ function GameContent() {
       }
       if (res.ok) {
         setAwardStatus("ok");
+        void hapticSuccess();
       } else {
         console.warn("[award-aura]", await res.text());
         setAwardStatus("error");
@@ -376,6 +378,7 @@ function GameContent() {
     setMessages([]); setDraft(""); setTotalScore(0); setMsgCount(0);
     setPhase("chat");
     sfx.moveSelect();
+    void hapticTap();
   }
 
   const girl       = girlSet.find((g) => g.id === currentGirl) ?? girlSet[0];

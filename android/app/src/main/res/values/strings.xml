@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Proof of Alpha</string>
+    <string name="title_activity_main">Proof of Alpha</string>
+    <string name="package_name">com.proofofalpha.app</string>
+    <string name="custom_url_scheme">com.proofofalpha.app</string>
+</resources>

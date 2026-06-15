@@ -10,6 +10,12 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
+    "@capacitor/android": "^8.4.0",
+    "@capacitor/cli": "^8.4.0",
+    "@capacitor/core": "^8.4.0",
+    "@capacitor/haptics": "^8.0.2",
+    "@solana-mobile/mobile-wallet-adapter-protocol": "^2.2.9",
+    "@solana-mobile/mobile-wallet-adapter-protocol-web3js": "^2.2.9",
     "@solana-mobile/wallet-standard-mobile": "^0.5.3",
     "@solana/wallet-standard-chains": "^1.1.1",
     "@solana/web3.js": "^1.98.4",
