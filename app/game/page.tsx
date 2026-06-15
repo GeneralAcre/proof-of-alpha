@@ -474,16 +474,14 @@ function GameContent() {
                         sizes="(max-width: 640px) 112px, 144px"
                       />
                       <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#2d1a4a]/70 to-transparent" />
-                      {/* Difficulty badge over portrait */}
-                      <div className="absolute bottom-2 left-2">
-                        <span className="font-mono text-[7px] font-black uppercase tracking-[0.2em] border border-[#E4D474]/40 bg-[#24153E]/80 px-1.5 py-0.5 text-[#E4D474]/70">
-                          {tier.label}
-                        </span>
-                      </div>
                     </div>
 
                     {/* Info */}
-                    <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
+                    <div className="flex-1 p-4 flex flex-col justify-between min-w-0 relative">
+                      {/* Difficulty badge — top-right corner of the purple box */}
+                      <span className="absolute top-0 right-0 font-mono text-[10px] font-black uppercase tracking-[0.18em] border-b border-l border-[#E4D474]/50 bg-[#2d1a4a] px-3 py-1.5 text-[#E4D474]">
+                        {tier.label}
+                      </span>
                       <div>
                         {/* Name + round */}
                         <div className="flex items-center gap-2 mb-1">
@@ -498,19 +496,19 @@ function GameContent() {
                       </div>
 
                       {/* Economy row */}
-                      <div className="mt-4 flex gap-5 border-t border-[#a09ab8]/20 pt-3">
-                        <div>
-                          <p className="font-mono text-xs uppercase tracking-wide text-[#a09ab8]">Entry</p>
+                      <div className="mt-4 flex gap-2 border-t border-[#a09ab8]/20 pt-3">
+                        <div className="flex-1 border border-[#a09ab8]/30 px-3 py-2 text-center">
+                          <p className="font-mono text-[9px] uppercase tracking-wide text-[#a09ab8]">Entry</p>
                           <p className="font-mono text-base font-black text-[#a09ab8]">−{g.approachCost}</p>
                         </div>
-                        <div>
-                          <p className="font-mono text-xs uppercase tracking-wide text-[#a09ab8]">Flirt</p>
+                        <div className="flex-1 border border-[#E4D474]/40 px-3 py-2 text-center">
+                          <p className="font-mono text-[9px] uppercase tracking-wide text-[#a09ab8]">Flirt</p>
                           <p className="font-mono text-base font-black text-[#E4D474]">
                             +{flirtPreview}{streakMult > 1 && <span className="ml-0.5 text-xs text-[#a09ab8]">×{streakMult}</span>}
                           </p>
                         </div>
-                        <div>
-                          <p className="font-mono text-xs uppercase tracking-wide text-[#a09ab8]">Flex</p>
+                        <div className="flex-1 border border-[#a09ab8]/30 px-3 py-2 text-center">
+                          <p className="font-mono text-[9px] uppercase tracking-wide text-[#a09ab8]">Flex</p>
                           <p className="font-mono text-base font-black text-[#ffffff]">
                             +{flexPreview}{streakMult > 1 && <span className="ml-0.5 text-xs text-[#a09ab8]">×{streakMult}</span>}
                           </p>
