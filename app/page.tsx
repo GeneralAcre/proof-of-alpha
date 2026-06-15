@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Nav } from "./components/Nav";
-import { RizzTestModal, hasSeenRizzTest } from "./components/RizzTestModal";
+import { RizzTestModal } from "./components/RizzTestModal";
 
 // ─── Partner logos ────────────────────────────────────────────────────────────
 
@@ -189,7 +189,7 @@ function HomeContent() {
   const [showRizzModal, setShowRizzModal] = useState(false);
   const onStoryboardDone = useCallback(() => {
     setScreen("home");
-    if (!hasSeenRizzTest()) setShowRizzModal(true);
+    setShowRizzModal(true);
   }, []);
 
   // ── Lobby — big background picture + Start ──────────────────────────────────
