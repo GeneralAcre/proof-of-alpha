@@ -14,8 +14,7 @@ const PROGRAM_ID = new PublicKey(
   process.env.NEXT_PUBLIC_PROGRAM_ID ?? "9UfB3hWQzQCFg47qjXnTigK2QTSkzSrApx5Z1tq1KkFD",
 );
 
-const RPC = process.env.SOLANA_RPC;
-if (!RPC) throw new Error("SOLANA_RPC env var not set");
+const RPC = process.env.SOLANA_RPC ?? "https://api.mainnet-beta.solana.com";
 
 const DISC_AWARD_AURA = Buffer.from([143, 106, 88, 182, 178, 116, 73, 85]);
 

@@ -34,7 +34,7 @@ type SignAndSendFeature = {
 };
 
 /**
- * Send `solAmount` devnet SOL from the connected wallet to the treasury.
+ * Send `solAmount` SOL from the connected wallet to the treasury.
  * Returns the base58 transaction signature on success.
  */
 export async function sendSolPayment(
