@@ -53,7 +53,7 @@ export default function HomePage() {
             {/* Left — text */}
             <div className="flex-1">
               <p className="mb-5 inline-block bg-[#E4D474] px-3 py-1.5 font-mono text-xs font-black uppercase tracking-[0.18em] text-[#24153E]">
-                AURA-powered · Solana devnet
+                AURA-powered · Solana
               </p>
               <h1 className="glitch mb-6 font-black uppercase leading-[0.85] tracking-tight text-[clamp(3rem,9vw,7rem)]">
                 Proof

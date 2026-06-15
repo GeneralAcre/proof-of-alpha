@@ -11,6 +11,8 @@ import { ARCHETYPES, type StatBlock } from "../lib/archetypes";
 import { getCharacterLevel } from "../lib/upgrades";
 import { syncPlayerStats } from "../lib/leaderboard";
 import { hasBsol } from "../lib/solblaze";
+import { calcWinChance, getStreakMultiplier } from "../lib/game-logic";
+import { initPlayerOnChain } from "../lib/solana-client";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -41,46 +43,6 @@ const DIFF_STYLE = {
 // ─── AURA economy ─────────────────────────────────────────────────────────────
 
 const STARTING_AURA = 200;
-
-function getStreakMultiplier(streak: number): number {
-  if (streak >= 5) return 3.0;
-  if (streak >= 3) return 1.75;
-  if (streak >= 2) return 1.25;
-  return 1.0;
-}
-
-// Difficulty penalty to win%: harder girls are harder to close
-const DIFF_PENALTY: Record<string, number> = { easy: 0, medium: -12, hard: -25 };
-
-// Stat bonus to win%: max +15% when stats are maxed
-function statBonus(closer: Closer, stats: StatBlock): number {
-  if (closer === "flirt") return Math.round(((stats.bluff + stats.aggression) / 20) * 15);
-  if (closer === "flex")  return Math.round(((stats.aggression + stats.greed) / 20) * 15);
-  return 0;
-}
-
-function calcWinChance(closer: Closer, totalScore: number, difficulty: string, stats: StatBlock): number {
-  const score = Math.max(-20, Math.min(40, totalScore));
-  const t = (score + 20) / 60; // 0..1
-  let base = 0;
-  if (closer === "flirt") base = 15 + t * 75;
-  else if (closer === "flex") base = 35 + t * 35;
-  else return 0;
-  const penalty = DIFF_PENALTY[difficulty] ?? 0;
-  const bonus   = statBonus(closer, stats);
-  return Math.min(95, Math.max(5, Math.round(base + penalty + bonus)));
-}
-
-function calcAura(closer: Closer, totalScore: number, girl: Girl, streak: number, stats: StatBlock) {
-  const mult = getStreakMultiplier(streak);
-  if (closer === "leave") {
-    return { aura: Math.round(girl.approachCost * 0.5), win: false, winChance: 0 };
-  }
-  const winChance = calcWinChance(closer, totalScore, girl.difficulty, stats);
-  const won = Math.random() * 100 < winChance;
-  const payout = closer === "flirt" ? girl.flirtWin : girl.flexWin;
-  return { aura: won ? Math.round(payout * mult) : 0, win: won, winChance };
-}
 
 // ─── Coach tip system ─────────────────────────────────────────────────────────
 
@@ -173,7 +135,7 @@ function AttractionBar({ score }: { score: number }) {
 function GameContent() {
   const router      = useRouter();
   const params      = useSearchParams();
-  const { truncatedAddress, account } = useWallet();
+  const { truncatedAddress, account, selectedWallet } = useWallet();
 
   // Wallet guard — redirect to map if not connected
   useEffect(() => {
@@ -278,26 +240,87 @@ function GameContent() {
     setIsLoading(true);
     sfx.moveConfirm();
     const g = girlSet.find((gg) => gg.id === currentGirl) ?? girlSet[0];
-    const { aura, win, winChance } = calcAura(closer, totalScore, g, streak, charStats);
-    setAuraEarned(aura);
-    setLastWinChance(winChance);
-    setSessionAura((prev) => prev + aura);
-    if (win) setStreak((s) => s + 1);
-    else if (closer !== "leave") setStreak(0);
+    const walletAddr = account?.address ? String(account.address) : null;
+
+    let aura = 0;
+    let win  = false;
+
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phase: "resolve", archetypeId: currentGirl, girlName: girl.name, difficulty: girl.difficulty, messages: messages.map(({ role, content }) => ({ role, content })), closer, totalScore }),
+        body: JSON.stringify({
+          phase: "resolve",
+          archetypeId: currentGirl,
+          girlName: girl.name,
+          difficulty: girl.difficulty,
+          messages: messages.map(({ role, content }) => ({ role, content })),
+          closer,
+          totalScore,
+          playerWallet: walletAddr,
+          streak,
+          stats: charStats,
+        }),
       });
-      const data = await res.json() as { verdict: string; reaction: string };
+      const data = await res.json() as {
+        verdict: string;
+        reaction: string;
+        win: boolean;
+        aura: number;
+        winChance: number;
+        token: string | null;
+      };
+
+      aura = data.aura ?? 0;
+      win  = data.win  ?? false;
+
       setVerdict(data.verdict ?? "...");
       setReaction(data.reaction ?? "neutral");
+      setAuraEarned(aura);
+      setLastWinChance(data.winChance ?? 0);
+      setSessionAura((prev) => prev + aura);
+
+      if (win) setStreak((s) => s + 1);
+      else if (closer !== "leave") setStreak(0);
+
+      // On-chain AURA award — fire-and-forget, handles init if needed
+      if (data.token && walletAddr) {
+        void (async () => {
+          try {
+            let awardRes = await fetch("/api/award-aura", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ token: data.token }),
+            });
+            if (awardRes.status === 402 && selectedWallet && account) {
+              // PlayerAura PDA not initialized yet — init then retry
+              await initPlayerOnChain(selectedWallet, account);
+              awardRes = await fetch("/api/award-aura", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ token: data.token }),
+              });
+            }
+            if (!awardRes.ok) {
+              console.warn("[award-aura]", await awardRes.text());
+            }
+          } catch (err) {
+            console.error("[award-aura]", err);
+          }
+        })();
+      }
+
+      // Supabase leaderboard sync (fire-and-forget)
+      if (walletAddr && closer !== "leave") {
+        void syncPlayerStats(walletAddr, sessionAura + aura, win, win ? streak + 1 : 0);
+      }
+
       const addrLabel   = truncatedAddress ?? "ANON";
       const closerLabel = closer === "flirt" ? "FLIRT" : closer === "flex" ? "FLEX" : "LEAVE";
       pushTicker(`[${addrLabel}] tried to ${closerLabel} ${g.title}. She said: "${data.verdict}". ${aura > 0 ? `+${aura} AURA.` : "0 AURA. Devastating."}`);
+
       if (data.reaction === "impressed" || aura > 100) sfx.roundWin();
-      else if (aura === 0) sfx.matchLoss();
+      else if (aura === 0 && closer !== "leave") sfx.matchLoss();
       else sfx.moveConfirm();
     } catch {
       setVerdict("I have to go.");
@@ -305,13 +328,8 @@ function GameContent() {
     } finally {
       setIsLoading(false);
     }
-    setResults((prev) => [...prev, { girlId: currentGirl, totalScore, closer, auraEarned: aura, verdict: "", reaction: "neutral" }]);
 
-    // Sync to Supabase leaderboard (fire-and-forget)
-    const walletAddr = account?.address ? String(account.address) : null;
-    if (walletAddr && closer !== "leave") {
-      void syncPlayerStats(walletAddr, sessionAura + aura, win, win ? streak + 1 : 0);
-    }
+    setResults((prev) => [...prev, { girlId: currentGirl, totalScore, closer, auraEarned: aura, verdict: "", reaction: "neutral" }]);
   }
 
   function nextRound() {

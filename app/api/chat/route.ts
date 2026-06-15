@@ -1,8 +1,7 @@
 import { GIRL_ARCHETYPES, type Difficulty } from "../../lib/girls";
-
-// ─── Model config per difficulty ──────────────────────────────────────────────
-// Same model for all tiers — difficulty comes from girl's system prompt + win thresholds.
-// Temperature varies: low = predictable (easy girls forgive), high = unpredictable (hard girls punish).
+import { calcAura } from "../../lib/game-logic";
+import { createAwardToken } from "../../lib/award-token";
+import type { StatBlock } from "../../lib/archetypes";
 
 const MODEL = "meta-llama/llama-3.1-8b-instruct";
 
@@ -22,6 +21,10 @@ type ChatRequest = {
   messages: Array<{ role: "user" | "assistant"; content: string }>;
   closer?: "flirt" | "flex" | "leave";
   totalScore?: number;
+  // Resolve-phase extras for server-side win computation
+  playerWallet?: string;
+  streak?: number;
+  stats?: StatBlock;
 };
 
 function safeParseJSON(text: string): Record<string, unknown> | null {
@@ -40,7 +43,7 @@ export async function POST(req: Request): Promise<Response> {
 
   try {
     const body = (await req.json()) as ChatRequest;
-    const { phase, archetypeId, girlName, difficulty, messages, closer, totalScore } = body;
+    const { phase, archetypeId, girlName, difficulty, messages, closer, totalScore, playerWallet, streak, stats } = body;
 
     const { model, temperature } = MODEL_CONFIG[difficulty] ?? MODEL_CONFIG.easy;
     const archetype = GIRL_ARCHETYPES.find((a) => a.id === archetypeId);
@@ -133,16 +136,49 @@ OUTPUT: Valid JSON only: {"verdict": "1-2 sentences", "reaction": "impressed|neu
       const text = data.choices?.[0]?.message?.content ?? "{}";
       const parsed = safeParseJSON(text);
 
-      if (!parsed || typeof parsed.verdict !== "string") {
-        return Response.json({ verdict: "Noted.", reaction: "neutral" });
+      const verdict  = (typeof parsed?.verdict === "string" ? parsed.verdict : null) ?? "Noted.";
+      const reaction = (typeof parsed?.reaction === "string" ? parsed.reaction : null) ?? "neutral";
+
+      // ── Server-side win/loss computation ─────────────────────────────────────
+      // Clamp stats to valid range so client can't inflate the bonus
+      const safeStats: StatBlock = {
+        aggression: Math.min(10, Math.max(0, stats?.aggression ?? 4)),
+        defense:    Math.min(10, Math.max(0, stats?.defense    ?? 3)),
+        bluff:      Math.min(10, Math.max(0, stats?.bluff      ?? 2)),
+        greed:      Math.min(10, Math.max(0, stats?.greed      ?? 3)),
+      };
+
+      const result = calcAura(
+        closer ?? "leave",
+        totalScore ?? 0,
+        archetype,
+        Math.min(Math.max(streak ?? 0, 0), 20), // cap streak to prevent multiplier abuse
+        safeStats,
+      );
+
+      // Generate a short-lived HMAC token the client must present to /api/award-aura
+      let token: string | null = null;
+      if (result.win && result.aura > 0 && playerWallet) {
+        try {
+          token = createAwardToken(playerWallet, result.aura);
+        } catch {
+          // AWARD_HMAC_SECRET not set — on-chain award skipped
+        }
       }
 
-      return Response.json({ verdict: parsed.verdict, reaction: (parsed.reaction as string) ?? "neutral" });
+      return Response.json({
+        verdict,
+        reaction,
+        win: result.win,
+        aura: result.aura,
+        winChance: result.winChance,
+        token,
+      });
     }
 
     return Response.json({ error: "Invalid phase" }, { status: 400 });
   } catch (err) {
     console.error("[/api/chat]", err);
-    return Response.json({ verdict: "I need a moment.", reaction: "neutral" }, { status: 200 });
+    return Response.json({ verdict: "I need a moment.", reaction: "neutral", win: false, aura: 0, winChance: 0, token: null }, { status: 200 });
   }
 }

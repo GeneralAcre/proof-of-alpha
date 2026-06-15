@@ -37,7 +37,7 @@ export function SolanaWalletConnect({ onAccountChange }: SolanaWalletConnectProp
             <br />
             address: {truncatedAddress}
             <br />
-            cluster: solana:devnet
+            cluster: solana:mainnet
           </div>
           <button
             className="rounded-lg border border-[#a09ab8] px-4 py-3 text-sm font-black uppercase text-[#E4D474] transition hover:bg-[#E4D474] hover:text-[#24153E]"

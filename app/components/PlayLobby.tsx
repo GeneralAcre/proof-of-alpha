@@ -118,8 +118,8 @@ export function PlayLobby({ characters }: PlayLobbyProps) {
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#E4D474]">Lobby ticket</p>
             <p className="mt-2 text-sm leading-6 text-[#ffffff]">
               {account
-                ? `${mode} as ${selectedCharacter?.name}. Entry is staged for Solana devnet plus MagicBlock ER.`
-                : "Authorize a Solana Mobile wallet to stage the devnet lobby entry."}
+                ? `${mode} as ${selectedCharacter?.name}. Entry is staged for Solana mainnet.`
+                : "Authorize a Solana Mobile wallet to stage the mainnet lobby entry."}
             </p>
           </div>
           <button

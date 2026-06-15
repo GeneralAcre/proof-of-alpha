@@ -69,7 +69,7 @@ export async function sendSolPayment(
   const [{ signature: sigBytes }] = await feature.signAndSendTransaction({
     account,
     transaction: new Uint8Array(rawTx),
-    chain: "solana:devnet",
+    chain: "solana:mainnet",
   });
 
   const signature = toBase58(new Uint8Array(sigBytes));

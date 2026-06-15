@@ -145,7 +145,7 @@ export default function StorePage() {
         <h1 className="mb-2 text-4xl font-black uppercase sm:text-5xl">Buy AURA</h1>
         <p className="mb-8 font-mono text-sm text-[#a09ab8]">
           AURA is spent every time you approach a girl. Buy more to keep playing.
-          Payments are real devnet SOL transactions — confirmed on-chain.
+          Payments are real SOL transactions — confirmed on-chain.
         </p>
 
         {/* Treasury warning */}
@@ -209,7 +209,7 @@ export default function StorePage() {
 
                 <div className="mb-3 border-t border-[#a09ab8]/40 pt-3">
                   <p className="font-mono text-sm font-black text-[#E4D474]">{pack.sol} SOL</p>
-                  <p className="font-mono text-[10px] text-[#a09ab8]">Solana devnet</p>
+                  <p className="font-mono text-[10px] text-[#a09ab8]">Solana</p>
                 </div>
 
                 <button
@@ -227,7 +227,7 @@ export default function StorePage() {
                 {/* Tx confirmation link */}
                 {state === "done" && sig && (
                   <a
-                    href={`https://explorer.solana.com/tx/${sig}?cluster=devnet`}
+                    href={`https://explorer.solana.com/tx/${sig}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-2 block text-center font-mono text-[10px] uppercase tracking-[0.14em] text-[#a09ab8] underline transition hover:text-[#E4D474]"

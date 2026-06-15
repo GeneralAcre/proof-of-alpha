@@ -9,7 +9,7 @@ const PACKS: Record<string, { aura: number; sol: number }> = {
   gigachad: { aura: 10_000, sol: 0.10  },
 };
 
-const RPC      = process.env.SOLANA_RPC ?? "https://api.devnet.solana.com";
+const RPC      = process.env.SOLANA_RPC ?? "https://api.mainnet-beta.solana.com";
 const TREASURY = process.env.NEXT_PUBLIC_TREASURY ?? "";
 
 export async function POST(req: Request) {
@@ -28,17 +28,41 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Treasury not configured" }, { status: 500 });
     }
 
-    // ── 1. Verify transaction on-chain ──────────────────────────────────────
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL  ?? "",
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
+    );
+
+    // ── 1. Replay protection — reject if this tx was already claimed ─────────
+    // Requires: CREATE TABLE store_purchases (tx_signature TEXT PRIMARY KEY, claimed_at TIMESTAMPTZ NOT NULL DEFAULT now());
+    try {
+      const { error: insertErr } = await supabase
+        .from("store_purchases")
+        .insert({ tx_signature: txSignature });
+
+      if (insertErr) {
+        if (insertErr.code === "23505") {
+          // unique_violation — already claimed
+          return NextResponse.json({ error: "Transaction already claimed" }, { status: 409 });
+        }
+        // Table may not exist yet — log and continue (non-blocking)
+        console.warn("[store-purchase] store_purchases dedup skipped:", insertErr.message);
+      }
+    } catch {
+      console.warn("[store-purchase] store_purchases table unavailable — skipping dedup");
+    }
+
+    // ── 2. Verify transaction on-chain ───────────────────────────────────────
     const conn = new Connection(RPC, "confirmed");
     const tx = await conn.getParsedTransaction(txSignature, {
       commitment: "confirmed",
       maxSupportedTransactionVersion: 0,
     });
 
-    if (!tx)           return NextResponse.json({ error: "Transaction not found" },        { status: 400 });
-    if (tx.meta?.err)  return NextResponse.json({ error: "Transaction failed on-chain" }, { status: 400 });
+    if (!tx)          return NextResponse.json({ error: "Transaction not found" },        { status: 400 });
+    if (tx.meta?.err) return NextResponse.json({ error: "Transaction failed on-chain" }, { status: 400 });
 
-    // Reject if older than 5 minutes (replay protection)
+    // Reject if older than 5 minutes (secondary replay protection)
     const age = Math.floor(Date.now() / 1000) - (tx.blockTime ?? 0);
     if (age > 300) return NextResponse.json({ error: "Transaction too old" }, { status: 400 });
 
@@ -60,12 +84,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Payment not verified" }, { status: 400 });
     }
 
-    // ── 2. Increment AURA in Supabase ───────────────────────────────────────
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL  ?? "",
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
-    );
-
+    // ── 3. Increment AURA in Supabase ────────────────────────────────────────
     const { data: existing } = await supabase
       .from("players")
       .select("aura")

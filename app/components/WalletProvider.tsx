@@ -98,7 +98,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       if (!next) return;
       setSelectedWallet(w);
       setAccount(next);
-      setStatus("Authorized on devnet.");
+      setStatus("Authorized on mainnet.");
     }).catch(() => { /* no prior session — ignore */ });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -147,7 +147,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       }
       setSelectedWallet(wallet);
       setAccount(next);
-      setStatus("Authorized on devnet.");
+      setStatus("Authorized on mainnet.");
     } catch (err) {
       setStatus(err instanceof Error ? err.message : "Connection rejected or failed.");
     } finally {

@@ -76,7 +76,7 @@ export default function Dashboard() {
               <p className="mt-1 font-mono text-xl font-black text-[#E4D474]">
                 {truncatedAddress}
               </p>
-              <p className="mt-0.5 font-mono text-xs text-[#a09ab8]">solana:devnet</p>
+              <p className="mt-0.5 font-mono text-xs text-[#a09ab8]">solana:mainnet</p>
             </div>
             <div className="border border-[#E4D474] bg-[#E4D474]/10 px-5 py-3 text-center">
               <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#a09ab8]">Rank</p>

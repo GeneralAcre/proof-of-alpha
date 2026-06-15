@@ -65,7 +65,7 @@ export function WalletGate({ children }: { children: React.ReactNode }) {
         )}
 
         <p className="mt-8 font-mono text-[9px] uppercase tracking-[0.2em] text-[#a09ab8]/40">
-          Proof of Alpha · Solana devnet
+          Proof of Alpha · Solana
         </p>
       </div>
     </div>
