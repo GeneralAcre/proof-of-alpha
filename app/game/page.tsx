@@ -395,6 +395,14 @@ function GameContent() {
         <Nav />
         <TickerBar entries={ticker} />
 
+        <button
+          onClick={() => router.push(`/map?archetype=${archetypeId}`)}
+          className="fixed left-4 top-24 z-50 bg-[#E4D474] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-[#24153E] transition hover:opacity-80"
+          type="button"
+        >
+          Back
+        </button>
+
         <main className="flex-1 mx-auto w-full max-w-2xl px-4 py-8 sm:px-6">
 
           {/* Header */}

@@ -222,6 +222,13 @@ function MapContent() {
         {/* Header */}
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
+            <button
+              onClick={() => router.push("/character-select")}
+              className="mb-3 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-[#a09ab8] transition hover:text-[#E4D474]"
+              type="button"
+            >
+              <span>←</span> Back
+            </button>
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#a09ab8]">Proof of Alpha</p>
             <h1 className="mt-1 text-5xl font-black uppercase sm:text-6xl">Select Area</h1>
             <p className="mt-2 font-mono text-sm text-[#a09ab8]">7 areas. 4 open. 2 locked. 1 bSOL exclusive.</p>
