@@ -48,6 +48,7 @@ const PANELS = [
   },
 ];
 
+
 function Storyboard({ onDone }: { onDone: () => void }) {
   const [idx, setIdx] = useState(0);
   const [out, setOut] = useState(false);
@@ -127,11 +128,11 @@ function Storyboard({ onDone }: { onDone: () => void }) {
         <div className="flex flex-1 flex-col justify-center px-6 py-6 sm:px-10 sm:py-16 lg:px-14 lg:py-20">
 
           {/* Heading */}
-          <div className="mb-5 sm:mb-7">
+          <div className="mb-5 sm:mb-7 space-y-2">
             {panel.heading.map((line, i) => (
               <p
                 key={i}
-                className="font-black uppercase leading-[0.82] tracking-tight text-[#E4D474]"
+                className="font-black uppercase leading-[0.9] tracking-tight text-[#E4D474]"
                 style={{ fontSize: "clamp(2.4rem, 7vw, 6.5rem)" }}
               >
                 {line}
@@ -205,11 +206,12 @@ function HomeContent() {
       >
         <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#24153E]/90 via-[#24153E]/30 to-transparent" />
         <div className="relative z-10 w-full px-6 pb-16 text-center text-[#E4D474] sm:pb-24">
-          <h1 className="mb-4 text-[clamp(3.5rem,14vw,9rem)] font-black uppercase leading-[0.82] tracking-tight drop-shadow-[0_4px_24px_rgba(0,0,0,0.9)]">
-            Proof of Alpha
+          <h1 className="mb-4 text-[clamp(2.4rem,10vw,6.5rem)] font-black uppercase tracking-tight drop-shadow-[0_4px_24px_rgba(0,0,0,0.9)]">
+            <span className="block leading-[0.9] mb-2">Proof</span>
+            <span className="block leading-[0.9]">of Alpha</span>
           </h1>
           <p className="mx-auto mb-8 max-w-md font-mono text-sm text-[#ffffff]/80">
-            The on-chain meme dominance test.
+            A fully on-chain dating-practice game on Solana.
           </p>
           <button
             onClick={() => setScreen("storyboard")}
@@ -273,10 +275,9 @@ function HomeContent() {
                 <p className="mb-5 inline-block bg-[#E4D474] px-3 py-1.5 font-mono text-xs font-black uppercase tracking-[0.18em] text-[#24153E]">
                   AURA-powered · Solana
                 </p>
-                <h1 className="glitch mb-6 font-black uppercase leading-[0.85] tracking-tight text-[clamp(3rem,9vw,7rem)]">
-                  Proof
-                  <br />
-                  of Alpha.
+                <h1 className="glitch mb-6 font-black uppercase tracking-tight text-[clamp(3rem,9vw,7rem)]">
+                  <span className="block leading-[0.9] mb-2">Proof</span>
+                  <span className="block leading-[0.9]">of Alpha</span>
                 </h1>
                 <p className="mb-3 max-w-lg text-base leading-8 text-[#ffffff] sm:text-lg">
                   Pick your archetype. Spend AURA to approach. Charm her in 4 messages or get shut down on-chain.

@@ -7,6 +7,7 @@ import { useWallet } from "../components/WalletProvider";
 import { ARCHETYPES, getCurrentRank, getNextRank, getRankProgress } from "../lib/archetypes";
 import { fetchPlayerAura } from "../lib/solana-client";
 import { getOrInitAura, auraKey, saveAura } from "../lib/aura";
+import { loadPlayerProfile, type PlayerRow } from "../lib/leaderboard";
 import type { MatchRecord } from "../end/page";
 
 type Stats = {
@@ -32,6 +33,7 @@ export default function ProfilePage() {
   const [aura,        setAura]        = useState(0);
   const [auraLoading, setAuraLoading] = useState(false);
   const [records,     setRecords]     = useState<MatchRecord[]>([]);
+  const [dbProfile,   setDbProfile]   = useState<PlayerRow | null>(null);
   const [copied,      setCopied]      = useState(false);
   const [copiedAddr,  setCopiedAddr]  = useState(false);
 
@@ -47,21 +49,33 @@ export default function ProfilePage() {
       if (raw) setRecords(JSON.parse(raw) as MatchRecord[]);
     } catch {}
 
-    // Fetch on-chain balance as the authoritative source
+    // Fetch on-chain balance + Supabase profile as authoritative sources
     if (fullAddress) {
       setAuraLoading(true);
-      fetchPlayerAura(new PublicKey(fullAddress))
-        .then((state) => {
-          if (state && state.balance > 0) {
-            setAura(state.balance);
-            saveAura(fullAddress, state.balance);
-          }
-        })
-        .finally(() => setAuraLoading(false));
+      Promise.all([
+        fetchPlayerAura(new PublicKey(fullAddress)),
+        loadPlayerProfile(fullAddress),
+      ]).then(([state, profile]) => {
+        if (state && state.balance > 0) {
+          setAura(state.balance);
+          saveAura(fullAddress, state.balance);
+        }
+        if (profile) setDbProfile(profile);
+      }).finally(() => setAuraLoading(false));
     }
   }, [fullAddress]);
 
-  const stats = computeStats(records);
+  const localStats = computeStats(records);
+
+  // Supabase is the source of truth for aggregate counts; localStorage fills fav archetype
+  const stats = {
+    matches:     dbProfile?.matches_played ?? localStats.matches,
+    wins:        dbProfile?.matches_won    ?? localStats.wins,
+    losses:      (dbProfile?.matches_played ?? localStats.matches) - (dbProfile?.matches_won ?? localStats.wins),
+    elims:       localStats.elims,
+    favArchetype: localStats.favArchetype,
+    bestStreak:  dbProfile?.best_streak   ?? localStats.bestStreak,
+  };
 
   const rank     = getCurrentRank(aura);
   const nextRank = getNextRank(aura);

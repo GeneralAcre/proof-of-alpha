@@ -36,7 +36,7 @@ export function Footer() {
     <footer className="border-t border-[#a09ab8]/20 bg-[#160c2c]">
 
       {/* ── Top grid ── */}
-      <div className="mx-auto max-w-7xl grid grid-cols-2 gap-10 px-6 py-12 lg:grid-cols-3 lg:gap-8">
+      <div className="mx-auto max-w-7xl grid grid-cols-2 gap-10 px-6 py-12 lg:grid-cols-4 lg:gap-8">
 
         {/* Contact */}
         <div className="col-span-2 lg:col-span-1">
@@ -90,6 +90,25 @@ export function Footer() {
                 </Link>
               </li>
             ))}
+          </ul>
+        </div>
+
+        {/* Legal */}
+        <div>
+          <p className="mb-5 font-mono text-xs font-black uppercase tracking-[0.22em] text-[#a09ab8]">
+            Legal
+          </p>
+          <ul className="space-y-3">
+            <li>
+              <Link href="/privacy-policy" className="font-mono text-sm text-[#ffffff]/70 transition hover:text-[#E4D474]">
+                Privacy Policy
+              </Link>
+            </li>
+            <li>
+              <Link href="/terms" className="font-mono text-sm text-[#ffffff]/70 transition hover:text-[#E4D474]">
+                Terms of Service
+              </Link>
+            </li>
           </ul>
         </div>
 

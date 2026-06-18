@@ -55,10 +55,9 @@ export default function HomePage() {
               <p className="mb-5 inline-block bg-[#E4D474] px-3 py-1.5 font-mono text-xs font-black uppercase tracking-[0.18em] text-[#24153E]">
                 AURA-powered · Solana
               </p>
-              <h1 className="glitch mb-6 font-black uppercase leading-[0.85] tracking-tight text-[clamp(3rem,9vw,7rem)]">
-                Proof
-                <br />
-                of Alpha.
+              <h1 className="glitch mb-6 font-black uppercase tracking-tight text-[clamp(3rem,9vw,7rem)]">
+                <span className="block leading-[0.9] mb-2">Proof</span>
+                <span className="block leading-[0.9]">of Alpha</span>
               </h1>
               <p className="mb-3 max-w-lg text-base leading-8 text-[#ffffff] sm:text-lg">
                 Pick your archetype. Spend AURA to approach. Charm her in 4 messages or get shut down on-chain.
