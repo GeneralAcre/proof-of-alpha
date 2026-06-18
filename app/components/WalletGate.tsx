@@ -69,7 +69,7 @@ export function WalletGate({ children }: { children: React.ReactNode }) {
           <p className="mt-4 font-mono text-[10px] text-[#a09ab8]">{status}</p>
         )}
 
-        <p className="mt-6 font-mono text-[10px] text-[#ffffff]/40 leading-5">
+        <p className="mt-6 font-mono text-xs text-[#ffffff]/40 leading-5 text-center">
           By connecting, you agree to our{" "}
           <Link href="/terms" className="whitespace-nowrap text-[#E4D474]/60 underline underline-offset-2 hover:text-[#E4D474] transition">
             Terms of Service
