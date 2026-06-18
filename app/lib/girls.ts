@@ -47,7 +47,7 @@ export const GIRL_ARCHETYPES: readonly GirlArchetype[] = [
     wins: ["Knowing your coffee", "Not rushing her", "Genuine curiosity", "Tipping well"],
     fails: ["Being impatient", "Cringe pickup lines", "Fake sophistication"],
     difficulty: "easy",
-    approachCost: 10, winThreshold: 8, flirtWin: 80, flexWin: 40,
+    approachCost: 10, winThreshold: 8, flirtWin: 25, flexWin: 15,
     image: "/girl/Friendly-girl-1.png",
     chatPrompt: `You are {{name}}, a coffee barista. Friendly, a bit tired, genuinely warm. You love the craft and real conversation. You've heard every pickup line and see through nonsense instantly.
 
@@ -68,7 +68,7 @@ Reply in 1-2 sentences. New line: [SCORE: X]`,
     wins: ["Specific book recs", "Asking what she's reading", "Intellectual banter", "Niche interests"],
     fails: ["'I don't really read'", "Asking for the bestseller list", "Mentioning the movie"],
     difficulty: "easy",
-    approachCost: 10, winThreshold: 8, flirtWin: 80, flexWin: 40,
+    approachCost: 10, winThreshold: 8, flirtWin: 25, flexWin: 15,
     image: "/girl/Friendly-girl-2.png",
     chatPrompt: `You are {{name}}, a bookstore clerk. Introverted, dry-humored, quietly sharp. High standards for conversation.
 
@@ -89,7 +89,7 @@ Reply in 1-2 sentences. New line: [SCORE: X]`,
     wins: ["Knowing poses by name", "Mindfulness talk", "Health-focused chat"],
     fails: ["'Yoga is just stretching'", "Bro gym energy", "Creepy flexibility comments"],
     difficulty: "easy",
-    approachCost: 10, winThreshold: 8, flirtWin: 80, flexWin: 40,
+    approachCost: 10, winThreshold: 8, flirtWin: 25, flexWin: 15,
     image: "/girl/Friendly-girl-3.png",
     chatPrompt: `You are {{name}}, a yoga instructor. Calm, centered, sees through ego instantly. Value presence over posturing.
 
@@ -110,7 +110,7 @@ Reply in 1-2 sentences. New line: [SCORE: X]`,
     wins: ["Campus humor", "Not being condescending", "Genuine interest in her major"],
     fails: ["Bragging about money", "Unsolicited life advice", "Age jokes"],
     difficulty: "easy",
-    approachCost: 10, winThreshold: 8, flirtWin: 80, flexWin: 40,
+    approachCost: 10, winThreshold: 8, flirtWin: 25, flexWin: 15,
     image: "/girl/Friendly-girl-2.png",
     chatPrompt: `You are {{name}}, a college student. Smart, running on caffeine, sardonic Gen Z energy. Hate condescension, value realness.
 
@@ -131,7 +131,7 @@ Reply in 1-2 sentences. New line: [SCORE: X]`,
     wins: ["Trail names + elevations", "Gear knowledge", "Actual outdoor stories"],
     fails: ["'I prefer the gym'", "Calling nature boring", "Clearly never hiked"],
     difficulty: "easy",
-    approachCost: 10, winThreshold: 8, flirtWin: 80, flexWin: 40,
+    approachCost: 10, winThreshold: 8, flirtWin: 25, flexWin: 15,
     image: "/girl/Friendly-girl-3.png",
     chatPrompt: `You are {{name}}, a trail runner. High energy, no BS, deep respect for people who actually push themselves.
 
@@ -154,7 +154,7 @@ Reply in 1-2 sentences. New line: [SCORE: X]`,
     wins: ["Actual lift numbers", "Macro tracking", "Programming knowledge"],
     fails: ["Lying about your bench", "Skipping legs", "No training discipline"],
     difficulty: "medium",
-    approachCost: 50, winThreshold: 20, flirtWin: 150, flexWin: 80,
+    approachCost: 50, winThreshold: 20, flirtWin: 120, flexWin: 75,
     image: "/girl/Hard-girl-1.png",
     chatPrompt: `You are {{name}}, a personal trainer. Disciplined, sharp, zero patience for pretenders. You see through fake fitness claims immediately.
 
@@ -175,7 +175,7 @@ Reply in 1-2 sentences. New line: [SCORE: X]`,
     wins: ["Real technical knowledge", "Side projects", "Stack discussions", "Actual builds"],
     fails: ["'I have an app idea'", "Asking her to code it", "Zero tech literacy"],
     difficulty: "medium",
-    approachCost: 50, winThreshold: 20, flirtWin: 150, flexWin: 80,
+    approachCost: 50, winThreshold: 20, flirtWin: 120, flexWin: 75,
     image: "/girl/Hard-girl-2.png",
     chatPrompt: `You are {{name}}, a software engineer. Sharp, logical, low patience for vague ideas. You respect people who actually ship.
 
@@ -196,7 +196,7 @@ Reply in 1-2 sentences. New line: [SCORE: X]`,
     wins: ["Cooking techniques", "Unusual ingredients", "Food travel stories"],
     fails: ["Only eats fast food", "Can't boil water", "'Food is just fuel'"],
     difficulty: "medium",
-    approachCost: 50, winThreshold: 20, flirtWin: 150, flexWin: 80,
+    approachCost: 50, winThreshold: 20, flirtWin: 120, flexWin: 75,
     image: "/girl/alpha-girl.png",
     chatPrompt: `You are {{name}}, a private chef. Passionate, food-obsessed, low tolerance for people who don't care about food.
 
@@ -217,7 +217,7 @@ Reply in 1-2 sentences. New line: [SCORE: X]`,
     wins: ["Camera gear knowledge", "Composition talk", "Specific photography styles"],
     fails: ["'My phone camera is enough'", "Instagram = portfolio", "Lying about shoots"],
     difficulty: "medium",
-    approachCost: 50, winThreshold: 20, flirtWin: 150, flexWin: 80,
+    approachCost: 50, winThreshold: 20, flirtWin: 120, flexWin: 75,
     image: "/girl/Hard-girl-1.png",
     chatPrompt: `You are {{name}}, a photographer. Artistic, specific about craft. Tired of people calling themselves photographers because they have a phone.
 
@@ -238,7 +238,7 @@ Reply in 1-2 sentences. New line: [SCORE: X]`,
     wins: ["Niche artist knowledge", "Music theory", "Playing an instrument"],
     fails: ["Only Spotify Top 40", "'Music is background noise'", "Never plays anything"],
     difficulty: "medium",
-    approachCost: 50, winThreshold: 20, flirtWin: 150, flexWin: 80,
+    approachCost: 50, winThreshold: 20, flirtWin: 120, flexWin: 75,
     image: "/girl/Hard-girl-2.png",
     chatPrompt: `You are {{name}}, an indie musician. Deep in music, specific about taste, allergic to algorithm playlists.
 
@@ -261,7 +261,7 @@ Reply in 1-2 sentences. New line: [SCORE: X]`,
     wins: ["Real metrics", "Market understanding", "Specific product thinking", "Shipped products"],
     fails: ["Vague 'I have an idea'", "'It's like Uber but for X'", "No validation"],
     difficulty: "hard",
-    approachCost: 100, winThreshold: 30, flirtWin: 500, flexWin: 200,
+    approachCost: 100, winThreshold: 30, flirtWin: 300, flexWin: 180,
     image: "/girl/Hard-girl-1.png",
     chatPrompt: `You are {{name}}, a startup CEO. Sharp, metrics-obsessed, zero patience for dreamers. You respect people who ship.
 
@@ -282,7 +282,7 @@ Reply in 1-2 sentences. New line: [SCORE: X]`,
     wins: ["DeFi protocol depth", "On-chain metrics", "Liquidity positions", "Validator knowledge"],
     fails: ["Bitcoin price chat", "Asking what a seed phrase is", "Friend told me to buy"],
     difficulty: "hard",
-    approachCost: 100, winThreshold: 30, flirtWin: 500, flexWin: 200,
+    approachCost: 100, winThreshold: 30, flirtWin: 300, flexWin: 180,
     image: "/girl/Hard-girl-2.png",
     chatPrompt: `You are {{name}}, an on-chain crypto analyst. Deep in DeFi, liquidity pools, validator economics. Dismiss normies instantly.
 
@@ -303,7 +303,7 @@ Reply in 1-2 sentences. New line: [SCORE: X]`,
     wins: ["Legal concept knowledge", "Intellectual sharpness", "Precise language", "Witty debate"],
     fails: ["Lawyer jokes", "'Sounds complicated'", "Bad arguments", "Asking for free advice"],
     difficulty: "hard",
-    approachCost: 100, winThreshold: 30, flirtWin: 500, flexWin: 200,
+    approachCost: 100, winThreshold: 30, flirtWin: 300, flexWin: 180,
     image: "/girl/Hard-girl-1.png",
     chatPrompt: `You are {{name}}, a corporate lawyer. Razor-sharp, precise, zero tolerance for bad logic. You respect intellectual equals.
 
@@ -324,7 +324,7 @@ Reply in 1-2 sentences. New line: [SCORE: X]`,
     wins: ["Designer knowledge", "Fashion history", "Defined personal style", "Cultural references"],
     fails: ["'I just wear whatever'", "No aesthetic", "Asking what fast fashion is"],
     difficulty: "hard",
-    approachCost: 100, winThreshold: 30, flirtWin: 500, flexWin: 200,
+    approachCost: 100, winThreshold: 30, flirtWin: 300, flexWin: 180,
     image: "/girl/Hard-girl-2.png",
     chatPrompt: `You are {{name}}, a fashion editor. Impeccably styled, culturally sharp. Dismissive of people with no visual identity.
 
@@ -345,7 +345,7 @@ Reply in 1-2 sentences. New line: [SCORE: X]`,
     wins: ["Fund economics", "Portfolio thinking", "Market thesis with data", "Deal experience"],
     fails: ["'I just need funding'", "No traction", "Asking for intros first", "No competitive moat"],
     difficulty: "hard",
-    approachCost: 100, winThreshold: 30, flirtWin: 500, flexWin: 200,
+    approachCost: 100, winThreshold: 30, flirtWin: 300, flexWin: 180,
     image: "/girl/Hard-girl-1.png",
     chatPrompt: `You are {{name}}, a VC partner. Pattern-matching machine. You filter conversations for signal instantly.
 
