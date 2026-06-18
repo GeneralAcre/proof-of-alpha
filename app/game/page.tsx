@@ -395,9 +395,10 @@ function GameContent() {
         <Nav />
         <TickerBar entries={ticker} />
 
+        {/* Fixed back button — desktop only (enough left whitespace) */}
         <button
           onClick={() => router.push(`/map?archetype=${archetypeId}`)}
-          className="fixed left-4 top-24 z-50 bg-[#E4D474] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-[#24153E] transition hover:opacity-80"
+          className="fixed left-4 top-24 z-50 bg-[#E4D474] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-[#24153E] transition hover:opacity-80 hidden lg:block"
           type="button"
         >
           Back
@@ -407,6 +408,14 @@ function GameContent() {
 
           {/* Header */}
           <div className="mb-8">
+            {/* Inline back button — mobile only */}
+            <button
+              onClick={() => router.push(`/map?archetype=${archetypeId}`)}
+              className="mb-4 bg-[#E4D474] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-[#24153E] transition hover:opacity-80 lg:hidden"
+              type="button"
+            >
+              Back
+            </button>
             <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#a09ab8]">
               Proof of Alpha · Rizz Mode
             </p>

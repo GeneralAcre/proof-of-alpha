@@ -1,12 +1,16 @@
 ﻿"use client";
 
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useWallet } from "./WalletProvider";
+
+const PUBLIC_PATHS = ["/privacy-policy", "/terms"];
 
 export function WalletGate({ children }: { children: React.ReactNode }) {
   const { account, wallets, connect, isConnecting, status } = useWallet();
+  const path = usePathname();
 
-  if (account) return <>{children}</>;
+  if (account || PUBLIC_PATHS.includes(path)) return <>{children}</>;
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#000F08] text-[#E4D474]">

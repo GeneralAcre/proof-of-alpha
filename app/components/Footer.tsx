@@ -25,7 +25,7 @@ export function Footer() {
   function handleSend(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim() || !email.trim() || !message.trim()) return;
-    const mailto = `mailto:acreforcoding@gmail.com?subject=POA Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(message)}%0A%0AFrom: ${encodeURIComponent(email)}`;
+    const mailto = `mailto:proofonchainalpha@gmail.com?subject=POA Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(message)}%0A%0AFrom: ${encodeURIComponent(email)}`;
     window.location.href = mailto;
     setSent(true);
     setName(""); setEmail(""); setMessage("");

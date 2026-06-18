@@ -219,6 +219,17 @@ function HomeContent() {
           >
             Enter
           </button>
+          <p className="mt-4 font-mono text-xs text-[#ffffff]/50 mx-auto leading-5 px-4">
+            By entering, you agree to our{" "}
+            <Link href="/terms" className="whitespace-nowrap text-[#E4D474]/70 underline underline-offset-2 hover:text-[#E4D474] transition">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link href="/privacy-policy" className="whitespace-nowrap text-[#E4D474]/70 underline underline-offset-2 hover:text-[#E4D474] transition">
+              Privacy Policy
+            </Link>
+            .
+          </p>
         </div>
       </div>
     );

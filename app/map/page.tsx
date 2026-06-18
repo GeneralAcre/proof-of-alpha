@@ -224,10 +224,10 @@ function MapContent() {
           <div>
             <button
               onClick={() => router.push("/character-select")}
-              className="mb-3 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-[#a09ab8] transition hover:text-[#E4D474]"
+              className="mb-4 bg-[#E4D474] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-[#24153E] transition hover:opacity-80"
               type="button"
             >
-              <span>←</span> Back
+              Back
             </button>
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#a09ab8]">Proof of Alpha</p>
             <h1 className="mt-1 text-5xl font-black uppercase sm:text-6xl">Select Area</h1>

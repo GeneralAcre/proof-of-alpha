@@ -45,3 +45,8 @@ target/
 .anchor/
 
 .vercel
+
+# Android signing keys — never commit
+*.keystore
+*.jks
+android/key.properties

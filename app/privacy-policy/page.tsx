@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const metadata = {
   title: "Privacy Policy — Proof of Alpha",
   description: "Privacy Policy for Proof of Alpha, a fully on-chain game on Solana.",
@@ -6,7 +8,7 @@ export const metadata = {
 const SECTIONS = [
   {
     title: "1. Who We Are",
-    body: `Proof of Alpha ("we," "us," or "our") is an on-chain dating-practice game deployed on the Solana blockchain, operated by its developer (contact: acreforcoding@gmail.com). This Privacy Policy explains how we handle information when you access or use the Proof of Alpha application ("App").`,
+    body: `Proof of Alpha ("we," "us," or "our") is an on-chain dating-practice game deployed on the Solana blockchain, operated by its developer (contact: proofonchainalpha@gmail.com). This Privacy Policy explains how we handle information when you access or use the Proof of Alpha application ("App").`,
   },
   {
     title: "2. Information We Collect",
@@ -47,7 +49,7 @@ We require all third-party services with access to your data to maintain privacy
   },
   {
     title: "5. Minors",
-    body: `Proof of Alpha contains mature themes (flirting, dating-practice content) and is intended for users aged 18 and older. We do not knowingly collect personal data from anyone under the age of 18 (or the applicable age of majority in your jurisdiction). If we become aware that a minor has provided us with personal information, we will delete it promptly. Parents or guardians who believe their child has submitted data should contact us at acreforcoding@gmail.com.`,
+    body: `Proof of Alpha contains mature themes (flirting, dating-practice content) and is intended for users aged 18 and older. We do not knowingly collect personal data from anyone under the age of 18 (or the applicable age of majority in your jurisdiction). If we become aware that a minor has provided us with personal information, we will delete it promptly. Parents or guardians who believe their child has submitted data should contact us at proofonchainalpha@gmail.com.`,
   },
   {
     title: "6. Your Rights & Account Deletion",
@@ -57,7 +59,7 @@ We require all third-party services with access to your data to maintain privacy
 • Request correction of inaccurate data
 • Request deletion of your account and associated off-chain data (note: on-chain data on Solana is permanent and beyond our control)
 
-To exercise any of these rights, contact us at acreforcoding@gmail.com with the subject line "Data Request." We will respond within 30 days.`,
+To exercise any of these rights, contact us at proofonchainalpha@gmail.com with the subject line "Data Request." We will respond within 30 days.`,
   },
   {
     title: "7. Data Retention",
@@ -65,7 +67,13 @@ To exercise any of these rights, contact us at acreforcoding@gmail.com with the 
   },
   {
     title: "8. Security",
-    body: `We apply industry-standard security practices to protect your data, including encrypted data transmission (TLS) and access controls on our database. However, no method of transmission or storage is 100% secure. Blockchain data is public and outside our control.`,
+    body: `We apply industry-standard security practices to protect your data, including:
+
+• Encrypted data transmission (TLS/HTTPS) for all data in transit
+• Encryption and access controls for data at rest in our database
+• Principle of least-privilege access for internal systems
+
+However, no method of transmission or storage is 100% secure. Blockchain data is public and outside our control.`,
   },
   {
     title: "9. Changes to This Policy",
@@ -76,15 +84,29 @@ To exercise any of these rights, contact us at acreforcoding@gmail.com with the 
     body: `If you have questions or concerns about this Privacy Policy, please contact:
 
 Proof of Alpha Developer
-Email: acreforcoding@gmail.com
+Email: proofonchainalpha@gmail.com
 Twitter/X: @created_alpha`,
   },
 ];
 
 export default function PrivacyPolicyPage() {
   return (
-    <main className="min-h-screen bg-[#0d0820] px-6 py-16">
-      <div className="mx-auto max-w-3xl">
+    <main className="min-h-screen bg-[#0d0820]">
+
+      {/* Back button — outside content box, left edge */}
+      <div className="px-6 pt-8">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 border-2 border-[#E4D474] bg-[#E4D474] px-5 py-2.5 font-mono text-xs font-black uppercase tracking-[0.18em] text-[#24153E] shadow-[3px_3px_0_rgba(0,0,0,0.4)] transition hover:bg-transparent hover:text-[#E4D474]"
+        >
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M8 1L3 6l5 5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          Back
+        </Link>
+      </div>
+
+      <div className="mx-auto max-w-3xl px-6 py-12">
 
         {/* Header */}
         <div className="mb-12 border-b border-[#a09ab8]/20 pb-8">
@@ -95,7 +117,7 @@ export default function PrivacyPolicyPage() {
             Privacy Policy
           </h1>
           <p className="mt-3 font-mono text-xs text-[#a09ab8]/70">
-            Effective Date: June 18, 2025 &nbsp;·&nbsp; Last Updated: June 18, 2025
+            Effective Date: June 18, 2026 &nbsp;·&nbsp; Last Updated: June 18, 2026
           </p>
         </div>
 

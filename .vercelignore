@@ -3,3 +3,4 @@ programs/proof-of-alpha/target
 target
 .anchor
 *.pem
+.npmrc

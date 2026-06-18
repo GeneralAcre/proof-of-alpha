@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const metadata = {
   title: "Terms of Service — Proof of Alpha",
   description: "Terms of Service and End User License Agreement for Proof of Alpha.",
@@ -53,81 +55,107 @@ You are solely responsible for the security of your wallet and private keys. Nev
 We reserve the right to suspend or terminate any account that violates these rules, at our sole discretion and without prior notice.`,
   },
   {
-    title: "6. User-Generated Content",
+    title: "6. AI Characters & Nature of Gameplay",
+    body: `All characters in Proof of Alpha — including every "girl" archetype you interact with — are entirely artificial intelligence (AI) simulations. They are fictional and not real people. Any responses, dialogue, or personas generated in the App are produced by AI and do not represent the views, statements, or identities of any real individual.
+
+The App is entertainment software only. Nothing in the gameplay constitutes real romantic advice, real social interaction, or a substitute for human relationships.`,
+  },
+  {
+    title: "7. User-Generated Content",
     body: `If you submit any content through the App (including chat messages, profile information, or user interactions), you grant us a non-exclusive, royalty-free, worldwide license to use, store, display, and process that content solely for the purpose of operating the App.
 
 You represent and warrant that your content:
 • Does not infringe any third-party intellectual property rights
 • Does not contain illegal material, including child sexual abuse material (CSAM)
+• Is not pornographic, sexually explicit, hateful, or violent
 • Complies with these Terms and the Solana Mobile Publisher Policy
+
+Since all in-game interactions are between you and AI (not other users), there is no user-to-user communication channel. If you encounter AI behavior you believe violates this policy, please report it to proofonchainalpha@gmail.com. We review all reports and take appropriate corrective action.
 
 You agree that the same content restrictions in these Terms apply to any content you submit, and you take responsibility for compliance.`,
   },
   {
-    title: "7. Privacy",
-    body: `Our Privacy Policy (available at /privacy-policy) describes how we collect and handle your data and is incorporated into these Terms by reference. By using the App, you also agree to our Privacy Policy.`,
+    title: "8. Privacy",
+    body: `Our Privacy Policy (available at https://proof-of-alpha-live.vercel.app/privacy-policy) describes how we collect and handle your data and is incorporated into these Terms by reference. By using the App, you also agree to our Privacy Policy.`,
   },
   {
-    title: "8. Prohibited Content & Activities",
+    title: "9. Prohibited Content & Activities",
     body: `The following are strictly prohibited on Proof of Alpha, consistent with the Solana Mobile dApp Store Publisher Policy:
 
-• Content that sexualizes minors in any form
+• Content that sexualizes minors in any form (CSAM)
+• Pornographic or sexually explicit material
+• Hate speech or content that promotes or incites hatred or violence based on protected characteristics
 • Real-money gambling or unlicensed financial services
 • Malware, spyware, phishing, or deceptive software behavior
 • Content that promotes violence, terrorism, or illegal activity
 • Unauthorized collection or misuse of user data
+• False or misleading claims about the App's nature, purpose, or affiliations
 • Circumventing or interfering with the Solana Mobile dApp Store or its review processes
 
 Violation of any of these prohibitions will result in immediate account termination and may be reported to relevant authorities.`,
   },
   {
-    title: "9. Intellectual Property",
+    title: "10. Intellectual Property",
     body: `All content, branding, artwork, code, and game mechanics in Proof of Alpha are owned by or licensed to us. "Proof of Alpha," the AURA token branding, character art, and associated logos are our intellectual property.
 
 The Solana protocol and related open-source components are owned by their respective rights holders and are used under their applicable open-source licenses.`,
   },
   {
-    title: "10. Account Termination & Data Deletion",
-    body: `You may request deletion of your account and off-chain data at any time by contacting acreforcoding@gmail.com. We will process deletion requests within 30 days.
+    title: "11. Account Termination & Data Deletion",
+    body: `You may request deletion of your account and off-chain data at any time by contacting proofonchainalpha@gmail.com. We will process deletion requests within 30 days.
 
 Note: On-chain data (transactions, token balances recorded on the Solana blockchain) is permanent and cannot be deleted by us.
 
 We may terminate your access to the App at any time, with or without notice, if you violate these Terms or if we discontinue the App.`,
   },
   {
-    title: "11. Disclaimers",
+    title: "12. Disclaimers",
     body: `THE APP IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. WE DISCLAIM ALL WARRANTIES INCLUDING, WITHOUT LIMITATION, IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
 
 WE DO NOT WARRANT THAT THE APP WILL BE UNINTERRUPTED, ERROR-FREE, OR FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS.`,
   },
   {
-    title: "12. Limitation of Liability",
+    title: "13. Limitation of Liability",
     body: `TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW, WE SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING LOSS OF PROFITS, DATA, OR GOODWILL, ARISING OUT OF OR IN CONNECTION WITH YOUR USE OF THE APP.
 
 OUR TOTAL LIABILITY TO YOU FOR ANY CLAIMS ARISING FROM YOUR USE OF THE APP SHALL NOT EXCEED $100 USD OR THE AMOUNT YOU PAID US IN THE PAST 12 MONTHS, WHICHEVER IS GREATER.`,
   },
   {
-    title: "13. Governing Law & Disputes",
+    title: "14. Governing Law & Disputes",
     body: `These Terms are governed by and construed in accordance with applicable law. Any dispute arising from these Terms or your use of the App shall be resolved through good-faith negotiation. If negotiation fails, disputes shall be submitted to binding arbitration, except where prohibited by applicable law.`,
   },
   {
-    title: "14. Changes to These Terms",
+    title: "15. Changes to These Terms",
     body: `We may update these Terms from time to time. We will notify you of material changes by posting the updated Terms in the App with a revised effective date. Your continued use of the App after any changes constitutes your acceptance of the updated Terms.`,
   },
   {
-    title: "15. Contact",
+    title: "16. Contact",
     body: `For questions about these Terms, contact:
 
 Proof of Alpha Developer
-Email: acreforcoding@gmail.com
+Email: proofonchainalpha@gmail.com
 Twitter/X: @created_alpha`,
   },
 ];
 
 export default function TermsPage() {
   return (
-    <main className="min-h-screen bg-[#0d0820] px-6 py-16">
-      <div className="mx-auto max-w-3xl">
+    <main className="min-h-screen bg-[#0d0820]">
+
+      {/* Back button — outside content box, left edge */}
+      <div className="px-6 pt-8">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 border-2 border-[#E4D474] bg-[#E4D474] px-5 py-2.5 font-mono text-xs font-black uppercase tracking-[0.18em] text-[#24153E] shadow-[3px_3px_0_rgba(0,0,0,0.4)] transition hover:bg-transparent hover:text-[#E4D474]"
+        >
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M8 1L3 6l5 5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          Back
+        </Link>
+      </div>
+
+      <div className="mx-auto max-w-3xl px-6 py-12">
 
         {/* Header */}
         <div className="mb-12 border-b border-[#a09ab8]/20 pb-8">
@@ -141,7 +169,7 @@ export default function TermsPage() {
             End User License Agreement (EULA)
           </p>
           <p className="mt-3 font-mono text-xs text-[#a09ab8]/70">
-            Effective Date: June 18, 2025 &nbsp;·&nbsp; Last Updated: June 18, 2025
+            Effective Date: June 18, 2026 &nbsp;·&nbsp; Last Updated: June 18, 2026
           </p>
         </div>
 
