@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useWallet } from "./WalletProvider";
 
@@ -68,7 +69,19 @@ export function WalletGate({ children }: { children: React.ReactNode }) {
           <p className="mt-4 font-mono text-[10px] text-[#a09ab8]">{status}</p>
         )}
 
-        <p className="mt-8 font-mono text-[9px] uppercase tracking-[0.2em] text-[#a09ab8]/40">
+        <p className="mt-6 font-mono text-[10px] text-[#ffffff]/40 leading-5">
+          By connecting, you agree to our{" "}
+          <Link href="/terms" className="whitespace-nowrap text-[#E4D474]/60 underline underline-offset-2 hover:text-[#E4D474] transition">
+            Terms of Service
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy-policy" className="whitespace-nowrap text-[#E4D474]/60 underline underline-offset-2 hover:text-[#E4D474] transition">
+            Privacy Policy
+          </Link>
+          .
+        </p>
+
+        <p className="mt-4 font-mono text-[9px] uppercase tracking-[0.2em] text-[#a09ab8]/40">
           Proof of Alpha · Solana
         </p>
       </div>
