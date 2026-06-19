@@ -223,7 +223,7 @@ function MapContent() {
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
             <button
-              onClick={() => router.push("/character-select")}
+              onClick={() => router.push(`/play?archetype=${archetype}`)}
               className="mb-4 bg-[#E4D474] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-[#24153E] transition hover:opacity-80"
               type="button"
             >

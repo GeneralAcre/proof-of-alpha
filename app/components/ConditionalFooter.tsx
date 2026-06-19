@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { Footer } from "./Footer";
 
-const NO_FOOTER_PREFIX = ["/game", "/lobby", "/character-select", "/mode-select", "/map", "/end"];
+const NO_FOOTER_PREFIX = ["/game", "/lobby", "/character-select", "/mode-select", "/map", "/end", "/play", "/scenarios", "/life"];
 const NO_FOOTER_EXACT = ["/", "/privacy-policy", "/terms"];
 
 export function ConditionalFooter() {
