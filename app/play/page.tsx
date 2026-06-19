@@ -90,10 +90,8 @@ function PlayContent() {
           </button>
 
           {/* ── Situation Game ─────────────────────────────────────────────── */}
-          <button
-            className="group relative flex flex-col overflow-hidden border-2 border-[#9945FF]/25 bg-[#0d0820] text-left transition duration-200 hover:border-[#9945FF]/70 hover:bg-[#130e28] touch-manipulation"
-            onClick={() => router.push(`/scenarios?archetype=${archetype}`)}
-            type="button"
+          <div
+            className="group relative flex flex-col overflow-hidden border-2 border-[#9945FF]/15 bg-[#0d0820] text-left opacity-60 cursor-not-allowed select-none"
           >
             {/* Grid pattern */}
             <svg aria-hidden className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.04]" xmlns="http://www.w3.org/2000/svg">
@@ -139,12 +137,12 @@ function PlayContent() {
               </ul>
 
               <div className="mt-auto pt-8">
-                <div className="inline-block border-2 border-[#9945FF] bg-[#9945FF] px-6 py-2.5 font-mono text-xs font-black uppercase tracking-widest text-white transition duration-150 group-hover:bg-transparent group-hover:text-[#9945FF]">
-                  Enter Situation Game
+                <div className="inline-block border-2 border-[#9945FF]/40 bg-transparent px-6 py-2.5 font-mono text-xs font-black uppercase tracking-widest text-[#9945FF]/50">
+                  🔒 Coming Soon
                 </div>
               </div>
             </div>
-          </button>
+          </div>
 
         </div>
       </main>
