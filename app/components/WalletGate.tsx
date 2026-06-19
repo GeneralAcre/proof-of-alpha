@@ -8,7 +8,7 @@ import { useWallet } from "./WalletProvider";
 const PUBLIC_PATHS = ["/privacy-policy", "/terms"];
 
 export function WalletGate({ children }: { children: React.ReactNode }) {
-  const { account, wallets, connect, isConnecting, status } = useWallet();
+  const { account, wallets, connect, isConnecting, status, displayName } = useWallet();
   const path = usePathname();
 
   if (account || PUBLIC_PATHS.includes(path)) return <>{children}</>;
@@ -50,7 +50,7 @@ export function WalletGate({ children }: { children: React.ReactNode }) {
                 onClick={() => connect(w)}
                 type="button"
               >
-                {isConnecting ? "Connecting…" : w.name}
+                {isConnecting ? "Connecting…" : displayName(w)}
               </button>
             ))}
           </div>
@@ -60,7 +60,7 @@ export function WalletGate({ children }: { children: React.ReactNode }) {
               No wallet detected
             </p>
             <p className="mt-2 text-sm leading-6 text-[#ffffff]">
-              Install a Solana wallet like Phantom or Backpack, then refresh this page.
+              On Saga or Seeker, open any Solana wallet app first, then return here. On desktop, install Phantom or Backpack and refresh.
             </p>
           </div>
         )}

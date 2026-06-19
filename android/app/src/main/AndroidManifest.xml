@@ -32,16 +32,6 @@
 
         </activity>
 
-        <!-- MWA wallet endpoint — advertise this app as a dApp on Solana Mobile -->
-        <activity-alias
-            android:name=".WalletEntryActivity"
-            android:targetActivity=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.solana.mobilewalletadapter.fakedapp.ASSOCIATE_WALLET" />
-            </intent-filter>
-        </activity-alias>
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

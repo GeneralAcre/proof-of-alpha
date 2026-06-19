@@ -150,13 +150,12 @@ export default function StorePage() {
 
         {/* Treasury warning */}
         {!treasuryOk && (
-          <div className="mb-6 border border-red-500/60 bg-red-500/10 px-5 py-4">
-            <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-red-400">
-              Treasury not configured
+          <div className="mb-6 border border-[#a09ab8]/40 bg-[#a09ab8]/5 px-5 py-4">
+            <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[#a09ab8]">
+              Store temporarily unavailable
             </p>
-            <p className="mt-1 text-xs text-red-400/80">
-              Add your wallet address to <code className="font-mono">.env.local</code> as{" "}
-              <code className="font-mono">NEXT_PUBLIC_TREASURY=&lt;your-wallet&gt;</code> then restart the dev server.
+            <p className="mt-1 text-xs text-[#a09ab8]/80">
+              AURA purchases are not available right now. Please check back soon or contact us at proofonchainalpha@gmail.com.
             </p>
           </div>
         )}

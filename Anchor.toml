@@ -8,6 +8,9 @@ skip-lint = false
 [programs.devnet]
 proof_of_alpha = "9UfB3hWQzQCFg47qjXnTigK2QTSkzSrApx5Z1tq1KkFD"
 
+[programs.mainnet]
+proof_of_alpha = "DkwFvvRSqAqADDVdnnkyDYhG7WqY6uC5htjbJeLYrtoU"
+
 [registry]
 url = "https://api.apr.dev"
 

@@ -27,7 +27,7 @@ export async function connectMWA(): Promise<MWAWalletInfo> {
       identity: {
         name: "Proof of Alpha",
         uri: "https://proof-of-alpha-live.vercel.app",
-        icon: "/icon-192.png",
+        icon: "/charecter/alpha-charecter.png",
       },
     });
 

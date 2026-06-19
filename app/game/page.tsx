@@ -222,7 +222,12 @@ function GameContent() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phase: "chat", archetypeId: currentGirl, girlName: girl.name, difficulty: girl.difficulty, messages: newMessages.map(({ role, content }) => ({ role, content })) }),
       });
-      const reader = res.body!.getReader();
+      if (!res.ok || !res.body) {
+        setMessages([...newMessages, { role: "assistant", content: "...", score: 0 }]);
+        if (newCount >= MAX_MSGS) setTimeout(() => setPhase("lock"), 600);
+        return;
+      }
+      const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let fullText = "";
       while (true) {

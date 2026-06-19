@@ -9,7 +9,7 @@
     "lint": "eslint",
     "android:sync": "npx cap sync android",
     "android:debug": "cd android && JAVA_HOME=\"C:\\Program Files\\Android\\Android Studio\\jbr\" ./gradlew assembleDebug",
-    "android:release": "cd android && JAVA_HOME=\"C:\\Program Files\\Android\\Android Studio\\jbr\" ./gradlew assembleRelease && \"C:\\Program Files\\Android\\Android Studio\\jbr\\bin\\java\" -jar \"/c/Users/ACRESANPAPHAT/AppData/Local/Android/Sdk/build-tools/35.0.0/lib/apksigner.jar\" sign --ks ../poa.keystore --ks-key-alias poa --ks-pass env:KEYSTORE_PASS --key-pass env:KEYSTORE_PASS --out app/build/outputs/apk/release/app-release-signed.apk app/build/outputs/apk/release/app-release-unsigned.apk"
+    "android:release": "cd android && JAVA_HOME=\"C:\\Program Files\\Android\\Android Studio\\jbr\" ./gradlew assembleRelease && \"C:\\Program Files\\Android\\Android Studio\\jbr\\bin\\java\" -jar \"/c/Users/ACRESANPAPHAT/AppData/Local/Android/Sdk/build-tools/35.0.0/lib/apksigner.jar\" sign --ks app/proof-of-alpha.jks --ks-key-alias proofofalpha --ks-pass env:KEYSTORE_PASS --key-pass env:KEYSTORE_PASS --out app/build/outputs/apk/release/app-release-signed.apk app/build/outputs/apk/release/app-release-unsigned.apk"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
@@ -26,6 +26,7 @@
     "@wallet-standard/app": "^1.1.1",
     "@wallet-standard/base": "^1.1.1",
     "@wallet-standard/features": "^1.1.1",
+    "@wallet-standard/wallet": "^1.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.17.0",

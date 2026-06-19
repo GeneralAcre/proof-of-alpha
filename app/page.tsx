@@ -27,8 +27,8 @@ const PANELS = [
   },
   {
     label: "II",
-    heading: ["THREE", "WOMEN"],
-    quote: "Crypto Degen. High-Maintenance Influencer. Gym Girl. Each one is a completely different kind of war.",
+    heading: ["WOMENS", "BE", "LIKE"],
+    quote: "Each one is a completely different kind of war.",
     sub: null,
     duration: 3000,
   },

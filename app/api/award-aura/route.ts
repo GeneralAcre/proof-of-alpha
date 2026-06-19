@@ -11,7 +11,7 @@ import {
 import { verifyAwardToken } from "../../lib/award-token";
 
 const PROGRAM_ID = new PublicKey(
-  process.env.NEXT_PUBLIC_PROGRAM_ID ?? "9UfB3hWQzQCFg47qjXnTigK2QTSkzSrApx5Z1tq1KkFD",
+  process.env.NEXT_PUBLIC_PROGRAM_ID ?? "DkwFvvRSqAqADDVdnnkyDYhG7WqY6uC5htjbJeLYrtoU",
 );
 
 const RPC = process.env.SOLANA_RPC ?? "https://api.mainnet-beta.solana.com";

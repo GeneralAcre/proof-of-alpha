@@ -16,9 +16,9 @@ export default function Dashboard() {
   const walletAddr = account ? String(account.address) : null;
 
   useEffect(() => {
-    const sigmaKey = walletAddr ? `poa_sigma_${walletAddr}` : "poa_sigma_anonymous";
+    const auraKey = walletAddr ? `poa_aura_${walletAddr}` : "poa_aura_anonymous";
     const matchKey = walletAddr ? `poa_matches_${walletAddr}` : "poa_matches_anonymous";
-    try { setSigma(Number(localStorage.getItem(sigmaKey) ?? "0") || 0); } catch {}
+    try { setSigma(Number(localStorage.getItem(auraKey) ?? "0") || 0); } catch {}
     setUnlocked(getUnlocked(walletAddr));
     try {
       const raw = localStorage.getItem(matchKey);
@@ -85,9 +85,9 @@ export default function Dashboard() {
           </div>
           <div className="mt-5">
             <div className="mb-2 flex justify-between font-mono text-xs uppercase tracking-[0.14em]">
-              <span className="text-[#a09ab8]">Sigma Points</span>
+              <span className="text-[#a09ab8]">AURA</span>
               <span className="font-black text-[#E4D474]">
-                {sigma.toLocaleString()} σ
+                {sigma.toLocaleString()}
                 {nextRank && (
                   <span className="font-normal text-[#a09ab8]">
                     {" "}/ {rank.next?.toLocaleString()} to {nextRank.name}
@@ -149,7 +149,7 @@ export default function Dashboard() {
                   </div>
                   <p className="text-sm font-black uppercase">{a.name}</p>
                   <p className="mt-0.5 font-mono text-[10px] uppercase text-[#a09ab8]">
-                    {isOwned ? "Unlocked" : `${a.unlockCost.toLocaleString()} σ`}
+                    {isOwned ? "Unlocked" : `${a.unlockCost.toLocaleString()} AURA`}
                   </p>
                 </div>
               );
