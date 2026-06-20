@@ -5,7 +5,6 @@ import {
   LocalSolanaMobileWalletAdapterWallet,
   createDefaultAuthorizationCache,
   createDefaultChainSelector,
-  createDefaultWalletNotFoundHandler,
   registerMwa,
 } from "@solana-mobile/wallet-standard-mobile";
 import { SOLANA_MAINNET_CHAIN } from "@solana/wallet-standard-chains";
@@ -28,7 +27,7 @@ export function SolanaMobileWalletProvider() {
       authorizationCache: createDefaultAuthorizationCache(),
       chains: [SOLANA_MAINNET_CHAIN] as const,
       chainSelector: createDefaultChainSelector(),
-      onWalletNotFound: createDefaultWalletNotFoundHandler(),
+      onWalletNotFound: async () => { /* handled by WalletGate UI */ },
     };
 
     // registerMwa() skips WebViews (isWebView check on the user agent).
