@@ -36,7 +36,11 @@ export function SolanaMobileWalletProvider() {
     // registers nothing and the wallet list stays empty. When window.Capacitor
     // is present (set by the Capacitor runtime), bypass that guard and register
     // the local MWA wallet directly with the same config.
-    const isCapacitor = !!(window as unknown as Record<string, unknown>)["Capacitor"];
+    // window.Capacitor is set by the native bridge. Fall back to the Android
+    // WebView UA token (`wv`) in case the bridge initialises after this effect.
+    const isCapacitor =
+      !!(window as unknown as Record<string, unknown>)["Capacitor"] ||
+      /\bwv\b/.test(navigator.userAgent);
 
     // Android WebView throws when querying 'local-network-access' because the
     // "Local Network Access Split" Chrome feature flag is off. Patch it to return
