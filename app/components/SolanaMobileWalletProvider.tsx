@@ -37,6 +37,23 @@ export function SolanaMobileWalletProvider() {
     // is present (set by the Capacitor runtime), bypass that guard and register
     // the local MWA wallet directly with the same config.
     const isCapacitor = !!(window as unknown as Record<string, unknown>)["Capacitor"];
+
+    // Android WebView throws when querying 'local-network-access' because the
+    // "Local Network Access Split" Chrome feature flag is off. Patch it to return
+    // 'granted' so the MWA library can proceed without crashing.
+    if (isCapacitor && typeof navigator !== "undefined" && navigator.permissions) {
+      const _orig = navigator.permissions.query.bind(navigator.permissions);
+      navigator.permissions.query = (desc: PermissionDescriptor) => {
+        try {
+          return _orig(desc).catch(() =>
+            Promise.resolve({ state: "granted" } as PermissionStatus)
+          );
+        } catch {
+          return Promise.resolve({ state: "granted" } as PermissionStatus);
+        }
+      };
+    }
+
     if (isCapacitor) {
       registerWallet(new LocalSolanaMobileWalletAdapterWallet(config));
     } else {
