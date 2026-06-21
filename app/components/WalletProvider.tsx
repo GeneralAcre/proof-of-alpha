@@ -118,17 +118,21 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     });
   }, [selectedWallet]);
 
-  const connectableWallets = useMemo(
-    () =>
-      wallets
-        .filter((w) => getConnectFeature(w))
-        .sort((a, b) => {
-          if (a.name === "Solflare") return -1;
-          if (b.name === "Solflare") return 1;
-          return Number(isSolanaMobileWallet(b)) - Number(isSolanaMobileWallet(a));
-        }),
-    [wallets],
-  );
+  const connectableWallets = useMemo(() => {
+    const seen = new Set<string>();
+    return wallets
+      .filter((w) => {
+        if (!getConnectFeature(w)) return false;
+        if (seen.has(w.name)) return false;
+        seen.add(w.name);
+        return true;
+      })
+      .sort((a, b) => {
+        if (a.name === "Solflare") return -1;
+        if (b.name === "Solflare") return 1;
+        return Number(isSolanaMobileWallet(b)) - Number(isSolanaMobileWallet(a));
+      });
+  }, [wallets]);
 
   const connect = useCallback(async (wallet: Wallet) => {
     const feature = getConnectFeature(wallet);
