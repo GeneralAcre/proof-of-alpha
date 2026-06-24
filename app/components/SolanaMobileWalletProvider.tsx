@@ -21,8 +21,8 @@ export function SolanaMobileWalletProvider() {
     const config = {
       appIdentity: {
         name: "Proof of Alpha",
-        uri: window.location.origin,
-        icon: `${window.location.origin}/charecter/alpha-charecter.png`,
+        uri: "https://proof-of-alpha-live.vercel.app",
+        icon: "https://proof-of-alpha-live.vercel.app/charecter/alpha-charecter.png",
       },
       authorizationCache: createDefaultAuthorizationCache(),
       chains: [SOLANA_MAINNET_CHAIN] as const,
@@ -30,34 +30,31 @@ export function SolanaMobileWalletProvider() {
       onWalletNotFound: async () => { /* handled by WalletGate UI */ },
     };
 
-    // registerMwa() skips WebViews (isWebView check on the user agent).
-    // The Capacitor APK runs in an Android WebView, so registerMwa() silently
-    // registers nothing and the wallet list stays empty. When window.Capacitor
-    // is present (set by the Capacitor runtime), bypass that guard and register
-    // the local MWA wallet directly with the same config.
-    // window.Capacitor is set by the native bridge. Fall back to the Android
-    // WebView UA token (`wv`) in case the bridge initialises after this effect.
+    // registerMwa() skips WebViews. Bypass its guard for the Capacitor APK by
+    // registering LocalSolanaMobileWalletAdapterWallet directly.
     const isCapacitor =
       !!(window as unknown as Record<string, unknown>)["Capacitor"] ||
-      /\bwv\b/.test(navigator.userAgent);
-
-    // Android WebView throws when querying 'local-network-access' because the
-    // "Local Network Access Split" Chrome feature flag is off. Patch it to return
-    // 'granted' so the MWA library can proceed without crashing.
-    if (isCapacitor && typeof navigator !== "undefined" && navigator.permissions) {
-      const _orig = navigator.permissions.query.bind(navigator.permissions);
-      navigator.permissions.query = (desc: PermissionDescriptor) => {
-        try {
-          return _orig(desc).catch(() =>
-            Promise.resolve({ state: "granted" } as PermissionStatus)
-          );
-        } catch {
-          return Promise.resolve({ state: "granted" } as PermissionStatus);
-        }
-      };
-    }
+      /(WebView|; wv\))/i.test(navigator.userAgent);
 
     if (isCapacitor) {
+      if (navigator.permissions) {
+        // Unconditionally return 'granted' for all permission queries in Capacitor.
+        // Android WebView may return 'prompt' for loopback-network, which causes
+        // the MWA library to display a permission modal that doesn't work in WebView.
+        navigator.permissions.query = () =>
+          Promise.resolve({ state: "granted" } as PermissionStatus);
+      }
+
+      // window.blur doesn't fire when an Android Activity goes to background in
+      // Capacitor. The MWA library's getDetectionPromise() waits up to 3 s for
+      // window.blur to confirm the wallet app opened; bridge visibilitychange so
+      // that detection succeeds instead of timing out with ERROR_WALLET_NOT_FOUND.
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "hidden") {
+          window.dispatchEvent(new Event("blur"));
+        }
+      });
+
       registerWallet(new LocalSolanaMobileWalletAdapterWallet(config));
     } else {
       registerMwa(config);
