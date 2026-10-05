@@ -13,7 +13,7 @@ const CONVOS = [
       { who: "you", msg: "Hey, you're really cute. Can I get your number?", score: -7 },
       { who: "her", msg: "Ha. No." },
       { who: "you", msg: "I've been trying to dial in my V60 ratio at home — do you brew at home too or does work kill the passion?", score: +9 },
-      { who: "her", msg: "Oh actually yeah — I have a Chemex at home. Work definitely kills it some days though ðŸ˜…" },
+      { who: "her", msg: "Oh actually yeah — I have a Chemex at home. Work definitely kills it some days though 😅" },
     ],
     lesson: "Skip the compliment. Ask about her craft. She's an expert — treat her like one.",
   },
@@ -138,13 +138,13 @@ export default function TipsPage() {
                 {/* Girl label */}
                 <div className="mb-3 flex items-center gap-2">
                   <span className="font-black uppercase text-sm text-[#231942]">{c.girl}</span>
-                  <span className="border border-white/20 bg-white/5 px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[#716a7e]">
+                  <span className="rounded-full border border-white/20 bg-white/5 px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[#716a7e]">
                     {c.tier}
                   </span>
                 </div>
 
                 {/* Chat bubbles */}
-                <div className="space-y-2 border border-white/7 bg-[#f3f0fa] p-4 sm:p-5">
+                <div className="rounded-xl space-y-2 border border-white/7 bg-[#f3f0fa] p-4 sm:p-5">
                   {c.lines.map((l, i) => (
                     <div key={i} className={`flex items-start gap-3 ${l.who === "you" ? "" : "flex-row-reverse"}`}>
                       {l.who === "you" && l.score !== undefined && (
@@ -152,7 +152,7 @@ export default function TipsPage() {
                           {l.score > 0 ? `+${l.score}` : l.score}
                         </span>
                       )}
-                      <div className={`max-w-[80%] border px-3 py-2 text-sm leading-6 ${
+                      <div className={`rounded-xl max-w-[80%] border px-3 py-2 text-sm leading-6 ${
                         l.who === "you"
                           ? "border-white/10 bg-white text-[#231942]"
                           : "border-[#5e548e]/15 bg-[#5e548e]/5 text-[#716a7e]"
@@ -175,7 +175,7 @@ export default function TipsPage() {
         {/* ── Closer cheat sheet ── */}
         <section>
           <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.22em] text-[#716a7e]">Closer cheat sheet</p>
-          <div className="divide-y divide-white/7 border border-white/10">
+          <div className="rounded-lg divide-y divide-white/7 border border-white/10">
             {CLOSERS.map((c) => (
               <div key={c.name} className="grid grid-cols-[80px_1fr] sm:grid-cols-[100px_1fr] items-start gap-4 bg-white px-4 py-4 sm:px-5">
                 <div>
@@ -198,7 +198,7 @@ export default function TipsPage() {
             {GIRL_GUIDE.map((g) => (
               <div key={g.tier}>
                 <p className="mb-2 font-mono text-[10px] font-black uppercase tracking-widest text-[#5e548e]/60">{g.tier}</p>
-                <div className="border border-white/7 bg-[#f3f0fa] divide-y divide-white/[0.04]">
+                <div className="rounded-lg border border-white/7 bg-[#f3f0fa] divide-y divide-white/[0.04]">
                   {g.girls.map((girl) => (
                     <div key={girl.name} className="flex items-baseline gap-3 px-4 py-3 sm:px-5">
                       <span className="shrink-0 font-mono text-xs font-black text-[#231942] w-32 sm:w-36">{girl.name}</span>
@@ -214,7 +214,7 @@ export default function TipsPage() {
         {/* ── Universal rules ── */}
         <section className="pb-8">
           <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.22em] text-[#716a7e]">Rules that apply to every girl</p>
-          <div className="border border-white/7 bg-white divide-y divide-white/[0.04]">
+          <div className="rounded-lg border border-white/7 bg-white divide-y divide-white/[0.04]">
             {RULES.map((r, i) => (
               <div key={i} className="flex items-start gap-3 px-5 py-3.5">
                 <span className="mt-px font-mono text-[10px] text-[#5e548e]/30 shrink-0">{String(i + 1).padStart(2, "0")}</span>
@@ -226,13 +226,13 @@ export default function TipsPage() {
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href="/character-select"
-              className="border-2 border-[#5e548e] bg-[#5e548e] px-7 py-3.5 text-sm font-black uppercase tracking-wide text-white shadow-[4px_4px_0_rgba(0,0,0,0.3)] transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation"
+              className="rounded-xl border border-[#5e548e] bg-[#5e548e] px-7 py-3.5 text-sm font-black uppercase tracking-wide text-white shadow-sm transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation"
             >
               Play Now
             </Link>
             <Link
               href="/how-to-play"
-              className="border border-white/20 px-7 py-3.5 text-sm font-black uppercase tracking-wide text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e] touch-manipulation"
+              className="rounded-xl border border-white/20 px-7 py-3.5 text-sm font-black uppercase tracking-wide text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e] touch-manipulation"
             >
               How to Play
             </Link>

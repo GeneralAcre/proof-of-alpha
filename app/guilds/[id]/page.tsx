@@ -85,11 +85,11 @@ export default function GuildDetailPage() {
         </Link>
 
         {/* Guild card */}
-        <div className="border-2 border-[#5e548e] bg-white p-6 shadow-[8px_8px_0_#f3f0fa]">
+        <div className="rounded-xl border border-[#5e548e] bg-white p-6 shadow-sm">
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
               <div className="flex items-center gap-3 flex-wrap">
-                <span className="font-mono text-sm font-black border-2 border-[#5e548e] px-3 py-1 text-[#5e548e]">
+                <span className="rounded-xl font-mono text-sm font-black border border-[#5e548e] px-3 py-1 text-[#5e548e]">
                   [{guild.tag}]
                 </span>
                 <h1 className="text-3xl font-black uppercase sm:text-4xl">{guild.name}</h1>
@@ -98,7 +98,7 @@ export default function GuildDetailPage() {
             </div>
             {canJoin && (
               <button
-                className="shrink-0 border-2 border-[#5e548e] bg-[#5e548e] px-6 py-3 font-mono text-xs font-black uppercase text-white transition hover:bg-transparent hover:text-[#5e548e] disabled:opacity-40"
+                className="rounded-full shrink-0 border border-[#5e548e] bg-[#5e548e] px-6 py-3 font-mono text-xs font-black uppercase text-white transition hover:bg-transparent hover:text-[#5e548e] disabled:opacity-40"
                 disabled={acting}
                 onClick={handleJoin}
                 type="button"
@@ -108,7 +108,7 @@ export default function GuildDetailPage() {
             )}
             {isMyGuild && !guild.id.startsWith("seed_") && (
               <button
-                className="shrink-0 border border-[#ddd6ea]/40 px-4 py-3 font-mono text-xs uppercase text-[#716a7e] transition hover:border-red-400 hover:text-red-400"
+                className="rounded-full shrink-0 border border-[#ddd6ea]/40 px-4 py-3 font-mono text-xs uppercase text-[#716a7e] transition hover:border-red-400 hover:text-red-400"
                 onClick={handleLeave}
                 type="button"
               >
@@ -118,7 +118,7 @@ export default function GuildDetailPage() {
           </div>
 
           {/* Stats */}
-          <div className="mt-6 grid grid-cols-3 divide-x divide-[#716a7e]/30 border border-[#ddd6ea]/30">
+          <div className="rounded-lg mt-6 grid grid-cols-3 divide-x divide-[#716a7e]/30 border border-[#ddd6ea]/30">
             <div className="px-4 py-3 text-center">
               <p className="font-mono text-[9px] uppercase text-[#716a7e]">Members</p>
               <p className="mt-1 font-mono text-2xl font-black">{guild.members.length}</p>
@@ -141,7 +141,7 @@ export default function GuildDetailPage() {
           <p className="mb-3 font-mono text-xs font-black uppercase tracking-[0.18em] text-[#716a7e]">
             Roster — {guild.members.length} members
           </p>
-          <div className="border border-[#ddd6ea]/30 bg-white divide-y divide-[#716a7e]/15">
+          <div className="rounded-lg border border-[#ddd6ea]/30 bg-white divide-y divide-[#716a7e]/15">
             {guild.members.map((member, i) => {
               const isYou     = member === addr;
               const isFounder = member === guild.createdBy;
@@ -149,10 +149,10 @@ export default function GuildDetailPage() {
                 <Link
                   key={member}
                   href={`/profile/${member}`}
-                  className={`flex items-center gap-3 px-4 py-3 transition hover:bg-[#5e548e]/5 ${isYou ? "bg-[#5e548e]/5" : ""}`}
+                  className={`rounded-lg flex items-center gap-3 px-4 py-3 transition hover:bg-[#5e548e]/5 ${isYou ? "bg-[#5e548e]/5" : ""}`}
                 >
                   <span className="font-mono text-[10px] text-[#716a7e]/50 w-5">{i + 1}</span>
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center border font-mono text-[9px] font-black"
+                  <div className="rounded-lg flex h-7 w-7 shrink-0 items-center justify-center border font-mono text-[9px] font-black"
                     style={{ borderColor: isYou ? "#5e548e" : "#716a7e", color: isYou ? "#5e548e" : "#716a7e" }}>
                     {truncAddr(member).slice(0, 2).toUpperCase()}
                   </div>
@@ -172,12 +172,12 @@ export default function GuildDetailPage() {
         {isMyGuild && !guild.id.startsWith("seed_") && (
           <section>
             <p className="mb-2 font-mono text-xs font-black uppercase tracking-[0.18em] text-[#716a7e]">Invite Link</p>
-            <div className="flex items-center gap-2 border border-[#ddd6ea]/40 bg-[#f3f0fa] px-4 py-3">
+            <div className="rounded-xl flex items-center gap-2 border border-[#ddd6ea]/40 bg-[#f3f0fa] px-4 py-3">
               <span className="flex-1 font-mono text-xs text-[#231942] truncate">
                 {typeof window !== "undefined" ? `${window.location.origin}/guilds/${guild.id}` : `/guilds/${guild.id}`}
               </span>
               <button
-                className="shrink-0 border border-[#ddd6ea] px-3 py-1.5 font-mono text-[9px] uppercase text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e]"
+                className="rounded-full shrink-0 border border-[#ddd6ea] px-3 py-1.5 font-mono text-[9px] uppercase text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e]"
                 onClick={() => {
                   if (typeof window !== "undefined")
                     navigator.clipboard.writeText(`${window.location.origin}/guilds/${guild.id}`).catch(() => {});

@@ -45,7 +45,7 @@ export function WalletGate({ children }: { children: React.ReactNode }) {
             {wallets.map((w) => (
               <button
                 key={w.name}
-                className="w-full border-2 border-[#5e548e] bg-[#5e548e] px-6 py-3.5 font-mono text-sm font-black uppercase tracking-[0.14em] text-white shadow-[4px_4px_0_#716a7e] transition hover:bg-transparent hover:text-[#5e548e] disabled:opacity-50 touch-manipulation"
+                className="rounded-xl w-full border border-[#5e548e] bg-[#5e548e] px-6 py-3.5 font-mono text-sm font-black uppercase tracking-[0.14em] text-white shadow-sm transition hover:bg-transparent hover:text-[#5e548e] disabled:opacity-50 touch-manipulation"
                 disabled={isConnecting}
                 onClick={() => connect(w)}
                 type="button"
@@ -55,7 +55,7 @@ export function WalletGate({ children }: { children: React.ReactNode }) {
             ))}
           </div>
         ) : (
-          <div className="w-full border border-[#ddd6ea]/30 bg-[#f3f0fa] px-5 py-6">
+          <div className="rounded-xl w-full border border-[#ddd6ea]/30 bg-[#f3f0fa] px-5 py-6">
             <p className="font-mono text-xs uppercase tracking-[0.18em] text-[#716a7e]">
               No wallet detected
             </p>

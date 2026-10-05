@@ -67,7 +67,7 @@ export default function Dashboard() {
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 
         {/* ── WALLET + RANK + SIGMA POINTS ── */}
-        <section className="mb-6 border border-[#ddd6ea] bg-white p-5 shadow-[6px_6px_0_#716a7e] sm:p-6">
+        <section className="mb-6 border border-[#ddd6ea] bg-white p-5 shadow-sm sm:p-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e]">
@@ -78,7 +78,7 @@ export default function Dashboard() {
               </p>
               <p className="mt-0.5 font-mono text-xs text-[#716a7e]">solana:mainnet</p>
             </div>
-            <div className="border border-[#5e548e] bg-[#5e548e]/10 px-5 py-3 text-center">
+            <div className="rounded-xl border border-[#5e548e] bg-[#5e548e]/10 px-5 py-3 text-center">
               <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e]">Rank</p>
               <p className="mt-1 text-2xl font-black uppercase text-[#5e548e]">{rank.name}</p>
             </div>
@@ -95,7 +95,7 @@ export default function Dashboard() {
                 )}
               </span>
             </div>
-            <div className="h-2 w-full border border-[#ddd6ea] bg-[#f8f7fc]">
+            <div className="rounded-full h-2 w-full border border-[#ddd6ea] bg-[#f8f7fc]">
               <div
                 className="h-full bg-[#5e548e] transition-all duration-700"
                 style={{ width: `${progress}%` }}
@@ -116,7 +116,7 @@ export default function Dashboard() {
             { label: "Eliminations",   value: stats.elims || "—" },
             { label: "Best Streak",    value: stats.bestStreak || "—" },
           ].map(({ label, value }) => (
-            <div key={label} className="border border-[#ddd6ea] bg-white p-4 shadow-[4px_4px_0_#716a7e]">
+            <div key={label} className="rounded-xl border border-[#ddd6ea] bg-white p-4 shadow-sm">
               <p className="font-mono text-xs uppercase tracking-[0.16em] text-[#716a7e]">{label}</p>
               <p className="mt-2 text-3xl font-black text-[#716a7e]">{value}</p>
             </div>
@@ -124,7 +124,7 @@ export default function Dashboard() {
         </section>
 
         {/* ── ARCHETYPE COLLECTION ── */}
-        <section className="mb-6 border border-[#ddd6ea] bg-white p-5 shadow-[6px_6px_0_#716a7e]">
+        <section className="mb-6 border border-[#ddd6ea] bg-white p-5 shadow-sm">
           <p className="mb-4 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#716a7e]">
             Archetype Collection
           </p>
@@ -134,12 +134,12 @@ export default function Dashboard() {
               return (
                 <div
                   key={a.id}
-                  className={`border p-3 transition ${
+                  className={`rounded-xl border p-3 transition ${
                     isOwned ? "border-[#5e548e] bg-[#5e548e]/5" : "border-[#ddd6ea] opacity-50"
                   }`}
                 >
                   <div
-                    className={`mb-2 flex h-10 w-10 items-center justify-center border font-mono text-sm font-black ${
+                    className={`rounded-lg mb-2 flex h-10 w-10 items-center justify-center border font-mono text-sm font-black ${
                       isOwned
                         ? "border-[#5e548e] bg-[#5e548e]/10 text-[#5e548e]"
                         : "border-[#ddd6ea] bg-[#f8f7fc] text-[#716a7e]"
@@ -160,7 +160,7 @@ export default function Dashboard() {
         {/* ── CTAs ── */}
         <div className="grid gap-4 sm:grid-cols-2">
           <Link
-            className="border-2 border-[#5e548e] bg-[#5e548e] p-6 text-center font-black uppercase text-white shadow-[6px_6px_0_#716a7e] transition hover:bg-transparent hover:text-[#5e548e]"
+            className="rounded-xl border border-[#5e548e] bg-[#5e548e] p-6 text-center font-black uppercase text-white shadow-sm transition hover:bg-transparent hover:text-[#5e548e]"
             href="/mode-select?type=solo"
           >
             <span className="block text-3xl font-black">Play Solo</span>
@@ -169,7 +169,7 @@ export default function Dashboard() {
             </span>
           </Link>
           <Link
-            className="border-2 border-[#5e548e] p-6 text-center font-black uppercase text-[#5e548e] shadow-[6px_6px_0_#716a7e] transition hover:bg-[#5e548e] hover:text-white"
+            className="rounded-xl border border-[#5e548e] p-6 text-center font-black uppercase text-[#5e548e] shadow-sm transition hover:bg-[#5e548e] hover:text-white"
             href="/mode-select?type=multiplayer"
           >
             <span className="block text-3xl font-black">Play Multiplayer</span>

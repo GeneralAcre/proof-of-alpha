@@ -34,7 +34,7 @@ function ScenarioCard({ scenario, aura, addr, archetype, onEnter }: {
 
   return (
     <div
-      className="relative flex flex-col justify-between border border-[#5e548e]/10 p-5 sm:p-6"
+      className="rounded-xl overflow-hidden relative flex flex-col justify-between border border-[#5e548e]/10 p-5 sm:p-6"
       style={{ backgroundColor: "#f8f7fc", minHeight: "clamp(180px, 28vw, 240px)" }}
     >
       {/* Grid overlay */}
@@ -58,7 +58,7 @@ function ScenarioCard({ scenario, aura, addr, archetype, onEnter }: {
       <div className="relative z-10 flex flex-wrap items-start justify-between gap-1">
         <div className="flex items-center gap-2">
           <span
-            className="border px-2 py-0.5 font-mono text-[9px] font-black uppercase tracking-[0.22em]"
+            className="rounded-full border px-2 py-0.5 font-mono text-[9px] font-black uppercase tracking-[0.22em]"
             style={{ borderColor: accent + "55", color: accent }}
           >
             {label}
@@ -101,7 +101,7 @@ function ScenarioCard({ scenario, aura, addr, archetype, onEnter }: {
       <div className="relative z-10 mt-4">
         {!addr ? (
           <button
-            className="w-full border border-[#ddd6ea]/50 py-2.5 font-mono text-[10px] font-black uppercase tracking-widest text-[#716a7e] opacity-60 cursor-not-allowed touch-manipulation"
+            className="rounded-xl w-full border border-[#ddd6ea]/50 py-2.5 font-mono text-[10px] font-black uppercase tracking-widest text-[#716a7e] opacity-60 cursor-not-allowed touch-manipulation"
             disabled
             type="button"
           >
@@ -109,7 +109,7 @@ function ScenarioCard({ scenario, aura, addr, archetype, onEnter }: {
           </button>
         ) : canAfford ? (
           <button
-            className="w-full py-2.5 font-mono text-[10px] font-black uppercase tracking-widest text-[#231942] transition hover:opacity-75 touch-manipulation"
+            className="rounded-xl w-full py-2.5 font-mono text-[10px] font-black uppercase tracking-widest text-[#231942] transition hover:opacity-75 touch-manipulation"
             style={{ backgroundColor: accent }}
             onClick={() => onEnter(scenario)}
             type="button"
@@ -118,7 +118,7 @@ function ScenarioCard({ scenario, aura, addr, archetype, onEnter }: {
           </button>
         ) : (
           <button
-            className="w-full border border-[#ddd6ea]/30 py-2.5 font-mono text-[10px] font-black uppercase tracking-widest text-[#716a7e] opacity-50 cursor-not-allowed touch-manipulation"
+            className="rounded-xl w-full border border-[#ddd6ea]/30 py-2.5 font-mono text-[10px] font-black uppercase tracking-widest text-[#716a7e] opacity-50 cursor-not-allowed touch-manipulation"
             disabled
             type="button"
           >
@@ -160,7 +160,7 @@ function ScenariosContent() {
 
         {/* Wallet gate */}
         {!addr && (
-          <div className="mb-6 flex items-center justify-between gap-4 border border-[#5e548e]/30 bg-[#5e548e]/5 px-5 py-4">
+          <div className="rounded-xl mb-6 flex items-center justify-between gap-4 border border-[#5e548e]/30 bg-[#5e548e]/5 px-5 py-4">
             <div>
               <p className="font-black uppercase text-sm text-[#5e548e]">Connect your wallet to practice</p>
               <p className="font-mono text-xs text-[#716a7e] mt-0.5">Real life costs AURA too.</p>
@@ -176,7 +176,7 @@ function ScenariosContent() {
           <div>
             <button
               onClick={() => router.push(`/play?archetype=${archetype}`)}
-              className="mb-4 bg-[#5e548e] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-white transition hover:opacity-80 touch-manipulation"
+              className="rounded-full mb-4 bg-[#5e548e] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-white transition hover:opacity-80 touch-manipulation"
               type="button"
             >
               Back
@@ -188,7 +188,7 @@ function ScenariosContent() {
             </p>
           </div>
           {addr && (
-            <div className="shrink-0 border border-[#ddd6ea]/30 px-4 py-2.5 text-right">
+            <div className="rounded-xl shrink-0 border border-[#ddd6ea]/30 px-4 py-2.5 text-right">
               <p className="font-mono text-xs uppercase tracking-[0.16em] text-[#716a7e]">Your AURA</p>
               <p className="mt-0.5 font-mono text-2xl font-black leading-none text-[#5e548e]">{aura}</p>
             </div>
@@ -196,7 +196,7 @@ function ScenariosContent() {
         </div>
 
         {/* How it works */}
-        <div className="mb-8 border border-[#ddd6ea]/20 bg-[#f8f7fc]/50 px-5 py-4">
+        <div className="rounded-xl mb-8 border border-[#ddd6ea]/20 bg-[#f8f7fc]/50 px-5 py-4">
           <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#716a7e] mb-2">How It Works</p>
           <div className="grid gap-2 sm:grid-cols-3">
             {[
@@ -222,7 +222,7 @@ function ScenariosContent() {
         {/* EASY tier */}
         <div className="mb-8">
           <div className="mb-3 flex items-center gap-3">
-            <span className="font-mono text-[10px] font-black uppercase tracking-[0.22em] border border-[#5e548e]/40 text-[#5e548e] px-2 py-0.5">
+            <span className="rounded-full font-mono text-[10px] font-black uppercase tracking-[0.22em] border border-[#5e548e]/40 text-[#5e548e] px-2 py-0.5">
               Rookie — Easy
             </span>
             <div className="flex-1 h-px bg-[#5e548e]/10" />
@@ -244,7 +244,7 @@ function ScenariosContent() {
         {/* MEDIUM tier */}
         <div className="mb-8">
           <div className="mb-3 flex items-center gap-3">
-            <span className="font-mono text-[10px] font-black uppercase tracking-[0.22em] border border-[#ddd6ea]/40 text-[#716a7e] px-2 py-0.5">
+            <span className="rounded-full font-mono text-[10px] font-black uppercase tracking-[0.22em] border border-[#ddd6ea]/40 text-[#716a7e] px-2 py-0.5">
               Tested — Medium
             </span>
             <div className="flex-1 h-px bg-[#716a7e]/10" />
@@ -266,7 +266,7 @@ function ScenariosContent() {
         {/* HARD tier */}
         <div className="mb-8">
           <div className="mb-3 flex items-center gap-3">
-            <span className="font-mono text-[10px] font-black uppercase tracking-[0.22em] border border-[#9945FF]/40 text-[#9945FF] px-2 py-0.5">
+            <span className="rounded-full font-mono text-[10px] font-black uppercase tracking-[0.22em] border border-[#9945FF]/40 text-[#9945FF] px-2 py-0.5">
               Hard Mode
             </span>
             <div className="flex-1 h-px bg-[#9945FF]/10" />

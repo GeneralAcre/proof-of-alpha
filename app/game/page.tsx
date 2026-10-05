@@ -122,7 +122,7 @@ function AttractionBar({ score }: { score: number }) {
       <div className="flex justify-between font-mono text-[9px] uppercase text-[#716a7e]">
         <span>Vibe</span><span>???</span>
       </div>
-      <div className="h-1.5 w-full border border-[#ddd6ea] bg-[#f8f7fc]">
+      <div className="rounded-full h-1.5 w-full border border-[#ddd6ea] bg-[#f8f7fc]">
         <div className="h-full transition-all duration-700" style={{ width: `${pct}%`, backgroundColor: color }} />
       </div>
     </div>
@@ -411,7 +411,7 @@ function GameContent() {
               <div className="flex items-end gap-4 min-w-0">
                 <button
                   onClick={() => router.push(`/map?archetype=${archetypeId}`)}
-                  className="shrink-0 bg-[#5e548e] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-white transition hover:opacity-80 touch-manipulation"
+                  className="rounded-full shrink-0 bg-[#5e548e] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-white transition hover:opacity-80 touch-manipulation"
                   type="button"
                 >
                   Back
@@ -427,13 +427,13 @@ function GameContent() {
               </div>
               <div className="flex shrink-0 items-end gap-2">
                 {streak >= 2 && (
-                  <div className="hidden border border-[#5e548e]/30 bg-[#5e548e]/5 px-3 py-1.5 sm:block">
+                  <div className="rounded-xl hidden border border-[#5e548e]/30 bg-[#5e548e]/5 px-3 py-1.5 sm:block">
                     <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#5e548e]">
                       {streak}× Streak · {streakMult}× Boost
                     </span>
                   </div>
                 )}
-                <div className="text-right border border-[#ddd6ea]/40 px-4 py-1.5">
+                <div className="rounded-xl text-right border border-[#ddd6ea]/40 px-4 py-1.5">
                   <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#716a7e]">AURA</p>
                   <p className={`font-mono text-2xl font-black leading-none ${sessionAura >= initialAura ? "text-[#5e548e]" : "text-[#716a7e]"}`}>
                     {sessionAura}
@@ -467,7 +467,7 @@ function GameContent() {
               return (
                 <div
                   key={g.id}
-                  className={`flex min-h-0 flex-col border border-[#ddd6ea]/40 bg-white ${done ? "opacity-40" : ""}`}
+                  className={`rounded-xl overflow-hidden flex min-h-0 flex-col border border-[#ddd6ea]/40 bg-white ${done ? "opacity-40" : ""}`}
                 >
                   {/* Portrait — stretches to fill the remaining height */}
                   <div className="relative min-h-40 flex-1 overflow-hidden border-b border-[#ddd6ea]/30 bg-[#f3f0fa]">
@@ -479,7 +479,7 @@ function GameContent() {
                       sizes="(max-width: 768px) 100vw, 384px"
                     />
                     <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#ffffff] via-white/10 to-transparent" />
-                    <span className="absolute top-0 right-0 font-mono text-[10px] font-black uppercase tracking-[0.18em] border-b border-l border-[#5e548e]/50 bg-white px-3 py-1.5 text-[#5e548e]">
+                    <span className="rounded-bl-lg absolute top-0 right-0 font-mono text-[10px] font-black uppercase tracking-[0.18em] border-b border-l border-[#5e548e]/50 bg-white px-3 py-1.5 text-[#5e548e]">
                       {tier.label}
                     </span>
                     <div className="absolute bottom-0 left-0 right-0 px-4 pb-2">
@@ -496,38 +496,22 @@ function GameContent() {
 
                     {/* Economy row */}
                     <div className="mt-2 flex gap-2">
-                      <div className="flex-1 border border-[#ddd6ea]/30 px-2 py-1.5 text-center">
+                      <div className="rounded-xl flex-1 border border-[#ddd6ea]/30 px-2 py-1.5 text-center">
                         <p className="font-mono text-[9px] uppercase tracking-wide text-[#716a7e]">Entry</p>
                         <p className="font-mono text-sm font-black text-[#716a7e]">−{g.approachCost}</p>
                       </div>
-                      <div className="flex-1 border border-[#5e548e]/40 px-2 py-1.5 text-center">
+                      <div className="rounded-xl flex-1 border border-[#5e548e]/40 px-2 py-1.5 text-center">
                         <p className="font-mono text-[9px] uppercase tracking-wide text-[#716a7e]">Flirt</p>
                         <p className="font-mono text-sm font-black text-[#5e548e]">
                           +{flirtPreview}{streakMult > 1 && <span className="ml-0.5 text-[10px] text-[#716a7e]">×{streakMult}</span>}
                         </p>
                       </div>
-                      <div className="flex-1 border border-[#ddd6ea]/30 px-2 py-1.5 text-center">
+                      <div className="rounded-xl flex-1 border border-[#ddd6ea]/30 px-2 py-1.5 text-center">
                         <p className="font-mono text-[9px] uppercase tracking-wide text-[#716a7e]">Flex</p>
                         <p className="font-mono text-sm font-black text-[#231942]">
                           +{flexPreview}{streakMult > 1 && <span className="ml-0.5 text-[10px] text-[#716a7e]">×{streakMult}</span>}
                         </p>
                       </div>
-                    </div>
-
-                    {/* Hints */}
-                    <div className="mt-2 space-y-0.5">
-                      {g.wins.slice(0, 2).map((w) => (
-                        <p key={w} className="flex items-center gap-1.5 font-mono text-xs text-[#716a7e] truncate">
-                          <span className="inline-block h-2.5 w-2.5 shrink-0 bg-[#5e548e]" />
-                          {w}
-                        </p>
-                      ))}
-                      {g.fails.slice(0, 1).map((f) => (
-                        <p key={f} className="flex items-center gap-1.5 font-mono text-xs text-[#716a7e] truncate">
-                          <span className="inline-block h-2.5 w-2.5 shrink-0 bg-[#f8f7fc] border border-[#ddd6ea]/50" />
-                          {f}
-                        </p>
-                      ))}
                     </div>
                   </div>
 
@@ -554,7 +538,7 @@ function GameContent() {
           {/* Cash out */}
           {allDone && (
             <button
-              className="mt-4 w-full shrink-0 border-2 border-[#5e548e] bg-[#5e548e] py-3 text-lg font-black uppercase text-white shadow-[6px_6px_0_#716a7e] transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation"
+              className="rounded-xl mt-4 w-full shrink-0 border border-[#5e548e] bg-[#5e548e] py-3 text-lg font-black uppercase text-white shadow-sm transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation"
               onClick={() => {
                 const won = sessionAura > initialAura;
                 router.push(`/end?won=${won}&archetype=${archetypeId}&earned=${sessionAura - initialAura}&elims=0&mode=rizz`);
@@ -582,7 +566,7 @@ function GameContent() {
           style={{ borderBottomColor: girl.accentColor, borderBottomWidth: 2 }}
         >
           <div className="flex items-center gap-3">
-            <div className="relative h-10 w-10 shrink-0 overflow-hidden border-2"
+            <div className="rounded-lg relative h-10 w-10 shrink-0 overflow-hidden border"
               style={{ borderColor: girl.accentColor }}>
               <Image alt={girl.name} src={girl.image} fill className="object-cover object-top" sizes="40px" />
             </div>
@@ -590,7 +574,7 @@ function GameContent() {
               <div className="flex items-center gap-2">
                 <p className="font-black uppercase" style={{ color: girl.accentColor }}>{girl.name}</p>
                 <span
-                  className="font-mono text-[8px] uppercase px-1.5 py-0.5 border"
+                  className="rounded-full font-mono text-[8px] uppercase px-1.5 py-0.5 border"
                   style={{ borderColor: DIFF_STYLE[girl.difficulty].color, color: DIFF_STYLE[girl.difficulty].color }}
                 >
                   {DIFF_STYLE[girl.difficulty].label}
@@ -604,11 +588,11 @@ function GameContent() {
             <div className="hidden w-28 sm:block">
               <AttractionBar score={totalScore} />
             </div>
-            <div className="border border-[#ddd6ea]/50 px-3 py-1.5 text-center min-w-13">
+            <div className="rounded-xl border border-[#ddd6ea]/50 px-3 py-1.5 text-center min-w-13">
               <p className="font-mono text-[8px] uppercase text-[#716a7e]">Msgs</p>
               <p className="font-mono text-sm font-black">{msgCount}/{MAX_MSGS}</p>
             </div>
-            <div className="border border-[#ddd6ea]/50 px-3 py-1.5 text-center min-w-13">
+            <div className="rounded-xl border border-[#ddd6ea]/50 px-3 py-1.5 text-center min-w-13">
               <p className="font-mono text-[8px] uppercase text-[#716a7e]">AURA</p>
               <p className={`font-mono text-sm font-black ${sessionAura >= initialAura ? "text-[#5e548e]" : "text-[#716a7e]"}`}>
                 {sessionAura}
@@ -633,13 +617,13 @@ function GameContent() {
           {messages.map((msg, i) => (
             <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
               {msg.role === "assistant" && (
-                <div className="mr-2 mt-1 relative h-7 w-7 shrink-0 overflow-hidden border"
+                <div className="rounded-lg mr-2 mt-1 relative h-7 w-7 shrink-0 overflow-hidden border"
                   style={{ borderColor: girl.accentColor }}>
                   <Image alt={girl.name} src={girl.image} fill className="object-cover object-top" sizes="28px" />
                 </div>
               )}
               <div
-                className={`max-w-[75%] border px-3 py-2 text-sm leading-6 ${
+                className={`rounded-xl max-w-[75%] border px-3 py-2 text-sm leading-6 ${
                   msg.role === "user"
                     ? "border-[#5e548e] bg-[#5e548e]/10 text-[#5e548e]"
                     : "border-[#ddd6ea]/50 bg-white text-[#231942]"
@@ -699,7 +683,7 @@ function GameContent() {
                 <div className="grid grid-cols-3 gap-2">
                   {/* Flirt */}
                   <button
-                    className="border-2 border-[#5e548e] bg-[#5e548e]/5 px-2 py-4 text-center transition hover:bg-[#5e548e] hover:text-white touch-manipulation group"
+                    className="rounded-xl border border-[#5e548e] bg-[#5e548e]/5 px-2 py-4 text-center transition hover:bg-[#5e548e] hover:text-white touch-manipulation group"
                     onClick={() => resolveRound("flirt")}
                     type="button"
                   >
@@ -711,7 +695,7 @@ function GameContent() {
                   </button>
                   {/* Flex */}
                   <button
-                    className="border-2 border-[#5e548e] bg-[#5e548e]/5 px-2 py-4 text-center transition hover:bg-[#5e548e]/20 touch-manipulation"
+                    className="rounded-xl border border-[#5e548e] bg-[#5e548e]/5 px-2 py-4 text-center transition hover:bg-[#5e548e]/20 touch-manipulation"
                     onClick={() => resolveRound("flex")}
                     type="button"
                   >
@@ -723,7 +707,7 @@ function GameContent() {
                   </button>
                   {/* Leave */}
                   <button
-                    className="border-2 border-[#ddd6ea]/40 bg-[#716a7e]/5 px-2 py-4 text-center transition hover:bg-[#716a7e]/15 touch-manipulation"
+                    className="rounded-xl border border-[#ddd6ea]/40 bg-[#716a7e]/5 px-2 py-4 text-center transition hover:bg-[#716a7e]/15 touch-manipulation"
                     onClick={() => resolveRound("leave")}
                     type="button"
                   >
@@ -824,7 +808,7 @@ function GameContent() {
                   )}
                   <button
                     disabled={awardStatus === "pending"}
-                    className="mt-8 w-full max-w-sm border-2 border-white bg-white py-4 font-black uppercase tracking-widest text-[#f8f7fc] shadow-[6px_6px_0_rgba(0,0,0,0.5)] transition hover:bg-transparent hover:text-[#231942] touch-manipulation disabled:opacity-50 disabled:cursor-wait"
+                    className="rounded-xl mt-8 w-full max-w-sm border border-white bg-white py-4 font-black uppercase tracking-widest text-[#f8f7fc] shadow-sm transition hover:bg-transparent hover:text-[#231942] touch-manipulation disabled:opacity-50 disabled:cursor-wait"
                     onClick={nextRound}
                     type="button"
                   >
@@ -853,7 +837,7 @@ function GameContent() {
 
           {/* Girl badge */}
           <div className="mb-6 flex items-center gap-3">
-            <div className="relative h-16 w-16 overflow-hidden border-2"
+            <div className="rounded-lg relative h-16 w-16 overflow-hidden border"
               style={{ borderColor: girl.accentColor }}>
               <Image alt={girl.name} src={girl.image} fill className="object-cover object-top" sizes="64px" />
             </div>
@@ -864,7 +848,7 @@ function GameContent() {
           </div>
 
           {/* Verdict */}
-          <div className={`w-full max-w-lg border-2 p-6 shadow-[8px_8px_0_#f3f0fa] mb-6 ${
+          <div className={`rounded-xl w-full max-w-lg border p-6 shadow-sm mb-6 ${
             isWin ? "border-[#5e548e] bg-[#5e548e]/5" : "border-[#ddd6ea]"
           }`}>
             {isLoading ? (
@@ -919,7 +903,7 @@ function GameContent() {
               )}
               <button
                 disabled={awardStatus === "pending"}
-                className="w-full max-w-lg border-2 border-[#5e548e] bg-[#5e548e] py-4 font-black uppercase tracking-widest text-white shadow-[6px_6px_0_#716a7e] transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation disabled:opacity-50 disabled:cursor-wait"
+                className="rounded-xl w-full max-w-lg border border-[#5e548e] bg-[#5e548e] py-4 font-black uppercase tracking-widest text-white shadow-sm transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation disabled:opacity-50 disabled:cursor-wait"
                 onClick={nextRound}
                 type="button"
               >

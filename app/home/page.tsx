@@ -67,13 +67,13 @@ export default function HomePage() {
               </p>
               <div className="flex flex-wrap gap-3">
                 <Link
-                  className="border-2 border-[#5e548e] bg-[#5e548e] px-8 py-3.5 font-black uppercase tracking-[0.14em] text-white shadow-[5px_5px_0_#716a7e] transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation"
+                  className="rounded-xl border border-[#5e548e] bg-[#5e548e] px-8 py-3.5 font-black uppercase tracking-[0.14em] text-white shadow-sm transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation"
                   href="/character-select"
                 >
                   Play Now
                 </Link>
                 <Link
-                  className="border-2 border-[#ddd6ea] px-8 py-3.5 font-black uppercase tracking-[0.14em] text-[#5e548e] shadow-[5px_5px_0_#716a7e] transition hover:border-[#5e548e] touch-manipulation"
+                  className="rounded-xl border border-[#ddd6ea] px-8 py-3.5 font-black uppercase tracking-[0.14em] text-[#5e548e] shadow-sm transition hover:border-[#5e548e] touch-manipulation"
                   href="/how-to-play"
                 >
                   How to Play
@@ -83,7 +83,7 @@ export default function HomePage() {
 
             {/* Right — character */}
             <div className="relative mx-auto w-64 shrink-0 sm:w-80 lg:w-96">
-              <div className="relative overflow-hidden border border-[#ddd6ea]/30" style={{ aspectRatio: "3/4" }}>
+              <div className="rounded-lg relative overflow-hidden border border-[#ddd6ea]/30" style={{ aspectRatio: "3/4" }}>
                 <Image
                   src="/charecter/alpha-charecter.png"
                   alt="Alpha"
@@ -93,7 +93,7 @@ export default function HomePage() {
                   priority
                 />
                 <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#f8f7fc]/60 to-transparent" />
-                <div className="absolute bottom-4 left-4 border border-[#5e548e]/30 bg-[#f8f7fc]/70 px-3 py-1.5 backdrop-blur-sm">
+                <div className="rounded-xl absolute bottom-4 left-4 border border-[#5e548e]/30 bg-[#f8f7fc]/70 px-3 py-1.5 backdrop-blur-sm">
                   <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#716a7e]">Your guide</p>
                   <p className="font-mono text-xs font-black text-[#5e548e]">Alpha</p>
                 </div>

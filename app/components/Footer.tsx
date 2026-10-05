@@ -67,7 +67,7 @@ export function Footer() {
             />
             <button
               type="submit"
-              className="mt-2 w-full border border-[#5e548e] bg-[#5e548e] py-3 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#f3f0fa] transition hover:bg-transparent hover:text-[#5e548e]"
+              className="rounded-xl mt-2 w-full border border-[#5e548e] bg-[#5e548e] py-3 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#f3f0fa] transition hover:bg-transparent hover:text-[#5e548e]"
             >
               {sent ? "Sent!" : "Send"}
             </button>
@@ -122,7 +122,7 @@ export function Footer() {
               href="https://x.com/created_alpha"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-16 w-16 items-center justify-center border border-[#ddd6ea]/30 text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e]"
+              className="rounded-lg flex h-16 w-16 items-center justify-center border border-[#ddd6ea]/30 text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e]"
               aria-label="Twitter / X"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -133,7 +133,7 @@ export function Footer() {
               href="https://github.com/GeneralAcre/proof-of-alpha"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-16 w-16 items-center justify-center border border-[#ddd6ea]/30 text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e]"
+              className="rounded-lg flex h-16 w-16 items-center justify-center border border-[#ddd6ea]/30 text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e]"
               aria-label="GitHub"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -150,7 +150,7 @@ export function Footer() {
           <p className="font-mono text-xs text-[#716a7e]/60 leading-6 max-w-2xl mx-auto">
             Proof of Alpha is a fully on-chain dating-practice game on Solana — chat, flirt, and build your rizz to earn AURA and climb the leaderboard.
           </p>
-          <div className="inline-flex items-center gap-3 border border-[#ddd6ea]/20 px-6 py-2.5">
+          <div className="rounded-xl inline-flex items-center gap-3 border border-[#ddd6ea]/20 px-6 py-2.5">
             <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#716a7e]/50">Powered by</span>
             <Image src="/solanaWordMark.png" alt="Solana" width={80} height={14} className="object-contain" />
           </div>

@@ -126,8 +126,8 @@ export default function ProfilePage() {
               <p className="mt-1 max-w-[min(70vw,620px)] truncate font-mono text-xs text-[#231942]/45">{fullAddress ?? "Connect your wallet to sync your on-chain stats"}</p>
             </div>
             <div className="flex flex-wrap gap-2">
-              {fullAddress && <button onClick={copyAddress} type="button" className="rounded-lg border border-[#ddd6ea] px-3.5 py-2 text-xs font-semibold text-[#231942]/80 transition hover:border-white/30 hover:bg-[#f3f0f7]">{copiedAddr ? "Address copied" : "Copy address"}</button>}
-              {account && <button onClick={copyProfileLink} type="button" className="rounded-lg bg-[#5e548e] px-3.5 py-2 text-xs font-bold text-white transition hover:bg-[#5e548e]">{copied ? "Link copied" : "Share profile"}</button>}
+              {fullAddress && <button onClick={copyAddress} type="button" className="rounded-full border border-[#ddd6ea] px-3.5 py-2 text-xs font-semibold text-[#231942]/80 transition hover:border-white/30 hover:bg-[#f3f0f7]">{copiedAddr ? "Address copied" : "Copy address"}</button>}
+              {account && <button onClick={copyProfileLink} type="button" className="rounded-full bg-[#5e548e] px-3.5 py-2 text-xs font-bold text-white transition hover:bg-[#5e548e]">{copied ? "Link copied" : "Share profile"}</button>}
             </div>
           </div>
         </section>

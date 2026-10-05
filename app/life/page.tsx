@@ -38,7 +38,7 @@ function HandlingBar({ score }: { score: number }) {
         <span>Handling</span>
         <span>{score > 0 ? `+${score}` : score}</span>
       </div>
-      <div className="h-1.5 w-full border border-[#ddd6ea] bg-[#f8f7fc]">
+      <div className="rounded-full h-1.5 w-full border border-[#ddd6ea] bg-[#f8f7fc]">
         <div className="h-full transition-all duration-700" style={{ width: `${pct}%`, backgroundColor: color }} />
       </div>
     </div>
@@ -138,7 +138,7 @@ function LifeContent() {
         <div className="text-center px-4">
           <p className="font-mono text-[#716a7e] text-sm mb-4">Scenario not found.</p>
           <button
-            className="bg-[#5e548e] px-6 py-3 font-mono text-xs font-black uppercase tracking-widest text-white"
+            className="rounded-full bg-[#5e548e] px-6 py-3 font-mono text-xs font-black uppercase tracking-widest text-white"
             onClick={() => router.push("/scenarios")}
             type="button"
           >
@@ -271,7 +271,7 @@ function LifeContent() {
           <div className="mb-6">
             <button
               onClick={() => router.push(`/scenarios?archetype=${archetypeId}`)}
-              className="mb-5 bg-[#5e548e] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-white transition hover:opacity-80 touch-manipulation"
+              className="rounded-full mb-5 bg-[#5e548e] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-white transition hover:opacity-80 touch-manipulation"
               type="button"
             >
               Back
@@ -286,7 +286,7 @@ function LifeContent() {
                   {scenario.title}
                 </h1>
                 {streak >= 2 && (
-                  <div className="mt-2 inline-flex items-center gap-2 border border-[#5e548e]/30 bg-[#5e548e]/5 px-3 py-1">
+                  <div className="rounded-xl mt-2 inline-flex items-center gap-2 border border-[#5e548e]/30 bg-[#5e548e]/5 px-3 py-1">
                     <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#5e548e]">
                       {streak}× Streak · {streakMult}× Boost
                     </span>
@@ -294,7 +294,7 @@ function LifeContent() {
                 )}
               </div>
 
-              <div className="shrink-0 border border-[#ddd6ea]/40 px-4 py-2.5 text-right">
+              <div className="rounded-xl shrink-0 border border-[#ddd6ea]/40 px-4 py-2.5 text-right">
                 <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#716a7e]">AURA</p>
                 <p className={`font-mono text-2xl font-black leading-none ${sessionAura >= initialAura ? "text-[#5e548e]" : "text-[#716a7e]"}`}>
                   {sessionAura}
@@ -304,7 +304,7 @@ function LifeContent() {
           </div>
 
           {/* ── Scenario card ───────────────────────────────────────────── */}
-          <div className="relative border border-[#ddd6ea]/30 bg-white">
+          <div className="rounded-lg overflow-hidden relative border border-[#ddd6ea]/30 bg-white">
             {/* Accent strip */}
             <div className="absolute inset-x-0 top-0 h-0.5" style={{ backgroundColor: accent }} />
 
@@ -313,7 +313,7 @@ function LifeContent() {
               {/* Tags row */}
               <div className="mb-5 flex flex-wrap items-center gap-2">
                 <span
-                  className="border px-2 py-0.5 font-mono text-[9px] font-black uppercase tracking-[0.2em]"
+                  className="rounded-full border px-2 py-0.5 font-mono text-[9px] font-black uppercase tracking-[0.2em]"
                   style={{ borderColor: accent + "55", color: accent }}
                 >
                   {diffLabel}
@@ -347,7 +347,7 @@ function LifeContent() {
                   <ul className="space-y-2">
                     {scenario.pitfalls.map((p) => (
                       <li key={p} className="flex items-start gap-2.5">
-                        <span className="mt-1.5 inline-block h-1.5 w-1.5 shrink-0 border border-[#ddd6ea]/40" />
+                        <span className="rounded-sm mt-1.5 inline-block h-1.5 w-1.5 shrink-0 border border-[#ddd6ea]/40" />
                         <span className="font-mono text-xs leading-5 text-[#716a7e]">{p}</span>
                       </li>
                     ))}
@@ -357,18 +357,18 @@ function LifeContent() {
 
               {/* Economy row */}
               <div className="grid grid-cols-3 gap-2 border-t border-[#ddd6ea]/20 pt-5">
-                <div className="border border-[#ddd6ea]/25 px-3 py-3 text-center">
+                <div className="rounded-xl border border-[#ddd6ea]/25 px-3 py-3 text-center">
                   <p className="font-mono text-[8px] uppercase tracking-wide text-[#716a7e]">Entry</p>
                   <p className="mt-1 font-mono text-lg font-black text-[#716a7e]">−{scenario.approachCost}</p>
                 </div>
-                <div className="border px-3 py-3 text-center" style={{ borderColor: accent + "50" }}>
+                <div className="rounded-xl border px-3 py-3 text-center" style={{ borderColor: accent + "50" }}>
                   <p className="font-mono text-[8px] uppercase tracking-wide text-[#716a7e]">Own It</p>
                   <p className="mt-1 font-mono text-lg font-black" style={{ color: accent }}>
                     +{Math.round(scenario.ownItWin * streakMult)}
                     {streakMult > 1 && <span className="ml-1 text-[10px] text-[#716a7e]">×{streakMult}</span>}
                   </p>
                 </div>
-                <div className="border border-[#ddd6ea]/25 px-3 py-3 text-center">
+                <div className="rounded-xl border border-[#ddd6ea]/25 px-3 py-3 text-center">
                   <p className="font-mono text-[8px] uppercase tracking-wide text-[#716a7e]">Play It Cool</p>
                   <p className="mt-1 font-mono text-lg font-black text-[#231942]">
                     +{Math.round(scenario.coolWin * streakMult)}
@@ -413,7 +413,7 @@ function LifeContent() {
             <div className="flex flex-wrap items-center gap-2">
               <p className="font-black uppercase truncate" style={{ color: accent }}>{scenario.title}</p>
               <span
-                className="shrink-0 border font-mono text-[8px] uppercase px-1.5 py-0.5"
+                className="rounded-full shrink-0 border font-mono text-[8px] uppercase px-1.5 py-0.5"
                 style={{ borderColor: accent, color: accent }}
               >
                 {diffLabel}
@@ -425,11 +425,11 @@ function LifeContent() {
             <div className="hidden w-24 sm:block">
               <HandlingBar score={totalScore} />
             </div>
-            <div className="border border-[#ddd6ea]/50 px-3 py-1.5 text-center">
+            <div className="rounded-xl border border-[#ddd6ea]/50 px-3 py-1.5 text-center">
               <p className="font-mono text-[8px] uppercase text-[#716a7e]">Msgs</p>
               <p className="font-mono text-sm font-black">{msgCount}/{MAX_MSGS}</p>
             </div>
-            <div className="border border-[#ddd6ea]/50 px-3 py-1.5 text-center">
+            <div className="rounded-xl border border-[#ddd6ea]/50 px-3 py-1.5 text-center">
               <p className="font-mono text-[8px] uppercase text-[#716a7e]">AURA</p>
               <p className={`font-mono text-sm font-black ${sessionAura >= initialAura ? "text-[#5e548e]" : "text-[#716a7e]"}`}>
                 {sessionAura}
@@ -453,14 +453,14 @@ function LifeContent() {
             <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
               {msg.role === "assistant" && (
                 <div
-                  className="mr-2 mt-1 flex h-7 w-7 shrink-0 items-center justify-center border font-mono text-[9px] font-black"
+                  className="rounded-lg mr-2 mt-1 flex h-7 w-7 shrink-0 items-center justify-center border font-mono text-[9px] font-black"
                   style={{ borderColor: accent, color: accent }}
                 >
                   HER
                 </div>
               )}
               <div
-                className={`max-w-[75%] border px-3 py-2 text-sm leading-6 ${
+                className={`rounded-xl max-w-[75%] border px-3 py-2 text-sm leading-6 ${
                   msg.role === "user"
                     ? "border-[#5e548e] bg-[#5e548e]/10 text-[#5e548e]"
                     : "border-[#ddd6ea]/50 bg-white text-[#231942]"
@@ -507,7 +507,7 @@ function LifeContent() {
             </p>
             <div className="grid grid-cols-3 gap-2">
               <button
-                className="border-2 border-[#5e548e] bg-[#5e548e]/5 px-2 py-4 text-center transition hover:bg-[#5e548e] hover:text-white touch-manipulation group"
+                className="rounded-xl border border-[#5e548e] bg-[#5e548e]/5 px-2 py-4 text-center transition hover:bg-[#5e548e] hover:text-white touch-manipulation group"
                 onClick={() => resolveRound("own-it")} type="button"
               >
                 <p className="font-mono text-[7px] uppercase tracking-widest text-[#716a7e] group-hover:text-[#231942]">Own It</p>
@@ -515,7 +515,7 @@ function LifeContent() {
                 <p className="mt-0.5 font-mono text-[10px] font-black text-[#5e548e] group-hover:text-[#231942]">{ownItChance}% WIN</p>
               </button>
               <button
-                className="border-2 border-[#5e548e] bg-[#5e548e]/5 px-2 py-4 text-center transition hover:bg-[#5e548e]/20 touch-manipulation"
+                className="rounded-xl border border-[#5e548e] bg-[#5e548e]/5 px-2 py-4 text-center transition hover:bg-[#5e548e]/20 touch-manipulation"
                 onClick={() => resolveRound("play-it-cool")} type="button"
               >
                 <p className="font-mono text-[7px] uppercase tracking-widest text-[#716a7e]">Play It Cool</p>
@@ -523,7 +523,7 @@ function LifeContent() {
                 <p className="mt-0.5 font-mono text-[10px] font-black text-[#5e548e]">{coolChance}% WIN</p>
               </button>
               <button
-                className="border-2 border-[#ddd6ea]/40 bg-[#716a7e]/5 px-2 py-4 text-center transition hover:bg-[#716a7e]/15 touch-manipulation"
+                className="rounded-xl border border-[#ddd6ea]/40 bg-[#716a7e]/5 px-2 py-4 text-center transition hover:bg-[#716a7e]/15 touch-manipulation"
                 onClick={() => resolveRound("sidestep")} type="button"
               >
                 <p className="font-mono text-[7px] uppercase tracking-widest text-[#716a7e]">Sidestep</p>
@@ -571,10 +571,10 @@ function LifeContent() {
               )}
               {!isLoading && (
                 <div className="mt-8 flex w-full max-w-sm flex-col gap-3">
-                  <button className="w-full border-2 border-white bg-white py-4 font-black uppercase tracking-widest text-[#f8f7fc] transition hover:bg-transparent hover:text-[#231942] touch-manipulation" onClick={tryAgain} type="button">
+                  <button className="rounded-xl w-full border border-white bg-white py-4 font-black uppercase tracking-widest text-[#f8f7fc] transition hover:bg-transparent hover:text-[#231942] touch-manipulation" onClick={tryAgain} type="button">
                     Try Again
                   </button>
-                  <button className="w-full border border-[#ddd6ea]/50 py-3 font-mono text-xs font-black uppercase tracking-widest text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e] touch-manipulation" onClick={() => router.push(`/scenarios?archetype=${archetypeId}`)} type="button">
+                  <button className="rounded-xl w-full border border-[#ddd6ea]/50 py-3 font-mono text-xs font-black uppercase tracking-widest text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e] touch-manipulation" onClick={() => router.push(`/scenarios?archetype=${archetypeId}`)} type="button">
                     Back to Field Manual
                   </button>
                 </div>
@@ -590,12 +590,12 @@ function LifeContent() {
         <Nav />
         <main className="flex flex-1 flex-col items-center justify-center px-4 py-8 text-center">
           <div className="mb-6">
-            <span className="inline-block border px-4 py-2 font-mono text-[9px] uppercase tracking-[0.2em]" style={{ borderColor: accent + "60", color: accent }}>
+            <span className="rounded-full inline-block border px-4 py-2 font-mono text-[9px] uppercase tracking-[0.2em]" style={{ borderColor: accent + "60", color: accent }}>
               {scenario.title}
             </span>
           </div>
 
-          <div className={`w-full max-w-lg border-2 p-6 shadow-[8px_8px_0_#f3f0fa] mb-6 ${isWin ? "border-[#5e548e] bg-[#5e548e]/5" : "border-[#ddd6ea]"}`}>
+          <div className={`rounded-xl w-full max-w-lg border p-6 shadow-sm mb-6 ${isWin ? "border-[#5e548e] bg-[#5e548e]/5" : "border-[#ddd6ea]"}`}>
             {isLoading ? (
               <p className="font-mono text-sm text-[#716a7e] animate-pulse">Waiting for her reaction…</p>
             ) : (
@@ -631,10 +631,10 @@ function LifeContent() {
 
           {!isLoading && (
             <div className="flex w-full max-w-lg flex-col gap-3">
-              <button className="w-full border-2 border-[#5e548e] bg-[#5e548e] py-4 font-black uppercase tracking-widest text-white shadow-[6px_6px_0_#716a7e] transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation" onClick={tryAgain} type="button">
+              <button className="rounded-xl w-full border border-[#5e548e] bg-[#5e548e] py-4 font-black uppercase tracking-widest text-white shadow-sm transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation" onClick={tryAgain} type="button">
                 Practice Again
               </button>
-              <button className="w-full border border-[#ddd6ea]/50 py-3 font-mono text-xs font-black uppercase tracking-widest text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e] touch-manipulation" onClick={() => router.push(`/scenarios?archetype=${archetypeId}`)} type="button">
+              <button className="rounded-xl w-full border border-[#ddd6ea]/50 py-3 font-mono text-xs font-black uppercase tracking-widest text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e] touch-manipulation" onClick={() => router.push(`/scenarios?archetype=${archetypeId}`)} type="button">
                 Back to Field Manual
               </button>
             </div>

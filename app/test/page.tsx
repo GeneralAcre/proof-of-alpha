@@ -162,7 +162,7 @@ export default function TestPage() {
               </p>
             </div>
 
-            <div className="border border-[#ddd6ea]/30 bg-white divide-y divide-[#716a7e]/20">
+            <div className="rounded-lg border border-[#ddd6ea]/30 bg-white divide-y divide-[#716a7e]/20">
               {[
                 { label: "Questions",  value: "6 scenarios" },
                 { label: "Time",       value: "~2 minutes" },
@@ -176,7 +176,7 @@ export default function TestPage() {
             </div>
 
             <button
-              className="w-full border-2 border-[#5e548e] bg-[#5e548e] py-4 font-mono text-sm font-black uppercase tracking-[0.2em] text-white shadow-[6px_6px_0_#716a7e] transition hover:bg-transparent hover:text-[#5e548e]"
+              className="rounded-xl w-full border border-[#5e548e] bg-[#5e548e] py-4 font-mono text-sm font-black uppercase tracking-[0.2em] text-white shadow-sm transition hover:bg-transparent hover:text-[#5e548e]"
               onClick={() => setStarted(true)}
               type="button"
             >
@@ -221,7 +221,7 @@ export default function TestPage() {
                   key={i}
                   type="button"
                   onClick={() => handleSelect(i)}
-                  className={`w-full border px-5 py-4 text-left transition touch-manipulation ${
+                  className={`rounded-xl w-full border px-5 py-4 text-left transition touch-manipulation ${
                     chosen === i
                       ? "border-[#5e548e] bg-[#5e548e]/10 text-[#5e548e]"
                       : chosen !== null
@@ -244,7 +244,7 @@ export default function TestPage() {
               type="button"
               disabled={chosen === null}
               onClick={handleNext}
-              className="w-full border-2 border-[#5e548e] bg-[#5e548e] py-4 font-mono text-sm font-black uppercase tracking-[0.18em] text-white shadow-[4px_4px_0_#716a7e] transition hover:bg-transparent hover:text-[#5e548e] disabled:border-[#ddd6ea]/30 disabled:bg-transparent disabled:text-[#716a7e]/30 disabled:shadow-none"
+              className="rounded-xl w-full border border-[#5e548e] bg-[#5e548e] py-4 font-mono text-sm font-black uppercase tracking-[0.18em] text-white shadow-sm transition hover:bg-transparent hover:text-[#5e548e] disabled:border-[#ddd6ea]/30 disabled:bg-transparent disabled:text-[#716a7e]/30 disabled:shadow-none"
             >
               {current + 1 === QUESTIONS.length ? "See Result" : "Next"}
             </button>
@@ -261,18 +261,18 @@ export default function TestPage() {
               <h1 className="mt-2 text-5xl font-black uppercase sm:text-6xl" style={{ color: result.color }}>
                 {result.title}
               </h1>
-              <span className="mt-2 inline-block border border-[#ddd6ea]/40 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[#716a7e]">
+              <span className="rounded-full mt-2 inline-block border border-[#ddd6ea]/40 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[#716a7e]">
                 {result.tag}
               </span>
             </div>
 
             {/* Description */}
-            <div className="border border-[#ddd6ea]/30 bg-white p-6 shadow-[4px_4px_0_#716a7e]">
+            <div className="rounded-xl border border-[#ddd6ea]/30 bg-white p-6 shadow-sm">
               <p className="font-mono text-sm leading-7 text-[#231942]">{result.desc}</p>
             </div>
 
             {/* Score breakdown */}
-            <div className="border border-[#ddd6ea]/30 bg-[#f3f0fa]">
+            <div className="rounded-lg border border-[#ddd6ea]/30 bg-[#f3f0fa]">
               <div className="border-b border-[#ddd6ea]/20 px-5 py-3">
                 <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#716a7e]">Score Breakdown</p>
               </div>
@@ -297,14 +297,14 @@ export default function TestPage() {
             <div className="flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/character-select"
-                className="flex-1 border-2 border-[#5e548e] bg-[#5e548e] py-4 text-center font-mono text-sm font-black uppercase tracking-[0.18em] text-white shadow-[4px_4px_0_#716a7e] transition hover:bg-transparent hover:text-[#5e548e]"
+                className="rounded-xl flex-1 border border-[#5e548e] bg-[#5e548e] py-4 text-center font-mono text-sm font-black uppercase tracking-[0.18em] text-white shadow-sm transition hover:bg-transparent hover:text-[#5e548e]"
               >
                 Practice in Game
               </Link>
               <button
                 type="button"
                 onClick={reset}
-                className="flex-1 border border-[#ddd6ea]/40 py-4 font-mono text-sm uppercase tracking-[0.14em] text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e]"
+                className="rounded-xl flex-1 border border-[#ddd6ea]/40 py-4 font-mono text-sm uppercase tracking-[0.14em] text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e]"
               >
                 Retake Test
               </button>

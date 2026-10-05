@@ -32,7 +32,7 @@ export function SolanaWalletConnect({ onAccountChange }: SolanaWalletConnectProp
 
       {account ? (
         <div className="mt-5 grid gap-3">
-          <div className="rounded-lg border border-[#ddd6ea] bg-[#f8f7fc]/70 p-4 font-mono text-sm text-[#231942]">
+          <div className="rounded-xl border border-[#ddd6ea] bg-[#f8f7fc]/70 p-4 font-mono text-sm text-[#231942]">
             wallet: {selectedWallet?.name}
             <br />
             address: {truncatedAddress}
@@ -40,7 +40,7 @@ export function SolanaWalletConnect({ onAccountChange }: SolanaWalletConnectProp
             cluster: solana:mainnet
           </div>
           <button
-            className="rounded-lg border border-[#ddd6ea] px-4 py-3 text-sm font-black uppercase text-[#5e548e] transition hover:bg-[#5e548e] hover:text-white"
+            className="rounded-full border border-[#ddd6ea] px-4 py-3 text-sm font-black uppercase text-[#5e548e] transition hover:bg-[#5e548e] hover:text-white"
             onClick={disconnect}
             type="button"
           >
@@ -52,7 +52,7 @@ export function SolanaWalletConnect({ onAccountChange }: SolanaWalletConnectProp
           {wallets.length > 0 ? (
             wallets.map((wallet) => (
               <button
-                className="rounded-lg border border-[#5e548e] bg-[#5e548e] px-4 py-3 text-left text-sm font-black uppercase text-white transition hover:bg-[#5e548e] disabled:opacity-60"
+                className="rounded-xl border border-[#5e548e] bg-[#5e548e] px-4 py-3 text-left text-sm font-black uppercase text-white transition hover:bg-[#5e548e] disabled:opacity-60"
                 disabled={isConnecting}
                 key={wallet.name}
                 onClick={() => connect(wallet)}
@@ -67,7 +67,7 @@ export function SolanaWalletConnect({ onAccountChange }: SolanaWalletConnectProp
               </button>
             ))
           ) : (
-            <div className="rounded-lg border border-[#ddd6ea] bg-[#f8f7fc]/70 p-4 text-sm leading-6 text-[#231942]">
+            <div className="rounded-xl border border-[#ddd6ea] bg-[#f8f7fc]/70 p-4 text-sm leading-6 text-[#231942]">
               No wallet detected. Solana Mobile web support requires Android Chrome with a Mobile
               Wallet Adapter wallet installed.
               <a

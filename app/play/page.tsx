@@ -19,7 +19,7 @@ function PlayContent() {
         <div className="mb-10">
           <button
             onClick={() => router.push("/character-select")}
-            className="mb-6 bg-[#5e548e] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-white transition hover:opacity-80 touch-manipulation"
+            className="rounded-full mb-6 bg-[#5e548e] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-white transition hover:opacity-80 touch-manipulation"
             type="button"
           >
             Back
@@ -34,7 +34,7 @@ function PlayContent() {
 
           {/* ── Flirting Game ──────────────────────────────────────────────── */}
           <button
-            className="group relative flex flex-col overflow-hidden border-2 border-[#5e548e]/25 bg-[#f8f7fc] text-left transition duration-200 hover:border-[#5e548e]/70 hover:bg-[#f3f0fa] touch-manipulation"
+            className="rounded-xl group relative flex flex-col overflow-hidden border border-[#5e548e]/25 bg-[#f8f7fc] text-left transition duration-200 hover:border-[#5e548e]/70 hover:bg-[#f3f0fa] touch-manipulation"
             onClick={() => router.push(`/map?archetype=${archetype}`)}
             type="button"
           >
@@ -55,7 +55,7 @@ function PlayContent() {
             <div className="relative z-10 flex flex-1 flex-col p-7 sm:p-8">
 
               <div className="mb-6">
-                <span className="inline-block border border-[#5e548e]/40 bg-[#5e548e]/5 px-2.5 py-1 font-mono text-[9px] font-black uppercase tracking-[0.25em] text-[#5e548e]">
+                <span className="rounded-full inline-block border border-[#5e548e]/40 bg-[#5e548e]/5 px-2.5 py-1 font-mono text-[9px] font-black uppercase tracking-[0.25em] text-[#5e548e]">
                   Rizz Mode
                 </span>
               </div>
@@ -82,7 +82,7 @@ function PlayContent() {
               </ul>
 
               <div className="mt-auto pt-8">
-                <div className="inline-block border-2 border-[#5e548e] bg-[#5e548e] px-6 py-2.5 font-mono text-xs font-black uppercase tracking-widest text-white transition duration-150 group-hover:bg-transparent group-hover:text-[#5e548e]">
+                <div className="rounded-xl inline-block border border-[#5e548e] bg-[#5e548e] px-6 py-2.5 font-mono text-xs font-black uppercase tracking-widest text-white transition duration-150 group-hover:bg-transparent group-hover:text-[#5e548e]">
                   Enter Flirting Game
                 </div>
               </div>
@@ -91,7 +91,7 @@ function PlayContent() {
 
           {/* ── Situation Game ─────────────────────────────────────────────── */}
           <div
-            className="group relative flex flex-col overflow-hidden border-2 border-[#9945FF]/15 bg-[#f8f7fc] text-left opacity-60 cursor-not-allowed select-none"
+            className="rounded-lg group relative flex flex-col overflow-hidden border border-[#9945FF]/15 bg-[#f8f7fc] text-left opacity-60 cursor-not-allowed select-none"
           >
             {/* Grid pattern */}
             <svg aria-hidden className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.04]" xmlns="http://www.w3.org/2000/svg">
@@ -110,7 +110,7 @@ function PlayContent() {
             <div className="relative z-10 flex flex-1 flex-col p-7 sm:p-8">
 
               <div className="mb-6">
-                <span className="inline-block border border-[#9945FF]/40 bg-[#9945FF]/5 px-2.5 py-1 font-mono text-[9px] font-black uppercase tracking-[0.25em] text-[#9945FF]">
+                <span className="rounded-full inline-block border border-[#9945FF]/40 bg-[#9945FF]/5 px-2.5 py-1 font-mono text-[9px] font-black uppercase tracking-[0.25em] text-[#9945FF]">
                   Field Manual
                 </span>
               </div>
@@ -137,8 +137,8 @@ function PlayContent() {
               </ul>
 
               <div className="mt-auto pt-8">
-                <div className="inline-block border-2 border-[#9945FF]/40 bg-transparent px-6 py-2.5 font-mono text-xs font-black uppercase tracking-widest text-[#9945FF]/50">
-                  ðŸ”’ Coming Soon
+                <div className="rounded-xl inline-block border border-[#9945FF]/40 bg-transparent px-6 py-2.5 font-mono text-xs font-black uppercase tracking-widest text-[#9945FF]/50">
+                  🔒 Coming Soon
                 </div>
               </div>
             </div>

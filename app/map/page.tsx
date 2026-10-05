@@ -61,7 +61,7 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
 
   return (
     <div
-      className={`relative flex flex-col justify-between p-4 pb-6 sm:p-8 border border-[#5e548e]/10 ${cfg.colSpan}`}
+      className={`rounded-xl overflow-hidden relative flex flex-col justify-between p-4 pb-6 sm:p-8 border border-[#5e548e]/10 ${cfg.colSpan}`}
       style={{ backgroundColor: "#f8f7fc", minHeight: "clamp(200px, 30vw, 260px)" }}
     >
       {/* Grid overlay */}
@@ -85,13 +85,13 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
       <div className="relative z-10 flex flex-wrap items-start justify-between gap-1">
         <div className="flex items-center gap-2">
           <span
-            className="border px-2 py-0.5 font-mono text-[10px] font-black uppercase tracking-[0.22em]"
+            className="rounded-full border px-2 py-0.5 font-mono text-[10px] font-black uppercase tracking-[0.22em]"
             style={{ borderColor: accent + "55", color: accent }}
           >
             {area.id === "islandDAO" ? "DAO" : area.id === "superteamTH" ? "GOD · TH" : DIFF_LABEL[area.difficulty]}
           </span>
           {(bsolUnlocks || area.id === "islandDAO") && (
-            <span className="border border-[#9945FF]/60 bg-[#9945FF]/10 px-2 py-0.5 font-mono text-[9px] font-black uppercase tracking-[0.18em] text-[#9945FF]">
+            <span className="rounded-full border border-[#9945FF]/60 bg-[#9945FF]/10 px-2 py-0.5 font-mono text-[9px] font-black uppercase tracking-[0.18em] text-[#9945FF]">
               bSOL
             </span>
           )}
@@ -130,7 +130,7 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
         {isUnlocked ? (
           !addr ? (
             <button
-              className="border border-[#ddd6ea]/50 px-4 py-2 sm:px-6 sm:py-3 font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest text-[#716a7e] opacity-60 cursor-not-allowed touch-manipulation"
+              className="rounded-full border border-[#ddd6ea]/50 px-4 py-2 sm:px-6 sm:py-3 font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest text-[#716a7e] opacity-60 cursor-not-allowed touch-manipulation"
               disabled
               type="button"
             >
@@ -138,7 +138,7 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
             </button>
           ) : (
             <button
-              className={`px-4 py-2 sm:px-6 sm:py-3 font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest text-[#231942] transition hover:opacity-75 touch-manipulation ${area.id === "islandDAO" ? "bg-[#9945FF]" : "bg-[#5e548e]"}`}
+              className={`rounded-full px-4 py-2 sm:px-6 sm:py-3 font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest text-[#231942] transition hover:opacity-75 touch-manipulation ${area.id === "islandDAO" ? "bg-[#9945FF]" : "bg-[#5e548e]"}`}
               onClick={() => onEnter(area)}
               type="button"
             >
@@ -148,13 +148,13 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
         ) : isBsolGate ? (
           <Link
             href="/saura"
-            className="inline-block border border-[#9945FF]/50 bg-[#9945FF]/5 px-4 py-2 sm:px-6 sm:py-3 font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest text-[#9945FF] transition hover:bg-[#9945FF]/15 touch-manipulation"
+            className="rounded-full inline-block border border-[#9945FF]/50 bg-[#9945FF]/5 px-4 py-2 sm:px-6 sm:py-3 font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest text-[#9945FF] transition hover:bg-[#9945FF]/15 touch-manipulation"
           >
             Get bSOL to Enter
           </Link>
         ) : (
           <button
-            className="border border-[#ddd6ea]/50 px-4 py-2 sm:px-6 sm:py-3 font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest transition disabled:opacity-25 touch-manipulation"
+            className="rounded-full border border-[#ddd6ea]/50 px-4 py-2 sm:px-6 sm:py-3 font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest transition disabled:opacity-25 touch-manipulation"
             style={{ color: canAfford ? "#5e548e" : "#716a7e" }}
             disabled={!addr || !canAfford}
             onClick={() => onUnlock(area)}
@@ -210,7 +210,7 @@ function MapContent() {
 
         {/* Wallet gate banner */}
         {!addr && (
-          <div className="mb-6 flex items-center justify-between gap-4 border border-[#5e548e]/30 bg-[#5e548e]/5 px-5 py-4">
+          <div className="rounded-xl mb-6 flex items-center justify-between gap-4 border border-[#5e548e]/30 bg-[#5e548e]/5 px-5 py-4">
             <div>
               <p className="font-black uppercase text-sm text-[#5e548e]">Connect your wallet to play</p>
               <p className="font-mono text-xs text-[#716a7e] mt-0.5">You need a Solana wallet to enter any area.</p>
@@ -226,7 +226,7 @@ function MapContent() {
           <div>
             <button
               onClick={() => router.push(`/play?archetype=${archetype}`)}
-              className="mb-4 bg-[#5e548e] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-white transition hover:opacity-80"
+              className="rounded-full mb-4 bg-[#5e548e] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-white transition hover:opacity-80"
               type="button"
             >
               Back
@@ -237,13 +237,13 @@ function MapContent() {
           </div>
           <div className="flex items-center gap-3 shrink-0">
             {bsolHolder && (
-              <div className="border border-[#9945FF]/50 bg-[#9945FF]/10 px-3 py-2.5 text-right">
+              <div className="rounded-xl border border-[#9945FF]/50 bg-[#9945FF]/10 px-3 py-2.5 text-right">
                 <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#9945FF]">bSOL Holder</p>
                 <p className="mt-0.5 font-mono text-xs font-black text-[#9945FF]">Vault + islandDAO unlocked</p>
               </div>
             )}
             {addr && (
-              <div className="border border-[#ddd6ea]/30 px-4 py-2.5 text-right">
+              <div className="rounded-xl border border-[#ddd6ea]/30 px-4 py-2.5 text-right">
                 <p className="font-mono text-xs uppercase tracking-[0.16em] text-[#716a7e]">Your AURA</p>
                 <p className="mt-0.5 font-mono text-2xl font-black leading-none text-[#5e548e]">{aura}</p>
               </div>

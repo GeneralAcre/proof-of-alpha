@@ -124,7 +124,7 @@ function CharacterSelectContent() {
 
           {/* Back */}
           <button
-            className="mb-6 border border-[#ddd6ea] px-4 py-3 font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e] touch-manipulation"
+            className="rounded-full mb-6 border border-[#ddd6ea] px-4 py-3 font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e] touch-manipulation"
             onClick={() => setView("grid")}
             type="button"
           >
@@ -134,7 +134,7 @@ function CharacterSelectContent() {
           <div className="grid gap-6 sm:grid-cols-[1fr_1.1fr] sm:gap-8">
 
             {/* Portrait */}
-            <div className="relative aspect-3/4 w-full overflow-hidden border border-[#ddd6ea] bg-[#f3f0fa]">
+            <div className="rounded-lg relative aspect-3/4 w-full overflow-hidden border border-[#ddd6ea] bg-[#f3f0fa]">
               {a.image ? (
                 <Image
                   alt={a.name}
@@ -152,7 +152,7 @@ function CharacterSelectContent() {
               <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#f8f7fc]/60 to-transparent" />
 
               {/* Level badge on portrait */}
-              <div className="absolute bottom-3 left-3 border border-[#5e548e]/40 bg-[#f8f7fc]/80 px-3 py-1.5 backdrop-blur-sm">
+              <div className="rounded-xl absolute bottom-3 left-3 border border-[#5e548e]/40 bg-[#f8f7fc]/80 px-3 py-1.5 backdrop-blur-sm">
                 <p className="font-mono text-[10px] uppercase tracking-widest text-[#716a7e]">Level</p>
                 <p className="font-mono text-2xl font-black leading-none text-[#5e548e]">
                   {level}<span className="text-sm text-[#716a7e]">/{MAX_LEVEL}</span>
@@ -181,7 +181,7 @@ function CharacterSelectContent() {
               </div>
 
               {/* Level-up block */}
-              <div className="border border-[#ddd6ea]/40 bg-white p-3">
+              <div className="rounded-xl border border-[#ddd6ea]/40 bg-white p-3">
                 {/* Level pips */}
                 <div className="mb-2.5 flex items-center gap-2">
                   <span className="font-mono text-[10px] uppercase tracking-wide text-[#716a7e]">LVL</span>
@@ -201,7 +201,7 @@ function CharacterSelectContent() {
                       type="button"
                       disabled={!canAfford}
                       onClick={() => handleLevelUp(a.id, level)}
-                      className={`w-full border-2 py-3 font-mono text-xs font-black uppercase tracking-widest transition touch-manipulation ${
+                      className={`rounded-xl w-full border py-3 font-mono text-xs font-black uppercase tracking-widest transition touch-manipulation ${
                         canAfford
                           ? "border-[#5e548e] bg-[#5e548e] text-white hover:bg-transparent hover:text-[#5e548e]"
                           : "border-[#ddd6ea]/40 text-[#716a7e]/40 cursor-not-allowed"
@@ -234,7 +234,7 @@ function CharacterSelectContent() {
 
               {/* Confirm */}
               <button
-                className="mt-auto w-full border-2 border-[#5e548e] bg-[#5e548e] py-4 font-black uppercase tracking-[0.12em] text-white shadow-[6px_6px_0_#716a7e] transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation"
+                className="rounded-xl mt-auto w-full border border-[#5e548e] bg-[#5e548e] py-4 font-black uppercase tracking-[0.12em] text-white shadow-sm transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation"
                 onClick={confirm}
                 type="button"
               >
@@ -266,9 +266,9 @@ function CharacterSelectContent() {
             return (
               <button
                 key={a.id}
-                className={`group relative flex flex-col overflow-hidden border bg-white text-left transition touch-manipulation ${
+                className={`rounded-xl group relative flex flex-col overflow-hidden border bg-white text-left transition touch-manipulation ${
                   isAvailable
-                    ? "border-[#ddd6ea] hover:border-[#5e548e] hover:shadow-[4px_4px_0_#716a7e]"
+                    ? "border-[#ddd6ea] hover:border-[#5e548e] "
                     : "border-[#170b2e] opacity-40 cursor-not-allowed"
                 }`}
                 disabled={!isAvailable}

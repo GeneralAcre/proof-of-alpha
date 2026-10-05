@@ -18,7 +18,7 @@ function ModeSelectContent() {
         <div className="mb-8 grid gap-4 sm:grid-cols-2">
 
           {/* ── SOLO — active ── */}
-          <div className="border-2 border-[#5e548e] bg-[#5e548e] p-6 text-left shadow-[6px_6px_0_#716a7e]">
+          <div className="rounded-xl border border-[#5e548e] bg-[#5e548e] p-6 text-left shadow-sm">
             <p className="text-2xl font-black uppercase text-[#231942]">Solo</p>
             <p className="mt-1 font-mono text-xs uppercase tracking-[0.14em] text-[#231942]/70">
               Available Now
@@ -36,9 +36,9 @@ function ModeSelectContent() {
           </div>
 
           {/* ── MULTIPLAYER — coming soon ── */}
-          <div className="relative border-2 border-[#170b2e] bg-white p-6 text-left opacity-60 cursor-not-allowed select-none">
+          <div className="rounded-xl overflow-hidden relative border border-[#170b2e] bg-white p-6 text-left opacity-60 cursor-not-allowed select-none">
             {/* Coming soon badge */}
-            <div className="absolute right-4 top-4 border border-[#ddd6ea] bg-[#f8f7fc] px-2 py-0.5">
+            <div className="rounded-xl absolute right-4 top-4 border border-[#ddd6ea] bg-[#f8f7fc] px-2 py-0.5">
               <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#716a7e]">Coming Soon</span>
             </div>
 
@@ -61,7 +61,7 @@ function ModeSelectContent() {
 
         {/* ── SOLO CTA ── */}
         <Link
-          className="block border-2 border-[#5e548e] bg-[#5e548e] px-6 py-4 text-center text-lg font-black uppercase text-white shadow-[6px_6px_0_#716a7e] transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation"
+          className="rounded-xl block border border-[#5e548e] bg-[#5e548e] px-6 py-4 text-center text-lg font-black uppercase text-white shadow-sm transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation"
           href="/character-select?mode=solo"
         >
           Play Solo Now

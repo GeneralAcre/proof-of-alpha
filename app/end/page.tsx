@@ -100,8 +100,8 @@ function EndContent() {
       <main className="mx-auto max-w-5xl px-4 py-10 sm:px-8">
 
         {/* ── WINNER BANNER ── */}
-        <section className={`mb-8 border-2 p-8 text-center shadow-[8px_8px_0_#716a7e] ${won ? "border-[#5e548e] bg-[#5e548e]/5" : "border-[#ddd6ea]"}`}>
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center border-2 border-[#5e548e] bg-[#5e548e]/10 font-mono text-3xl font-black text-[#5e548e]">
+        <section className={`mb-8 border p-8 text-center shadow-sm ${won ? "border-[#5e548e] bg-[#5e548e]/5" : "border-[#ddd6ea]"}`}>
+          <div className="rounded-lg mx-auto mb-4 flex h-16 w-16 items-center justify-center border border-[#5e548e] bg-[#5e548e]/10 font-mono text-3xl font-black text-[#5e548e]">
             {archetype.initials}
           </div>
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e]">
@@ -118,7 +118,7 @@ function EndContent() {
         <div className="grid gap-6 sm:grid-cols-2">
 
           {/* ── SIGMA POINTS BREAKDOWN ── */}
-          <section className="border border-[#ddd6ea] bg-white shadow-[4px_4px_0_#716a7e]">
+          <section className="border border-[#ddd6ea] bg-white shadow-sm">
             <div className="border-b border-[#ddd6ea] px-5 py-3">
               <p className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#716a7e]">
                 AURA Earned
@@ -145,7 +145,7 @@ function EndContent() {
 
           {/* ── RANK ── */}
           <section className="space-y-4">
-            <div className={`border p-5 shadow-[4px_4px_0_#716a7e] ${showRankUp ? "rank-flash border-[#5e548e]" : "border-[#ddd6ea] bg-white"}`}>
+            <div className={`rounded-xl border p-5 shadow-sm ${showRankUp ? "rank-flash border-[#5e548e]" : "border-[#ddd6ea] bg-white"}`}>
               <p className="mb-3 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#716a7e]">
                 Rank {rankedUp && showRankUp ? "— NEW RANK!" : ""}
               </p>
@@ -164,7 +164,7 @@ function EndContent() {
                     <span>to {getNextRank(newAura)?.name}</span>
                   )}
                 </div>
-                <div className="h-2 w-full border border-[#ddd6ea] bg-[#f8f7fc]">
+                <div className="rounded-full h-2 w-full border border-[#ddd6ea] bg-[#f8f7fc]">
                   <div
                     className="h-full bg-[#5e548e] transition-all duration-1000"
                     style={{ width: `${progress}%` }}
@@ -174,14 +174,14 @@ function EndContent() {
             </div>
 
             {newAura >= 2500 && (
-              <div className="border border-[#5e548e] bg-[#5e548e]/5 p-5 shadow-[4px_4px_0_#716a7e]">
+              <div className="rounded-xl border border-[#5e548e] bg-[#5e548e]/5 p-5 shadow-sm">
                 <p className="mb-1 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#716a7e]">
                   Achievement Unlocked
                 </p>
                 <p className="text-xl font-black uppercase text-[#5e548e]">Gigachad NFT</p>
                 <p className="mt-1 text-sm text-[#231942]">2,500 AURA threshold reached.</p>
                 <button
-                  className="mt-3 w-full border border-[#5e548e] bg-[#5e548e] py-3.5 font-black uppercase text-white transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation"
+                  className="rounded-xl mt-3 w-full border border-[#5e548e] bg-[#5e548e] py-3.5 font-black uppercase text-white transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation"
                   type="button"
                 >
                   Mint Gigachad NFT
@@ -194,13 +194,13 @@ function EndContent() {
         {/* ── ACTIONS ── */}
         <div className="mt-8 flex flex-wrap gap-4">
           <Link
-            className="flex-1 border-2 border-[#5e548e] bg-[#5e548e] px-6 py-4 text-center font-black uppercase text-white shadow-[6px_6px_0_#716a7e] transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation"
+            className="rounded-xl flex-1 border border-[#5e548e] bg-[#5e548e] px-6 py-4 text-center font-black uppercase text-white shadow-sm transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation"
             href="/map"
           >
             Play Again
           </Link>
           <button
-            className="flex-1 border-2 border-[#ddd6ea] px-6 py-4 font-black uppercase text-[#5e548e] transition hover:border-[#5e548e] touch-manipulation"
+            className="rounded-xl flex-1 border border-[#ddd6ea] px-6 py-4 font-black uppercase text-[#5e548e] transition hover:border-[#5e548e] touch-manipulation"
             onClick={() => {
               const text = `Just ${won ? "won" : "played"} a match as ${archetype.name} on Proof of Alpha! ${totalEarned >= 0 ? "+" : ""}${totalEarned} AURA earned. The only fully on-chain meme battle game.`;
               window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, "_blank");
@@ -210,7 +210,7 @@ function EndContent() {
             Share on X
           </button>
           <Link
-            className="border-2 border-[#ddd6ea] px-6 py-4 font-black uppercase text-[#5e548e] transition hover:border-[#5e548e] touch-manipulation"
+            className="rounded-xl border border-[#ddd6ea] px-6 py-4 font-black uppercase text-[#5e548e] transition hover:border-[#5e548e] touch-manipulation"
             href="/profile"
           >
             View Profile

@@ -127,9 +127,9 @@ export default function HowToPlayPage() {
           <p className="mb-4 text-sm text-[#716a7e]">Three girls per session, randomly picked from a pool of 15 archetypes. Harder girls pay more but are smarter AI models.</p>
           <div className="space-y-3">
             {DIFFICULTY.map((d) => (
-              <div key={d.label} className="border border-white/10 bg-white/4 backdrop-blur-sm">
+              <div key={d.label} className="rounded-lg border border-white/10 bg-white/4 backdrop-blur-sm">
                 <div className="flex items-center gap-3 border-b border-[#e7e2ee] px-5 py-3">
-                  <span className="border border-white/20 bg-white/10 px-2 py-0.5 font-mono text-xs font-black text-[#231942] tracking-widest">
+                  <span className="rounded-xl border border-white/20 bg-white/10 px-2 py-0.5 font-mono text-xs font-black text-[#231942] tracking-widest">
                     {d.label}
                   </span>
                   <span className="font-mono text-xs text-[#716a7e]">{d.threshold} to win FLIRT</span>
@@ -163,10 +163,10 @@ export default function HowToPlayPage() {
           <p className="mb-4 text-sm text-[#716a7e]">After 4 messages the chat locks and you pick a closer. Win % is shown live based on your conversation score.</p>
           <div className="grid gap-3 sm:grid-cols-3">
             {CLOSERS.map((c) => (
-              <div key={c.name} className="border border-white/10 bg-white/4 backdrop-blur-sm p-4">
+              <div key={c.name} className="rounded-xl border border-white/10 bg-white/4 backdrop-blur-sm p-4">
                 <div className="flex items-center justify-between mb-3">
                   <p className="font-mono text-sm font-black text-[#231942]">{c.name}</p>
-                  <span className="border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-[9px] uppercase text-[#716a7e]">{c.risk}</span>
+                  <span className="rounded-full border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-[9px] uppercase text-[#716a7e]">{c.risk}</span>
                 </div>
                 <p className="font-mono text-lg font-black mb-2 text-[#5e548e]">{c.odds}</p>
                 <p className="text-xs leading-5 text-[#231942]">{c.desc}</p>
@@ -178,7 +178,7 @@ export default function HowToPlayPage() {
         {/* AURA */}
         <section>
           <SectionLabel>AURA Economy</SectionLabel>
-          <div className="border border-[#ddd6ea]/50 bg-white divide-y divide-[#716a7e]/20">
+          <div className="rounded-lg border border-[#ddd6ea]/50 bg-white divide-y divide-[#716a7e]/20">
             {AURA_USES.map(({ action, cost, earn }) => (
               <div key={action} className="flex items-center justify-between px-5 py-3">
                 <span className="text-sm text-[#231942]">{action}</span>
@@ -191,7 +191,7 @@ export default function HowToPlayPage() {
         {/* RANKS */}
         <section>
           <SectionLabel>Rank Thresholds</SectionLabel>
-          <div className="border border-[#ddd6ea]/50 bg-white divide-y divide-[#716a7e]/20">
+          <div className="rounded-lg border border-[#ddd6ea]/50 bg-white divide-y divide-[#716a7e]/20">
             {RANKS.map((r) => (
               <div key={r.name} className="flex items-center justify-between px-5 py-3">
                 <span className="font-black uppercase text-[#5e548e]">{r.name}</span>
@@ -206,7 +206,7 @@ export default function HowToPlayPage() {
         {/* FAQ */}
         <section className="pb-8">
           <SectionLabel>FAQ</SectionLabel>
-          <div className="border border-[#ddd6ea]/50 bg-white divide-y divide-[#716a7e]/20">
+          <div className="rounded-lg border border-[#ddd6ea]/50 bg-white divide-y divide-[#716a7e]/20">
             {FAQ.map(({ q, a }) => (
               <details key={q} className="group px-5 py-4 cursor-pointer">
                 <summary className="font-black uppercase text-sm text-[#5e548e] list-none flex items-center justify-between">
@@ -220,19 +220,19 @@ export default function HowToPlayPage() {
 
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
-              className="border-2 border-[#5e548e] bg-[#5e548e] px-7 py-3.5 text-sm font-black uppercase tracking-wide text-white shadow-[4px_4px_0_#716a7e] transition hover:bg-transparent hover:text-[#5e548e]"
+              className="rounded-xl border border-[#5e548e] bg-[#5e548e] px-7 py-3.5 text-sm font-black uppercase tracking-wide text-white shadow-sm transition hover:bg-transparent hover:text-[#5e548e]"
               href="/character-select"
             >
               Play Now
             </Link>
             <Link
-              className="border-2 border-[#ddd6ea] px-7 py-3.5 text-sm font-black uppercase tracking-wide text-[#5e548e] transition hover:border-[#5e548e]"
+              className="rounded-xl border border-[#ddd6ea] px-7 py-3.5 text-sm font-black uppercase tracking-wide text-[#5e548e] transition hover:border-[#5e548e]"
               href="/character-select"
             >
               Browse Archetypes
             </Link>
             <Link
-              className="border border-[#ddd6ea]/50 px-7 py-3.5 text-sm font-black uppercase tracking-wide text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e]"
+              className="rounded-xl border border-[#ddd6ea]/50 px-7 py-3.5 text-sm font-black uppercase tracking-wide text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e]"
               href="/tips"
             >
               Tips

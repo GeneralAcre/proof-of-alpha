@@ -150,7 +150,7 @@ export default function StorePage() {
 
         {/* Treasury warning */}
         {!treasuryOk && (
-          <div className="mb-6 border border-[#ddd6ea]/40 bg-[#716a7e]/5 px-5 py-4">
+          <div className="rounded-xl mb-6 border border-[#ddd6ea]/40 bg-[#716a7e]/5 px-5 py-4">
             <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[#716a7e]">
               Store temporarily unavailable
             </p>
@@ -161,7 +161,7 @@ export default function StorePage() {
         )}
 
         {/* Balance */}
-        <div className="mb-8 flex items-center justify-between border border-[#ddd6ea] bg-white px-5 py-4 shadow-[4px_4px_0_#716a7e]">
+        <div className="rounded-xl mb-8 flex items-center justify-between border border-[#ddd6ea] bg-white px-5 py-4 shadow-sm">
           <div>
             <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#716a7e]">Your Balance</p>
             <p className="text-3xl font-black text-[#5e548e]">
@@ -184,7 +184,7 @@ export default function StorePage() {
             return (
               <div
                 key={pack.id}
-                className={`relative flex flex-col border bg-white p-5 shadow-[4px_4px_0_#716a7e] transition ${
+                className={`rounded-xl overflow-hidden relative flex flex-col border bg-white p-5 shadow-sm transition ${
                   pack.badge ? "border-[#5e548e]" : "border-[#ddd6ea]"
                 }`}
               >
@@ -212,7 +212,7 @@ export default function StorePage() {
                 </div>
 
                 <button
-                  className={`w-full border-2 py-3.5 font-mono text-[11px] font-black uppercase tracking-widest transition touch-manipulation ${buttonStyle(pack)}`}
+                  className={`rounded-xl w-full border py-3.5 font-mono text-[11px] font-black uppercase tracking-widest transition touch-manipulation ${buttonStyle(pack)}`}
                   disabled={!account || !treasuryOk || isActive(pack) || state === "done"}
                   onClick={() => handleBuy(pack)}
                   type="button"

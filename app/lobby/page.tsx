@@ -79,7 +79,7 @@ function LobbyContent() {
       <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
 
         {/* ── HEADER: room code + timer ── */}
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border border-[#ddd6ea] bg-white px-5 py-4 shadow-[6px_6px_0_#716a7e]">
+        <div className="rounded-xl mb-6 flex flex-wrap items-center justify-between gap-4 border border-[#ddd6ea] bg-white px-5 py-4 shadow-sm">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e]">
               Room Code — share to invite
@@ -111,7 +111,7 @@ function LobbyContent() {
           <div className="space-y-6">
 
             {/* ── PLAYER SLOTS ── */}
-            <section className="border border-[#ddd6ea] bg-white shadow-[4px_4px_0_#716a7e]">
+            <section className="border border-[#ddd6ea] bg-white shadow-sm">
               <div className="border-b border-[#ddd6ea] px-5 py-3">
                 <p className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#716a7e]">
                   Players — {slots.length}/6
@@ -141,7 +141,7 @@ function LobbyContent() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="border border-[#ddd6ea] px-2 py-0.5 font-mono text-xs uppercase text-[#716a7e]">
+                    <span className="rounded-xl border border-[#ddd6ea] px-2 py-0.5 font-mono text-xs uppercase text-[#716a7e]">
                       {slot.rank}
                     </span>
                     {!slot.isHuman && (
@@ -153,7 +153,7 @@ function LobbyContent() {
             </section>
 
             {/* ── ROUND 1 MODIFIER ── */}
-            <section className="border border-[#ddd6ea] bg-white p-5 shadow-[4px_4px_0_#716a7e]">
+            <section className="border border-[#ddd6ea] bg-white p-5 shadow-sm">
               <p className="mb-1 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#716a7e]">
                 Round 1 Modifier
               </p>
@@ -171,7 +171,7 @@ function LobbyContent() {
             <div className="flex flex-wrap gap-3">
               {isSolo ? (
                 <button
-                  className="flex-1 border-2 border-[#5e548e] bg-[#5e548e] px-6 py-4 text-lg font-black uppercase text-white shadow-[4px_4px_0_#716a7e] transition hover:bg-transparent hover:text-[#5e548e]"
+                  className="rounded-xl flex-1 border border-[#5e548e] bg-[#5e548e] px-6 py-4 text-lg font-black uppercase text-white shadow-sm transition hover:bg-transparent hover:text-[#5e548e]"
                   onClick={() => router.push(`/game?mode=${mode}&archetype=${archetypeId}&round=1&room=${roomCode}`)}
                   type="button"
                 >
@@ -179,10 +179,10 @@ function LobbyContent() {
                 </button>
               ) : (
                 <button
-                  className={`flex-1 border-2 px-6 py-4 font-black uppercase text-lg transition ${
+                  className={`rounded-xl flex-1 border px-6 py-4 font-black uppercase text-lg transition ${
                     isReady
                       ? "cursor-default border-[#ddd6ea] bg-[#f8f7fc] text-[#716a7e]"
-                      : "border-[#5e548e] bg-[#5e548e] text-white shadow-[4px_4px_0_#716a7e] hover:bg-transparent hover:text-[#5e548e]"
+                      : "border-[#5e548e] bg-[#5e548e] text-white shadow-sm hover:bg-transparent hover:text-[#5e548e]"
                   }`}
                   disabled={isReady}
                   onClick={() => setIsReady(true)}
@@ -192,7 +192,7 @@ function LobbyContent() {
                 </button>
               )}
               <Link
-                className="border-2 border-[#ddd6ea] px-6 py-4 font-black uppercase text-[#716a7e] transition hover:border-[#ddd6ea] hover:text-[#716a7e]"
+                className="rounded-xl border border-[#ddd6ea] px-6 py-4 font-black uppercase text-[#716a7e] transition hover:border-[#ddd6ea] hover:text-[#716a7e]"
                 href="/mode-select"
               >
                 Leave
@@ -201,7 +201,7 @@ function LobbyContent() {
           </div>
 
           {/* ── CHAT BOX ── */}
-          <section className="flex flex-col border border-[#ddd6ea] bg-white shadow-[4px_4px_0_#716a7e]">
+          <section className="flex flex-col border border-[#ddd6ea] bg-white shadow-sm">
             <div className="border-b border-[#ddd6ea] px-4 py-3">
               <p className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#716a7e]">
                 Lobby Chat

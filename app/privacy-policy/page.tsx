@@ -97,7 +97,7 @@ export default function PrivacyPolicyPage() {
       <div className="px-6 pt-8">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 border-2 border-[#5e548e] bg-[#5e548e] px-5 py-2.5 font-mono text-xs font-black uppercase tracking-[0.18em] text-white shadow-[3px_3px_0_rgba(0,0,0,0.4)] transition hover:bg-transparent hover:text-[#5e548e]"
+          className="rounded-full inline-flex items-center gap-2 border border-[#5e548e] bg-[#5e548e] px-5 py-2.5 font-mono text-xs font-black uppercase tracking-[0.18em] text-white shadow-sm transition hover:bg-transparent hover:text-[#5e548e]"
         >
           <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M8 1L3 6l5 5" strokeLinecap="round" strokeLinejoin="round" />

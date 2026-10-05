@@ -91,7 +91,7 @@ function Storyboard({ onDone }: { onDone: () => void }) {
       {/* Skip button */}
       <button
         onClick={onDone}
-        className="absolute right-4 top-4 z-20 inline-flex items-center gap-2 border-2 border-[#5e548e] bg-[#5e548e] px-5 py-2.5 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#f8f7fc] shadow-[4px_4px_0_rgba(94,84,142,0.3)] transition hover:bg-[#f8f7fc] hover:text-[#5e548e] touch-manipulation sm:right-8 sm:top-6 sm:text-sm"
+        className="rounded-full absolute right-4 top-4 z-20 inline-flex items-center gap-2 border border-[#5e548e] bg-[#5e548e] px-5 py-2.5 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#f8f7fc] shadow-sm transition hover:bg-[#f8f7fc] hover:text-[#5e548e] touch-manipulation sm:right-8 sm:top-6 sm:text-sm"
         type="button"
       >
         Skip <span aria-hidden>→</span>
@@ -116,7 +116,7 @@ function Storyboard({ onDone }: { onDone: () => void }) {
 
           {/* Character badge */}
           <div className="absolute bottom-4 left-4 sm:bottom-8 sm:left-6">
-            <div className="inline-flex items-center gap-2 border border-[#5e548e]/40 bg-[#f8f7fc]/60 px-3 py-1.5 backdrop-blur-sm">
+            <div className="rounded-xl inline-flex items-center gap-2 border border-[#5e548e]/40 bg-[#f8f7fc]/60 px-3 py-1.5 backdrop-blur-sm">
               <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-[#5e548e]">AL</span>
               <span className="h-3 w-px bg-[#716a7e]" />
               <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#716a7e]">Alpha · Your Guide</span>
@@ -215,7 +215,7 @@ function HomeContent() {
           </p>
           <button
             onClick={() => setScreen("storyboard")}
-            className="border-2 border-[#5e548e] bg-[#5e548e] px-12 py-4 text-lg font-black uppercase tracking-[0.18em] text-white shadow-[6px_6px_0_rgba(0,0,0,0.4)] transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation"
+            className="rounded-xl border border-[#5e548e] bg-[#5e548e] px-12 py-4 text-lg font-black uppercase tracking-[0.18em] text-white shadow-sm transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation"
           >
             Enter
           </button>
@@ -298,13 +298,13 @@ function HomeContent() {
                 </p>
                 <div className="flex flex-row gap-3">
                   <Link
-                    className="border-2 border-[#5e548e] bg-[#5e548e] px-8 py-3.5 font-black uppercase tracking-[0.14em] text-white shadow-[5px_5px_0_#716a7e] transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation"
+                    className="rounded-xl border border-[#5e548e] bg-[#5e548e] px-8 py-3.5 font-black uppercase tracking-[0.14em] text-white shadow-sm transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation"
                     href="/character-select"
                   >
                     Play Now
                   </Link>
                   <Link
-                    className="border-2 border-[#ddd6ea] px-8 py-3.5 font-black uppercase tracking-[0.14em] text-[#5e548e] shadow-[5px_5px_0_#716a7e] transition hover:border-[#5e548e] touch-manipulation"
+                    className="rounded-xl border border-[#ddd6ea] px-8 py-3.5 font-black uppercase tracking-[0.14em] text-[#5e548e] shadow-sm transition hover:border-[#5e548e] touch-manipulation"
                     href="/how-to-play"
                   >
                     How to Play
@@ -314,7 +314,7 @@ function HomeContent() {
 
               {/* Right — character */}
               <div className="relative mx-auto w-64 shrink-0 sm:w-80 lg:w-96">
-                <div className="relative overflow-hidden border border-[#ddd6ea]/30" style={{ aspectRatio: "3/4" }}>
+                <div className="rounded-lg relative overflow-hidden border border-[#ddd6ea]/30" style={{ aspectRatio: "3/4" }}>
                   <Image
                     src="/charecter/alpha-charecter.png"
                     alt="Alpha"
@@ -324,7 +324,7 @@ function HomeContent() {
                     priority
                   />
                   <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#f8f7fc]/60 to-transparent" />
-                  <div className="absolute bottom-4 left-4 border border-[#5e548e]/30 bg-[#f8f7fc]/70 px-3 py-1.5 backdrop-blur-sm">
+                  <div className="rounded-xl absolute bottom-4 left-4 border border-[#5e548e]/30 bg-[#f8f7fc]/70 px-3 py-1.5 backdrop-blur-sm">
                     <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#716a7e]">Your guide</p>
                     <p className="font-mono text-xs font-black text-[#5e548e]">Alpha</p>
                   </div>

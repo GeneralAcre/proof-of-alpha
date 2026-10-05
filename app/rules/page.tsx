@@ -41,7 +41,7 @@ export default function RulesPage() {
           </Link>
         </nav>
 
-        <header className="rounded-lg border border-[#ddd6ea] bg-white p-5 sm:p-7">
+        <header className="rounded-xl border border-[#ddd6ea] bg-white p-5 sm:p-7">
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e]">Rulebook</p>
           <h1 className="mt-3 max-w-4xl text-4xl font-black uppercase leading-none text-[#5e548e] sm:text-6xl">
             First to 5 round wins becomes the match alpha.
@@ -49,7 +49,7 @@ export default function RulesPage() {
         </header>
 
         <section className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
-          <article className="rounded-lg border border-[#ddd6ea] bg-white p-5 sm:p-6">
+          <article className="rounded-xl border border-[#ddd6ea] bg-white p-5 sm:p-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e]">Round engine</p>
@@ -76,7 +76,7 @@ export default function RulesPage() {
           </article>
 
           <aside className="grid gap-5">
-            <section className="rounded-lg border border-[#ddd6ea] bg-white p-5">
+            <section className="rounded-xl border border-[#ddd6ea] bg-white p-5">
               <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e]">Live reveal</p>
               <div className="mt-5 rounded-lg border border-[#ddd6ea] bg-[#f8f7fc]/70 p-4 font-mono text-sm leading-7 text-[#231942]">
                 00:10 pick move + target secretly
@@ -91,24 +91,24 @@ export default function RulesPage() {
               </div>
             </section>
 
-            <section className="rounded-lg border border-[#ddd6ea] bg-white p-5">
+            <section className="rounded-xl border border-[#ddd6ea] bg-white p-5">
               <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e]">Locker room</p>
               <div className="mt-5 grid gap-3 text-sm text-[#231942]">
-                <p className="rounded-lg border border-[#ddd6ea] bg-[#f8f7fc]/70 p-4">30 seconds between rounds.</p>
-                <p className="rounded-lg border border-[#ddd6ea] bg-[#f8f7fc]/70 p-4">Scores visible. Characters can be switched.</p>
-                <p className="rounded-lg border border-[#ddd6ea] bg-[#f8f7fc]/70 p-4">Dead players respawn with 50 $TEST.</p>
-                <p className="rounded-lg border border-[#ddd6ea] bg-[#f8f7fc]/70 p-4">Round winner starts next round with +20 $TEST.</p>
+                <p className="rounded-xl border border-[#ddd6ea] bg-[#f8f7fc]/70 p-4">30 seconds between rounds.</p>
+                <p className="rounded-xl border border-[#ddd6ea] bg-[#f8f7fc]/70 p-4">Scores visible. Characters can be switched.</p>
+                <p className="rounded-xl border border-[#ddd6ea] bg-[#f8f7fc]/70 p-4">Dead players respawn with 50 $TEST.</p>
+                <p className="rounded-xl border border-[#ddd6ea] bg-[#f8f7fc]/70 p-4">Round winner starts next round with +20 $TEST.</p>
               </div>
             </section>
           </aside>
         </section>
 
         <section className="grid gap-5 lg:grid-cols-[1fr_0.9fr_0.9fr]">
-          <article className="rounded-lg border border-[#ddd6ea] bg-white p-5">
+          <article className="rounded-xl border border-[#ddd6ea] bg-white p-5">
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e]">Round modifiers</p>
             <div className="mt-5 grid gap-3">
               {modifiers.map(([round, name, detail]) => (
-                <div key={round} className="rounded-lg border border-[#ddd6ea] bg-[#f8f7fc]/70 p-4">
+                <div key={round} className="rounded-xl border border-[#ddd6ea] bg-[#f8f7fc]/70 p-4">
                   <p className="font-mono text-xs uppercase tracking-[0.16em] text-[#716a7e]">{round}</p>
                   <h3 className="mt-1 font-black text-[#5e548e]">{name}</h3>
                   <p className="mt-1 text-sm text-[#231942]">{detail}</p>
@@ -117,7 +117,7 @@ export default function RulesPage() {
             </div>
           </article>
 
-          <article className="rounded-lg border border-[#ddd6ea] bg-white p-5">
+          <article className="rounded-xl border border-[#ddd6ea] bg-white p-5">
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e]">AURA</p>
             <div className="mt-5 grid gap-3">
               {scoreEvents.map(([event, reward]) => (
@@ -132,7 +132,7 @@ export default function RulesPage() {
             </p>
           </article>
 
-          <article className="rounded-lg border border-[#ddd6ea] bg-white p-5">
+          <article className="rounded-xl border border-[#ddd6ea] bg-white p-5">
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e]">On-chain rank</p>
             <div className="mt-5 flex flex-col gap-2">
               {ranks.map((rank, index) => (

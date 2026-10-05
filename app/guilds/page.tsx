@@ -105,7 +105,7 @@ export default function GuildsPage() {
             </p>
           </div>
           {supabaseReady && (
-            <div className="flex items-center gap-2 border border-[#ddd6ea]/30 px-3 py-2">
+            <div className="rounded-xl flex items-center gap-2 border border-[#ddd6ea]/30 px-3 py-2">
               <span className="h-2 w-2 rounded-full bg-[#5e548e] animate-pulse" />
               <span className="font-mono text-[10px] uppercase tracking-widest text-[#716a7e]">Live</span>
             </div>
@@ -119,9 +119,9 @@ export default function GuildsPage() {
             <button
               type="button"
               onClick={() => canCreate && setCreating(true)}
-              className={`relative w-full text-left border px-5 py-5 transition ${
+              className={`rounded-xl relative w-full text-left border px-5 py-5 transition ${
                 canCreate
-                  ? "border-[#5e548e] bg-white shadow-[4px_4px_0_#716a7e] hover:bg-[#3a2060] cursor-pointer"
+                  ? "border-[#5e548e] bg-white shadow-sm hover:bg-[#3a2060] cursor-pointer"
                   : "border-[#ddd6ea]/20 bg-[#f3f0fa] cursor-not-allowed"
               }`}
             >
@@ -137,12 +137,12 @@ export default function GuildsPage() {
                   </p>
                 </div>
                 {!canCreate && (
-                  <span className="shrink-0 border border-[#ddd6ea]/20 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-[#716a7e]/30">
+                  <span className="rounded-full shrink-0 border border-[#ddd6ea]/20 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-[#716a7e]/30">
                     Locked
                   </span>
                 )}
                 {canCreate && (
-                  <span className="shrink-0 border-2 border-[#5e548e] bg-[#5e548e] px-4 py-2 font-mono text-xs font-black uppercase tracking-widest text-white">
+                  <span className="rounded-xl shrink-0 border border-[#5e548e] bg-[#5e548e] px-4 py-2 font-mono text-xs font-black uppercase tracking-widest text-white">
                     + Create
                   </span>
                 )}
@@ -170,7 +170,7 @@ export default function GuildsPage() {
                       Gang Name
                     </label>
                     <input
-                      className="w-full border border-[#ddd6ea] bg-[#f8f7fc] px-3 py-3 font-mono text-sm text-[#5e548e] outline-none focus:border-[#5e548e] touch-manipulation"
+                      className="rounded-xl w-full border border-[#ddd6ea] bg-[#f8f7fc] px-3 py-3 font-mono text-sm text-[#5e548e] outline-none focus:border-[#5e548e] touch-manipulation"
                       maxLength={32}
                       placeholder="Alpha Legion"
                       autoComplete="off"
@@ -183,7 +183,7 @@ export default function GuildsPage() {
                       Tag <span className="normal-case">(2–4 chars)</span>
                     </label>
                     <input
-                      className="w-full border border-[#ddd6ea] bg-[#f8f7fc] px-3 py-3 font-mono text-sm uppercase text-[#5e548e] outline-none focus:border-[#5e548e] touch-manipulation"
+                      className="rounded-xl w-full border border-[#ddd6ea] bg-[#f8f7fc] px-3 py-3 font-mono text-sm uppercase text-[#5e548e] outline-none focus:border-[#5e548e] touch-manipulation"
                       maxLength={4}
                       placeholder="ALP"
                       autoComplete="off"
@@ -198,7 +198,7 @@ export default function GuildsPage() {
                     Motto <span className="normal-case text-[#716a7e]/60">(optional)</span>
                   </label>
                   <input
-                    className="w-full border border-[#ddd6ea] bg-[#f8f7fc] px-3 py-3 font-mono text-sm text-[#5e548e] outline-none focus:border-[#5e548e] touch-manipulation"
+                    className="rounded-xl w-full border border-[#ddd6ea] bg-[#f8f7fc] px-3 py-3 font-mono text-sm text-[#5e548e] outline-none focus:border-[#5e548e] touch-manipulation"
                     maxLength={60}
                     placeholder="Real ones only."
                     autoComplete="off"
@@ -208,21 +208,21 @@ export default function GuildsPage() {
                 </div>
 
                 {error && (
-                  <p className="border border-[#ddd6ea]/30 bg-[#716a7e]/5 px-4 py-3 font-mono text-xs text-[#716a7e]">
+                  <p className="rounded-xl border border-[#ddd6ea]/30 bg-[#716a7e]/5 px-4 py-3 font-mono text-xs text-[#716a7e]">
                     {error}
                   </p>
                 )}
 
                 <div className="flex gap-3 pt-1">
                   <button
-                    className="flex-1 border-2 border-[#5e548e] bg-[#5e548e] py-3 font-mono text-sm font-black uppercase tracking-wide text-white transition hover:bg-transparent hover:text-[#5e548e] disabled:opacity-50 touch-manipulation"
+                    className="rounded-xl flex-1 border border-[#5e548e] bg-[#5e548e] py-3 font-mono text-sm font-black uppercase tracking-wide text-white transition hover:bg-transparent hover:text-[#5e548e] disabled:opacity-50 touch-manipulation"
                     type="submit"
                     disabled={submitting}
                   >
                     {submitting ? "Founding…" : "Found Gang"}
                   </button>
                   <button
-                    className="border border-[#ddd6ea]/50 px-5 py-3 font-mono text-sm uppercase text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e] touch-manipulation"
+                    className="rounded-full border border-[#ddd6ea]/50 px-5 py-3 font-mono text-sm uppercase text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e] touch-manipulation"
                     onClick={() => { setCreating(false); setError(""); }}
                     type="button"
                   >
@@ -238,11 +238,11 @@ export default function GuildsPage() {
         {myGuild && (
           <section>
             <p className="mb-3 font-mono text-[10px] font-black uppercase tracking-[0.2em] text-[#716a7e]">Your Gang</p>
-            <div className="border-2 border-[#5e548e] bg-white p-5 sm:p-6 shadow-[6px_6px_0_#f3f0fa]">
+            <div className="rounded-xl border border-[#5e548e] bg-white p-5 sm:p-6 shadow-sm">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="border border-[#5e548e] px-2 py-0.5 font-mono text-xs font-black text-[#5e548e]">
+                    <span className="rounded-xl border border-[#5e548e] px-2 py-0.5 font-mono text-xs font-black text-[#5e548e]">
                       [{myGuild.tag}]
                     </span>
                     <h2 className="text-2xl font-black uppercase sm:text-3xl">{myGuild.name}</h2>
@@ -258,13 +258,13 @@ export default function GuildsPage() {
                 <div className="flex gap-2 shrink-0">
                   <Link
                     href={`/guilds/${myGuild.id}`}
-                    className="border border-[#ddd6ea] px-4 py-2.5 font-mono text-xs uppercase tracking-wide text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e] touch-manipulation"
+                    className="rounded-full border border-[#ddd6ea] px-4 py-2.5 font-mono text-xs uppercase tracking-wide text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e] touch-manipulation"
                   >
                     View
                   </Link>
                   {!myGuild.id.startsWith("seed_") && (
                     <button
-                      className="border border-[#ddd6ea]/40 px-4 py-2.5 font-mono text-xs uppercase tracking-wide text-[#716a7e]/50 transition hover:border-red-400 hover:text-red-400 touch-manipulation"
+                      className="rounded-full border border-[#ddd6ea]/40 px-4 py-2.5 font-mono text-xs uppercase tracking-wide text-[#716a7e]/50 transition hover:border-red-400 hover:text-red-400 touch-manipulation"
                       onClick={handleLeave}
                       type="button"
                     >
@@ -289,7 +289,7 @@ export default function GuildsPage() {
           </div>
 
           {/* Header row — 4 cols mobile, 5 cols desktop */}
-          <div className="grid grid-cols-[28px_1fr_52px_64px] sm:grid-cols-[32px_1fr_64px_88px_72px] gap-2 sm:gap-3 border border-[#ddd6ea]/30 bg-[#f3f0fa] px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#716a7e]">
+          <div className="rounded-xl grid grid-cols-[28px_1fr_52px_64px] sm:grid-cols-[32px_1fr_64px_88px_72px] gap-2 sm:gap-3 border border-[#ddd6ea]/30 bg-[#f3f0fa] px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#716a7e]">
             <span>#</span>
             <span>Gang</span>
             <span className="text-right">Members</span>
@@ -297,7 +297,7 @@ export default function GuildsPage() {
             <span className="text-right">Action</span>
           </div>
 
-          <div className="border border-t-0 border-[#ddd6ea]/30 divide-y divide-[#716a7e]/15">
+          <div className="rounded-lg border border-t-0 border-[#ddd6ea]/30 divide-y divide-[#716a7e]/15">
             {guilds.length === 0 && !loading ? (
               <div className="bg-[#f3f0fa] py-12 text-center">
                 <p className="font-mono text-xs uppercase tracking-widest text-[#716a7e]">No gangs yet. Be the first.</p>
@@ -321,7 +321,7 @@ export default function GuildsPage() {
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-1.5">
                       <span
-                        className="shrink-0 border px-1.5 py-px font-mono text-[9px] font-black"
+                        className="rounded-full shrink-0 border px-1.5 py-px font-mono text-[9px] font-black"
                         style={{ borderColor: isMe ? "#5e548e" : "#716a7e55", color: isMe ? "#5e548e" : "#716a7e" }}
                       >
                         [{g.tag}]
@@ -334,7 +334,7 @@ export default function GuildsPage() {
                         {g.name}
                       </Link>
                       {isMe && (
-                        <span className="shrink-0 border border-[#5e548e]/40 px-1 font-mono text-[8px] text-[#5e548e]">
+                        <span className="rounded-full shrink-0 border border-[#5e548e]/40 px-1 font-mono text-[8px] text-[#5e548e]">
                           YOU
                         </span>
                       )}
@@ -356,7 +356,7 @@ export default function GuildsPage() {
                       <span className="font-mono text-xs uppercase text-[#5e548e]">Joined</span>
                     ) : canJoin(g) && !myGuild ? (
                       <button
-                        className="border border-[#ddd6ea]/50 px-3 py-1.5 font-mono text-xs uppercase text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e] disabled:opacity-40 touch-manipulation"
+                        className="rounded-full border border-[#ddd6ea]/50 px-3 py-1.5 font-mono text-xs uppercase text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e] disabled:opacity-40 touch-manipulation"
                         disabled={!addr || joining === g.id}
                         onClick={() => handleJoin(g.id)}
                         type="button"

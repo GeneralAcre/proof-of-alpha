@@ -66,20 +66,20 @@ export default function PlayerProfilePage({ params }: { params: Promise<{ addr: 
           </div>
           <Link
             href="/leaderboard"
-            className="shrink-0 border border-[#ddd6ea] px-5 py-2.5 font-mono text-xs font-black uppercase tracking-widest text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e]"
+            className="rounded-full shrink-0 border border-[#ddd6ea] px-5 py-2.5 font-mono text-xs font-black uppercase tracking-widest text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e]"
           >
             Back
           </Link>
         </div>
 
         {isOwn && (
-          <div className="border border-[#5e548e]/30 bg-[#5e548e]/5 px-4 py-2.5 flex items-center justify-between gap-4">
+          <div className="rounded-xl border border-[#5e548e]/30 bg-[#5e548e]/5 px-4 py-2.5 flex items-center justify-between gap-4">
             <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#5e548e]">
               This is your profile
             </p>
             <Link
               href="/profile"
-              className="border border-[#5e548e] px-4 py-1.5 font-mono text-[10px] uppercase tracking-widest text-[#5e548e] transition hover:bg-[#5e548e] hover:text-white"
+              className="rounded-full border border-[#5e548e] px-4 py-1.5 font-mono text-[10px] uppercase tracking-widest text-[#5e548e] transition hover:bg-[#5e548e] hover:text-white"
             >
               Full Profile
             </Link>
@@ -96,16 +96,16 @@ export default function PlayerProfilePage({ params }: { params: Promise<{ addr: 
             <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
 
               {/* Identity card */}
-              <section className="border border-[#ddd6ea] bg-white p-6 shadow-[6px_6px_0_#716a7e]">
+              <section className="border border-[#ddd6ea] bg-white p-6 shadow-sm">
                 <div className="flex flex-wrap items-start gap-5">
-                  <div className="flex h-20 w-20 shrink-0 items-center justify-center border-2 border-[#5e548e] bg-[#5e548e]/10 font-mono text-4xl font-black text-[#5e548e]">
+                  <div className="rounded-lg flex h-20 w-20 shrink-0 items-center justify-center border border-[#5e548e] bg-[#5e548e]/10 font-mono text-4xl font-black text-[#5e548e]">
                     {initials}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.2em] text-[#716a7e]">Wallet</p>
                     <p className="break-all font-mono text-sm font-bold leading-6 text-[#5e548e]">{targetAddr}</p>
                     <button
-                      className="mt-2 border border-[#ddd6ea]/40 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e]"
+                      className="rounded-full mt-2 border border-[#ddd6ea]/40 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e]"
                       onClick={copyAddress}
                       type="button"
                     >
@@ -116,7 +116,7 @@ export default function PlayerProfilePage({ params }: { params: Promise<{ addr: 
               </section>
 
               {/* Rank card */}
-              <section className="border border-[#ddd6ea] bg-white p-6 shadow-[6px_6px_0_#716a7e] flex flex-col justify-between">
+              <section className="border border-[#ddd6ea] bg-white p-6 shadow-sm flex flex-col justify-between">
                 <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#716a7e]">Rank</p>
                 <p className="mt-2 text-5xl font-black uppercase text-[#5e548e]">{rank.name}</p>
                 <div className="mt-4">
@@ -124,7 +124,7 @@ export default function PlayerProfilePage({ params }: { params: Promise<{ addr: 
                     <span>{aura.toLocaleString()} AURA</span>
                     {nextRank && <span>/ {nextRank.name}</span>}
                   </div>
-                  <div className="h-1.5 w-full border border-[#ddd6ea] bg-[#f8f7fc]">
+                  <div className="rounded-full h-1.5 w-full border border-[#ddd6ea] bg-[#f8f7fc]">
                     <div className="h-full bg-[#5e548e]" style={{ width: `${progress}%` }} />
                   </div>
                 </div>
@@ -132,7 +132,7 @@ export default function PlayerProfilePage({ params }: { params: Promise<{ addr: 
             </div>
 
             {/* Stats */}
-            <section className="border border-[#ddd6ea] bg-white shadow-[4px_4px_0_#716a7e]">
+            <section className="border border-[#ddd6ea] bg-white shadow-sm">
               <div className="border-b border-[#ddd6ea] px-5 py-3">
                 <p className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#716a7e]">Stats</p>
               </div>
@@ -158,13 +158,13 @@ export default function PlayerProfilePage({ params }: { params: Promise<{ addr: 
             </section>
 
             {/* Gang */}
-            <section className="border border-[#ddd6ea] bg-white p-6 shadow-[4px_4px_0_#716a7e]">
+            <section className="border border-[#ddd6ea] bg-white p-6 shadow-sm">
               <p className="mb-4 font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#716a7e]">Gang</p>
               {guild ? (
                 <div className="flex items-center justify-between gap-6">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="border border-[#5e548e] px-2 py-0.5 font-mono text-xs font-black text-[#5e548e]">
+                      <span className="rounded-xl border border-[#5e548e] px-2 py-0.5 font-mono text-xs font-black text-[#5e548e]">
                         [{guild.tag}]
                       </span>
                       <p className="text-2xl font-black uppercase">{guild.name}</p>
@@ -178,7 +178,7 @@ export default function PlayerProfilePage({ params }: { params: Promise<{ addr: 
                   </div>
                   <Link
                     href={`/guilds/${guild.id}`}
-                    className="shrink-0 border-2 border-[#5e548e] bg-[#5e548e] px-6 py-3 font-mono text-xs font-black uppercase tracking-widest text-white shadow-[3px_3px_0_#716a7e] transition hover:bg-transparent hover:text-[#5e548e]"
+                    className="rounded-full shrink-0 border border-[#5e548e] bg-[#5e548e] px-6 py-3 font-mono text-xs font-black uppercase tracking-widest text-white shadow-sm transition hover:bg-transparent hover:text-[#5e548e]"
                   >
                     View Gang
                   </Link>

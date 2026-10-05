@@ -7,7 +7,7 @@ import { getBsolBalance } from "../lib/solblaze";
 
 function UnlockRow({ active, title, desc }: { active: boolean; title: string; desc: string }) {
   return (
-    <div className={`flex items-start gap-4 border p-4 transition ${
+    <div className={`rounded-xl flex items-start gap-4 border p-4 transition ${
       active
         ? "border-white/10 bg-white/5"
         : "border-white/5 bg-[#f3f0fa] opacity-50"
@@ -75,18 +75,18 @@ export default function SauraPage() {
         {/* Stat cards */}
         <div className="mb-8 grid gap-4 sm:grid-cols-2">
 
-          <div className="border border-white/10 bg-white p-6">
+          <div className="rounded-xl border border-white/10 bg-white p-6">
             <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#716a7e]">bSOL Balance</p>
             <p className="mt-2 font-mono text-4xl font-black text-[#231942]">
               {checked ? bsol.toFixed(4) : "—"}
             </p>
             <div className="mt-2 flex items-center gap-2">
-              <span className="border border-[#9945FF]/40 bg-[#9945FF]/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[#9945FF]">bSOL</span>
+              <span className="rounded-full border border-[#9945FF]/40 bg-[#9945FF]/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[#9945FF]">bSOL</span>
               <p className="font-mono text-xs text-[#716a7e]">Solana mainnet · SolBlaze</p>
             </div>
           </div>
 
-          <div className={`border p-6 transition ${
+          <div className={`rounded-xl border p-6 transition ${
             hasBSOL
               ? "border-[#5e548e]/30 bg-white"
               : "border-white/6 bg-[#f3f0fa]"
@@ -123,7 +123,7 @@ export default function SauraPage() {
         {addr && (
           <div className="mb-10 flex flex-wrap items-center gap-4">
             <button
-              className="border border-[#5e548e] bg-[#5e548e]/10 px-6 py-3 font-mono text-xs font-black uppercase tracking-[0.14em] text-[#5e548e] transition hover:bg-[#5e548e]/20 disabled:opacity-40 touch-manipulation"
+              className="rounded-full border border-[#5e548e] bg-[#5e548e]/10 px-6 py-3 font-mono text-xs font-black uppercase tracking-[0.14em] text-[#5e548e] transition hover:bg-[#5e548e]/20 disabled:opacity-40 touch-manipulation"
               disabled={loading}
               onClick={handleRefresh}
               type="button"
@@ -145,7 +145,7 @@ export default function SauraPage() {
         {/* How it works */}
         <div className="mb-8">
           <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-[#716a7e]">How it works</p>
-          <div className="space-y-0 border border-white/7 bg-[#f3f0fa] divide-y divide-white/5">
+          <div className="rounded-lg space-y-0 border border-white/7 bg-[#f3f0fa] divide-y divide-white/5">
             {[
               "Stake SOL on SolBlaze — receive bSOL, a liquid staking token earning ~6% APY",
               "Connect your Solana wallet to Proof of Alpha",
@@ -164,10 +164,10 @@ export default function SauraPage() {
         </div>
 
         {/* APY banner */}
-        <div className="flex items-center justify-between border border-white/10 bg-white px-6 py-5">
+        <div className="rounded-xl flex items-center justify-between border border-white/10 bg-white px-6 py-5">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="border border-[#9945FF]/40 bg-[#9945FF]/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[#9945FF]">SolBlaze</span>
+              <span className="rounded-full border border-[#9945FF]/40 bg-[#9945FF]/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[#9945FF]">SolBlaze</span>
               <p className="font-mono text-xs font-black uppercase tracking-[0.14em] text-[#231942]">Staking APY</p>
             </div>
             <p className="font-mono text-[11px] text-[#716a7e]">
