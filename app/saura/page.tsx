@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { Nav } from "../components/Nav";
@@ -10,15 +10,15 @@ function UnlockRow({ active, title, desc }: { active: boolean; title: string; de
     <div className={`flex items-start gap-4 border p-4 transition ${
       active
         ? "border-white/10 bg-white/5"
-        : "border-white/5 bg-[#160c2c] opacity-50"
+        : "border-white/5 bg-[#f3f0fa] opacity-50"
     }`}>
-      <span className={`mt-1 h-2 w-2 shrink-0 rounded-full ${active ? "bg-[#E4D474]" : "bg-[#a09ab8]/40"}`} />
+      <span className={`mt-1 h-2 w-2 shrink-0 rounded-full ${active ? "bg-[#5e548e]" : "bg-[#716a7e]/40"}`} />
       <div className="min-w-0 flex-1">
-        <p className="font-mono text-xs font-black uppercase tracking-[0.14em] text-white">{title}</p>
-        <p className="mt-1 font-mono text-[11px] leading-5 text-[#a09ab8]">{desc}</p>
+        <p className="font-mono text-xs font-black uppercase tracking-[0.14em] text-[#231942]">{title}</p>
+        <p className="mt-1 font-mono text-[11px] leading-5 text-[#716a7e]">{desc}</p>
       </div>
       <span className={`ml-auto shrink-0 font-mono text-[10px] font-black uppercase tracking-widest ${
-        active ? "text-[#E4D474]" : "text-[#a09ab8]"
+        active ? "text-[#5e548e]" : "text-[#716a7e]"
       }`}>
         {active ? "Unlocked" : "Locked"}
       </span>
@@ -55,18 +55,18 @@ export default function SauraPage() {
   const hasBSOL = bsol > 0;
 
   return (
-    <div className="min-h-screen bg-[#24153E] text-[#E4D474]">
+    <div className="min-h-screen bg-[#f8f7fc] text-[#5e548e]">
       <Nav />
 
       <main className="mx-auto max-w-5xl px-6 py-10 sm:px-8">
 
         {/* Header */}
         <div className="mb-10">
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#a09ab8]">
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e]">
             SolBlaze · Liquid Staking
           </p>
           <h1 className="mt-1 text-5xl font-black uppercase sm:text-6xl">Staking</h1>
-          <p className="mt-2 max-w-xl font-mono text-sm text-[#a09ab8]">
+          <p className="mt-2 max-w-xl font-mono text-sm text-[#716a7e]">
             Stake SOL on SolBlaze, hold bSOL in your wallet, and unlock exclusive map areas in
             Proof of Alpha — automatically, no extra transaction needed.
           </p>
@@ -75,27 +75,27 @@ export default function SauraPage() {
         {/* Stat cards */}
         <div className="mb-8 grid gap-4 sm:grid-cols-2">
 
-          <div className="border border-white/10 bg-[#2d1a4a] p-6">
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#a09ab8]">bSOL Balance</p>
-            <p className="mt-2 font-mono text-4xl font-black text-white">
+          <div className="border border-white/10 bg-white p-6">
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#716a7e]">bSOL Balance</p>
+            <p className="mt-2 font-mono text-4xl font-black text-[#231942]">
               {checked ? bsol.toFixed(4) : "—"}
             </p>
             <div className="mt-2 flex items-center gap-2">
               <span className="border border-[#9945FF]/40 bg-[#9945FF]/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[#9945FF]">bSOL</span>
-              <p className="font-mono text-xs text-[#a09ab8]">Solana mainnet · SolBlaze</p>
+              <p className="font-mono text-xs text-[#716a7e]">Solana mainnet · SolBlaze</p>
             </div>
           </div>
 
           <div className={`border p-6 transition ${
             hasBSOL
-              ? "border-[#E4D474]/30 bg-[#2d1a4a]"
-              : "border-white/6 bg-[#160c2c]"
+              ? "border-[#5e548e]/30 bg-white"
+              : "border-white/6 bg-[#f3f0fa]"
           }`}>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#a09ab8]">Map Access</p>
-            <p className={`mt-2 font-mono text-4xl font-black uppercase ${hasBSOL ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#716a7e]">Map Access</p>
+            <p className={`mt-2 font-mono text-4xl font-black uppercase ${hasBSOL ? "text-[#5e548e]" : "text-[#716a7e]"}`}>
               {hasBSOL ? "2 areas" : "0 areas"}
             </p>
-            <p className="mt-2 font-mono text-xs text-[#a09ab8]">
+            <p className="mt-2 font-mono text-xs text-[#716a7e]">
               {hasBSOL ? "islandDAO + The Yacht Club unlocked" : "Hold bSOL to unlock areas"}
             </p>
           </div>
@@ -104,7 +104,7 @@ export default function SauraPage() {
 
         {/* Unlock list */}
         <div className="mb-8">
-          <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-[#a09ab8]">Areas unlocked by bSOL</p>
+          <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-[#716a7e]">Areas unlocked by bSOL</p>
           <div className="space-y-2">
             <UnlockRow
               active={hasBSOL}
@@ -123,7 +123,7 @@ export default function SauraPage() {
         {addr && (
           <div className="mb-10 flex flex-wrap items-center gap-4">
             <button
-              className="border border-[#E4D474] bg-[#E4D474]/10 px-6 py-3 font-mono text-xs font-black uppercase tracking-[0.14em] text-[#E4D474] transition hover:bg-[#E4D474]/20 disabled:opacity-40 touch-manipulation"
+              className="border border-[#5e548e] bg-[#5e548e]/10 px-6 py-3 font-mono text-xs font-black uppercase tracking-[0.14em] text-[#5e548e] transition hover:bg-[#5e548e]/20 disabled:opacity-40 touch-manipulation"
               disabled={loading}
               onClick={handleRefresh}
               type="button"
@@ -131,9 +131,9 @@ export default function SauraPage() {
               {loading ? "Checking mainnet…" : "Refresh bSOL Balance"}
             </button>
             {checked && (
-              <p className="font-mono text-xs text-[#a09ab8]">
+              <p className="font-mono text-xs text-[#716a7e]">
                 {hasBSOL
-                  ? <span className="text-[#E4D474]">bSOL detected — areas unlocked</span>
+                  ? <span className="text-[#5e548e]">bSOL detected — areas unlocked</span>
                   : "No bSOL found in this wallet"}
               </p>
             )}
@@ -144,8 +144,8 @@ export default function SauraPage() {
 
         {/* How it works */}
         <div className="mb-8">
-          <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-[#a09ab8]">How it works</p>
-          <div className="space-y-0 border border-white/7 bg-[#160c2c] divide-y divide-white/5">
+          <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-[#716a7e]">How it works</p>
+          <div className="space-y-0 border border-white/7 bg-[#f3f0fa] divide-y divide-white/5">
             {[
               "Stake SOL on SolBlaze — receive bSOL, a liquid staking token earning ~6% APY",
               "Connect your Solana wallet to Proof of Alpha",
@@ -154,27 +154,27 @@ export default function SauraPage() {
               "bSOL stays in your wallet — nothing is transferred or burned",
             ].map((step, i) => (
               <div key={i} className="flex items-start gap-4 px-5 py-4">
-                <span className="mt-px font-mono text-[10px] font-black text-[#E4D474]/40">
+                <span className="mt-px font-mono text-[10px] font-black text-[#5e548e]/40">
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <p className="font-mono text-sm text-[#ffffff]">{step}</p>
+                <p className="font-mono text-sm text-[#231942]">{step}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* APY banner */}
-        <div className="flex items-center justify-between border border-white/10 bg-[#2d1a4a] px-6 py-5">
+        <div className="flex items-center justify-between border border-white/10 bg-white px-6 py-5">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="border border-[#9945FF]/40 bg-[#9945FF]/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[#9945FF]">SolBlaze</span>
-              <p className="font-mono text-xs font-black uppercase tracking-[0.14em] text-white">Staking APY</p>
+              <p className="font-mono text-xs font-black uppercase tracking-[0.14em] text-[#231942]">Staking APY</p>
             </div>
-            <p className="font-mono text-[11px] text-[#a09ab8]">
+            <p className="font-mono text-[11px] text-[#716a7e]">
               Earn ~6% on your SOL while playing. bSOL auto-compounds — no action needed.
             </p>
           </div>
-          <p className="font-mono text-3xl font-black text-[#E4D474] ml-6 shrink-0">~6%</p>
+          <p className="font-mono text-3xl font-black text-[#5e548e] ml-6 shrink-0">~6%</p>
         </div>
 
       </main>

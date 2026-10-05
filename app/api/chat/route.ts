@@ -9,6 +9,7 @@ const MODEL_CONFIG: Record<Difficulty, { model: string; temperature: number }> =
   easy:   { model: MODEL, temperature: 0.5 },
   medium: { model: MODEL, temperature: 0.8 },
   hard:   { model: MODEL, temperature: 1.0 },
+  god:    { model: MODEL, temperature: 1.1 },
 };
 
 const OR_BASE = "https://openrouter.ai/api/v1/chat/completions";

@@ -15,8 +15,8 @@ import {
 const AURA_KEY = (addr: string) => `poa_aura_${addr}`;
 
 const DIFF_ACCENT: Record<ScenarioDifficulty, string> = {
-  easy:   "#E4D474",
-  medium: "#a09ab8",
+  easy:   "#5e548e",
+  medium: "#716a7e",
   hard:   "#9945FF",
 };
 
@@ -34,8 +34,8 @@ function ScenarioCard({ scenario, aura, addr, archetype, onEnter }: {
 
   return (
     <div
-      className="relative flex flex-col justify-between border border-[#E4D474]/10 p-5 sm:p-6"
-      style={{ backgroundColor: "#24153E", minHeight: "clamp(180px, 28vw, 240px)" }}
+      className="relative flex flex-col justify-between border border-[#5e548e]/10 p-5 sm:p-6"
+      style={{ backgroundColor: "#f8f7fc", minHeight: "clamp(180px, 28vw, 240px)" }}
     >
       {/* Grid overlay */}
       <svg
@@ -45,7 +45,7 @@ function ScenarioCard({ scenario, aura, addr, archetype, onEnter }: {
       >
         <defs>
           <pattern id={`gp-${scenario.id}`} width="22" height="22" patternUnits="userSpaceOnUse">
-            <path d="M22 0L0 0 0 22" fill="none" stroke="#E4D474" strokeWidth="0.5" />
+            <path d="M22 0L0 0 0 22" fill="none" stroke="#5e548e" strokeWidth="0.5" />
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill={`url(#gp-${scenario.id})`} />
@@ -63,11 +63,11 @@ function ScenarioCard({ scenario, aura, addr, archetype, onEnter }: {
           >
             {label}
           </span>
-          <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#a09ab8]">
+          <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#716a7e]">
             {category}
           </span>
         </div>
-        <span className="font-mono text-[10px] uppercase tracking-wide text-[#a09ab8]">
+        <span className="font-mono text-[10px] uppercase tracking-wide text-[#716a7e]">
           {scenario.approachCost} AURA
         </span>
       </div>
@@ -80,20 +80,20 @@ function ScenarioCard({ scenario, aura, addr, archetype, onEnter }: {
         >
           {scenario.title}
         </h3>
-        <p className="mt-2 font-mono text-[11px] italic leading-4 text-[#a09ab8] line-clamp-2 sm:text-xs">
+        <p className="mt-2 font-mono text-[11px] italic leading-4 text-[#716a7e] line-clamp-2 sm:text-xs">
           {scenario.subtitle}
         </p>
       </div>
 
       {/* Reward row */}
-      <div className="relative z-10 mt-4 flex gap-2 border-t border-[#a09ab8]/20 pt-3">
+      <div className="relative z-10 mt-4 flex gap-2 border-t border-[#ddd6ea]/20 pt-3">
         <div className="flex-1 text-center">
-          <p className="font-mono text-[8px] uppercase tracking-wide text-[#a09ab8]">Own It</p>
+          <p className="font-mono text-[8px] uppercase tracking-wide text-[#716a7e]">Own It</p>
           <p className="font-mono text-sm font-black" style={{ color: accent }}>+{scenario.ownItWin}</p>
         </div>
         <div className="flex-1 text-center">
-          <p className="font-mono text-[8px] uppercase tracking-wide text-[#a09ab8]">Play It Cool</p>
-          <p className="font-mono text-sm font-black text-[#ffffff]">+{scenario.coolWin}</p>
+          <p className="font-mono text-[8px] uppercase tracking-wide text-[#716a7e]">Play It Cool</p>
+          <p className="font-mono text-sm font-black text-[#231942]">+{scenario.coolWin}</p>
         </div>
       </div>
 
@@ -101,7 +101,7 @@ function ScenarioCard({ scenario, aura, addr, archetype, onEnter }: {
       <div className="relative z-10 mt-4">
         {!addr ? (
           <button
-            className="w-full border border-[#a09ab8]/50 py-2.5 font-mono text-[10px] font-black uppercase tracking-widest text-[#a09ab8] opacity-60 cursor-not-allowed touch-manipulation"
+            className="w-full border border-[#ddd6ea]/50 py-2.5 font-mono text-[10px] font-black uppercase tracking-widest text-[#716a7e] opacity-60 cursor-not-allowed touch-manipulation"
             disabled
             type="button"
           >
@@ -109,7 +109,7 @@ function ScenarioCard({ scenario, aura, addr, archetype, onEnter }: {
           </button>
         ) : canAfford ? (
           <button
-            className="w-full py-2.5 font-mono text-[10px] font-black uppercase tracking-widest text-[#24153E] transition hover:opacity-75 touch-manipulation"
+            className="w-full py-2.5 font-mono text-[10px] font-black uppercase tracking-widest text-[#231942] transition hover:opacity-75 touch-manipulation"
             style={{ backgroundColor: accent }}
             onClick={() => onEnter(scenario)}
             type="button"
@@ -118,7 +118,7 @@ function ScenarioCard({ scenario, aura, addr, archetype, onEnter }: {
           </button>
         ) : (
           <button
-            className="w-full border border-[#a09ab8]/30 py-2.5 font-mono text-[10px] font-black uppercase tracking-widest text-[#a09ab8] opacity-50 cursor-not-allowed touch-manipulation"
+            className="w-full border border-[#ddd6ea]/30 py-2.5 font-mono text-[10px] font-black uppercase tracking-widest text-[#716a7e] opacity-50 cursor-not-allowed touch-manipulation"
             disabled
             type="button"
           >
@@ -153,19 +153,19 @@ function ScenariosContent() {
   const hard   = SCENARIOS.filter((s) => s.difficulty === "hard");
 
   return (
-    <div className="min-h-screen bg-[#000F08] text-[#E4D474]">
+    <div className="min-h-screen bg-[#f8f7fc] text-[#5e548e]">
       <Nav />
 
       <main className="px-4 py-10 sm:px-8">
 
         {/* Wallet gate */}
         {!addr && (
-          <div className="mb-6 flex items-center justify-between gap-4 border border-[#E4D474]/30 bg-[#E4D474]/5 px-5 py-4">
+          <div className="mb-6 flex items-center justify-between gap-4 border border-[#5e548e]/30 bg-[#5e548e]/5 px-5 py-4">
             <div>
-              <p className="font-black uppercase text-sm text-[#E4D474]">Connect your wallet to practice</p>
-              <p className="font-mono text-xs text-[#a09ab8] mt-0.5">Real life costs AURA too.</p>
+              <p className="font-black uppercase text-sm text-[#5e548e]">Connect your wallet to practice</p>
+              <p className="font-mono text-xs text-[#716a7e] mt-0.5">Real life costs AURA too.</p>
             </div>
-            <div className="shrink-0 font-mono text-[10px] uppercase tracking-widest text-[#a09ab8]">
+            <div className="shrink-0 font-mono text-[10px] uppercase tracking-widest text-[#716a7e]">
               Use Connect in the nav
             </div>
           </div>
@@ -176,28 +176,28 @@ function ScenariosContent() {
           <div>
             <button
               onClick={() => router.push(`/play?archetype=${archetype}`)}
-              className="mb-4 bg-[#E4D474] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-[#24153E] transition hover:opacity-80 touch-manipulation"
+              className="mb-4 bg-[#5e548e] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-white transition hover:opacity-80 touch-manipulation"
               type="button"
             >
               Back
             </button>
-            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#a09ab8]">Proof of Alpha</p>
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e]">Proof of Alpha</p>
             <h1 className="mt-1 text-5xl font-black uppercase sm:text-6xl">Field Manual</h1>
-            <p className="mt-2 font-mono text-sm text-[#a09ab8]">
+            <p className="mt-2 font-mono text-sm text-[#716a7e]">
               Real scenarios. Real stakes. Practice before it matters.
             </p>
           </div>
           {addr && (
-            <div className="shrink-0 border border-[#a09ab8]/30 px-4 py-2.5 text-right">
-              <p className="font-mono text-xs uppercase tracking-[0.16em] text-[#a09ab8]">Your AURA</p>
-              <p className="mt-0.5 font-mono text-2xl font-black leading-none text-[#E4D474]">{aura}</p>
+            <div className="shrink-0 border border-[#ddd6ea]/30 px-4 py-2.5 text-right">
+              <p className="font-mono text-xs uppercase tracking-[0.16em] text-[#716a7e]">Your AURA</p>
+              <p className="mt-0.5 font-mono text-2xl font-black leading-none text-[#5e548e]">{aura}</p>
             </div>
           )}
         </div>
 
         {/* How it works */}
-        <div className="mb-8 border border-[#a09ab8]/20 bg-[#24153E]/50 px-5 py-4">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#a09ab8] mb-2">How It Works</p>
+        <div className="mb-8 border border-[#ddd6ea]/20 bg-[#f8f7fc]/50 px-5 py-4">
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#716a7e] mb-2">How It Works</p>
           <div className="grid gap-2 sm:grid-cols-3">
             {[
               { step: "01", text: "Pick a scenario you struggle with" },
@@ -205,27 +205,27 @@ function ScenariosContent() {
               { step: "03", text: "Choose your closer. Win AURA. Learn." },
             ].map(({ step, text }) => (
               <div key={step} className="flex items-start gap-3">
-                <span className="font-mono text-xs font-black text-[#E4D474] shrink-0">{step}</span>
-                <p className="font-mono text-xs text-[#a09ab8]">{text}</p>
+                <span className="font-mono text-xs font-black text-[#5e548e] shrink-0">{step}</span>
+                <p className="font-mono text-xs text-[#716a7e]">{text}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* Closers legend */}
-        <div className="mb-8 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#a09ab8]">
-          <span><span className="text-[#E4D474] font-black">■</span> Own It — address head-on (high risk, high reward)</span>
-          <span><span className="text-[#ffffff] font-black">■</span> Play It Cool — handle with grace (safer odds)</span>
-          <span><span className="text-[#a09ab8] font-black">□</span> Sidestep — dodge & deflect (partial refund)</span>
+        <div className="mb-8 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#716a7e]">
+          <span><span className="text-[#5e548e] font-black">■</span> Own It — address head-on (high risk, high reward)</span>
+          <span><span className="text-[#231942] font-black">■</span> Play It Cool — handle with grace (safer odds)</span>
+          <span><span className="text-[#716a7e] font-black">□</span> Sidestep — dodge & deflect (partial refund)</span>
         </div>
 
         {/* EASY tier */}
         <div className="mb-8">
           <div className="mb-3 flex items-center gap-3">
-            <span className="font-mono text-[10px] font-black uppercase tracking-[0.22em] border border-[#E4D474]/40 text-[#E4D474] px-2 py-0.5">
+            <span className="font-mono text-[10px] font-black uppercase tracking-[0.22em] border border-[#5e548e]/40 text-[#5e548e] px-2 py-0.5">
               Rookie — Easy
             </span>
-            <div className="flex-1 h-px bg-[#E4D474]/10" />
+            <div className="flex-1 h-px bg-[#5e548e]/10" />
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             {easy.map((s) => (
@@ -244,10 +244,10 @@ function ScenariosContent() {
         {/* MEDIUM tier */}
         <div className="mb-8">
           <div className="mb-3 flex items-center gap-3">
-            <span className="font-mono text-[10px] font-black uppercase tracking-[0.22em] border border-[#a09ab8]/40 text-[#a09ab8] px-2 py-0.5">
+            <span className="font-mono text-[10px] font-black uppercase tracking-[0.22em] border border-[#ddd6ea]/40 text-[#716a7e] px-2 py-0.5">
               Tested — Medium
             </span>
-            <div className="flex-1 h-px bg-[#a09ab8]/10" />
+            <div className="flex-1 h-px bg-[#716a7e]/10" />
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             {medium.map((s) => (
@@ -292,7 +292,7 @@ function ScenariosContent() {
 
 export default function ScenariosPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#000F08]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[#f8f7fc]" />}>
       <ScenariosContent />
     </Suspense>
   );

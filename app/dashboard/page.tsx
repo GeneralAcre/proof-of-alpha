@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -42,15 +42,15 @@ export default function Dashboard() {
 
   if (!account) {
     return (
-      <div className="min-h-screen bg-[#24153E] text-[#E4D474]">
+      <div className="min-h-screen bg-[#f8f7fc] text-[#5e548e]">
         <Nav />
         <div className="mx-auto max-w-7xl px-4 py-24 text-center sm:px-6 lg:px-8">
-          <p className="mb-4 font-mono text-xs uppercase tracking-[0.2em] text-[#a09ab8]">
+          <p className="mb-4 font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e]">
             Not connected
           </p>
           <h1 className="mb-4 text-5xl font-black uppercase">Connect first</h1>
-          <p className="text-[#ffffff]">
-            Use the <span className="font-black text-[#E4D474]">Connect Wallet</span> button in the navigation above.
+          <p className="text-[#231942]">
+            Use the <span className="font-black text-[#5e548e]">Connect Wallet</span> button in the navigation above.
           </p>
         </div>
       </div>
@@ -62,46 +62,46 @@ export default function Dashboard() {
   const progress = getRankProgress(sigma);
 
   return (
-    <div className="min-h-screen bg-[#24153E] text-[#E4D474]">
+    <div className="min-h-screen bg-[#f8f7fc] text-[#5e548e]">
       <Nav />
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 
         {/* ── WALLET + RANK + SIGMA POINTS ── */}
-        <section className="mb-6 border border-[#a09ab8] bg-[#2d1a4a] p-5 shadow-[6px_6px_0_#a09ab8] sm:p-6">
+        <section className="mb-6 border border-[#ddd6ea] bg-white p-5 shadow-[6px_6px_0_#716a7e] sm:p-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#a09ab8]">
+              <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e]">
                 Connected wallet
               </p>
-              <p className="mt-1 font-mono text-xl font-black text-[#E4D474]">
+              <p className="mt-1 font-mono text-xl font-black text-[#5e548e]">
                 {truncatedAddress}
               </p>
-              <p className="mt-0.5 font-mono text-xs text-[#a09ab8]">solana:mainnet</p>
+              <p className="mt-0.5 font-mono text-xs text-[#716a7e]">solana:mainnet</p>
             </div>
-            <div className="border border-[#E4D474] bg-[#E4D474]/10 px-5 py-3 text-center">
-              <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#a09ab8]">Rank</p>
-              <p className="mt-1 text-2xl font-black uppercase text-[#E4D474]">{rank.name}</p>
+            <div className="border border-[#5e548e] bg-[#5e548e]/10 px-5 py-3 text-center">
+              <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e]">Rank</p>
+              <p className="mt-1 text-2xl font-black uppercase text-[#5e548e]">{rank.name}</p>
             </div>
           </div>
           <div className="mt-5">
             <div className="mb-2 flex justify-between font-mono text-xs uppercase tracking-[0.14em]">
-              <span className="text-[#a09ab8]">AURA</span>
-              <span className="font-black text-[#E4D474]">
+              <span className="text-[#716a7e]">AURA</span>
+              <span className="font-black text-[#5e548e]">
                 {sigma.toLocaleString()}
                 {nextRank && (
-                  <span className="font-normal text-[#a09ab8]">
+                  <span className="font-normal text-[#716a7e]">
                     {" "}/ {rank.next?.toLocaleString()} to {nextRank.name}
                   </span>
                 )}
               </span>
             </div>
-            <div className="h-2 w-full border border-[#a09ab8] bg-[#24153E]">
+            <div className="h-2 w-full border border-[#ddd6ea] bg-[#f8f7fc]">
               <div
-                className="h-full bg-[#E4D474] transition-all duration-700"
+                className="h-full bg-[#5e548e] transition-all duration-700"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <div className="mt-1.5 flex justify-between font-mono text-[10px] uppercase tracking-[0.14em] text-[#a09ab8]">
+            <div className="mt-1.5 flex justify-between font-mono text-[10px] uppercase tracking-[0.14em] text-[#716a7e]">
               <span>{rank.name}</span>
               {nextRank && <span>{nextRank.name}</span>}
             </div>
@@ -116,16 +116,16 @@ export default function Dashboard() {
             { label: "Eliminations",   value: stats.elims || "—" },
             { label: "Best Streak",    value: stats.bestStreak || "—" },
           ].map(({ label, value }) => (
-            <div key={label} className="border border-[#a09ab8] bg-[#2d1a4a] p-4 shadow-[4px_4px_0_#a09ab8]">
-              <p className="font-mono text-xs uppercase tracking-[0.16em] text-[#a09ab8]">{label}</p>
-              <p className="mt-2 text-3xl font-black text-[#a09ab8]">{value}</p>
+            <div key={label} className="border border-[#ddd6ea] bg-white p-4 shadow-[4px_4px_0_#716a7e]">
+              <p className="font-mono text-xs uppercase tracking-[0.16em] text-[#716a7e]">{label}</p>
+              <p className="mt-2 text-3xl font-black text-[#716a7e]">{value}</p>
             </div>
           ))}
         </section>
 
         {/* ── ARCHETYPE COLLECTION ── */}
-        <section className="mb-6 border border-[#a09ab8] bg-[#2d1a4a] p-5 shadow-[6px_6px_0_#a09ab8]">
-          <p className="mb-4 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#a09ab8]">
+        <section className="mb-6 border border-[#ddd6ea] bg-white p-5 shadow-[6px_6px_0_#716a7e]">
+          <p className="mb-4 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#716a7e]">
             Archetype Collection
           </p>
           <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-6">
@@ -135,20 +135,20 @@ export default function Dashboard() {
                 <div
                   key={a.id}
                   className={`border p-3 transition ${
-                    isOwned ? "border-[#E4D474] bg-[#E4D474]/5" : "border-[#a09ab8] opacity-50"
+                    isOwned ? "border-[#5e548e] bg-[#5e548e]/5" : "border-[#ddd6ea] opacity-50"
                   }`}
                 >
                   <div
                     className={`mb-2 flex h-10 w-10 items-center justify-center border font-mono text-sm font-black ${
                       isOwned
-                        ? "border-[#E4D474] bg-[#E4D474]/10 text-[#E4D474]"
-                        : "border-[#a09ab8] bg-[#24153E] text-[#a09ab8]"
+                        ? "border-[#5e548e] bg-[#5e548e]/10 text-[#5e548e]"
+                        : "border-[#ddd6ea] bg-[#f8f7fc] text-[#716a7e]"
                     }`}
                   >
                     {a.initials}
                   </div>
                   <p className="text-sm font-black uppercase">{a.name}</p>
-                  <p className="mt-0.5 font-mono text-[10px] uppercase text-[#a09ab8]">
+                  <p className="mt-0.5 font-mono text-[10px] uppercase text-[#716a7e]">
                     {isOwned ? "Unlocked" : `${a.unlockCost.toLocaleString()} AURA`}
                   </p>
                 </div>
@@ -160,7 +160,7 @@ export default function Dashboard() {
         {/* ── CTAs ── */}
         <div className="grid gap-4 sm:grid-cols-2">
           <Link
-            className="border-2 border-[#E4D474] bg-[#E4D474] p-6 text-center font-black uppercase text-[#24153E] shadow-[6px_6px_0_#a09ab8] transition hover:bg-transparent hover:text-[#E4D474]"
+            className="border-2 border-[#5e548e] bg-[#5e548e] p-6 text-center font-black uppercase text-white shadow-[6px_6px_0_#716a7e] transition hover:bg-transparent hover:text-[#5e548e]"
             href="/mode-select?type=solo"
           >
             <span className="block text-3xl font-black">Play Solo</span>
@@ -169,7 +169,7 @@ export default function Dashboard() {
             </span>
           </Link>
           <Link
-            className="border-2 border-[#E4D474] p-6 text-center font-black uppercase text-[#E4D474] shadow-[6px_6px_0_#a09ab8] transition hover:bg-[#E4D474] hover:text-[#24153E]"
+            className="border-2 border-[#5e548e] p-6 text-center font-black uppercase text-[#5e548e] shadow-[6px_6px_0_#716a7e] transition hover:bg-[#5e548e] hover:text-white"
             href="/mode-select?type=multiplayer"
           >
             <span className="block text-3xl font-black">Play Multiplayer</span>

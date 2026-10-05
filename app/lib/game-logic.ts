@@ -15,7 +15,7 @@ export function getStreakMultiplier(streak: number): number {
   return 1.0;
 }
 
-const DIFF_PENALTY: Record<string, number> = { easy: 0, medium: -12, hard: -25 };
+const DIFF_PENALTY: Record<string, number> = { easy: 0, medium: -12, hard: -25, god: -35 };
 
 function statBonus(closer: "flirt" | "flex" | "leave", stats: StatBlock): number {
   if (closer === "flirt") return Math.round(((stats.bluff + stats.aggression) / 20) * 15);

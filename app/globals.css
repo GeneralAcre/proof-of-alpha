@@ -59,9 +59,9 @@ h1, h2, h3,
 
 .alpha-card {
   background:
-    linear-gradient(135deg, rgba(36, 21, 62, 0.14) 25%, transparent 25%) 0 0 / 28px 28px,
-    linear-gradient(315deg, rgba(36, 21, 62, 0.14) 25%, transparent 25%) 0 0 / 28px 28px,
-    #E4D474;
+    linear-gradient(135deg, rgba(248, 247, 252, 0.14) 25%, transparent 25%) 0 0 / 28px 28px,
+    linear-gradient(315deg, rgba(248, 247, 252, 0.14) 25%, transparent 25%) 0 0 / 28px 28px,
+    #5e548e;
 }
 
 .alpha-figure {
@@ -70,11 +70,11 @@ h1, h2, h3,
   height: 72%;
   margin-bottom: 92px;
   background:
-    radial-gradient(ellipse at 50% 12%, #24153E 0 14%, transparent 14.4%),
-    radial-gradient(ellipse at 39% 16%, #24153E 0 6%, transparent 6.4%),
-    radial-gradient(ellipse at 61% 16%, #24153E 0 6%, transparent 6.4%),
-    radial-gradient(ellipse at 50% 30%, #24153E 0 22%, transparent 22.4%),
-    radial-gradient(ellipse at 50% 60%, #24153E 0 39%, transparent 39.4%);
+    radial-gradient(ellipse at 50% 12%, #f8f7fc 0 14%, transparent 14.4%),
+    radial-gradient(ellipse at 39% 16%, #f8f7fc 0 6%, transparent 6.4%),
+    radial-gradient(ellipse at 61% 16%, #f8f7fc 0 6%, transparent 6.4%),
+    radial-gradient(ellipse at 50% 30%, #f8f7fc 0 22%, transparent 22.4%),
+    radial-gradient(ellipse at 50% 60%, #f8f7fc 0 39%, transparent 39.4%);
   filter: drop-shadow(20px 10px 0 rgba(160, 154, 184, 0.78));
 }
 
@@ -87,8 +87,8 @@ h1, h2, h3,
   height: 43%;
   border-radius: 48% 48% 10% 10%;
   background:
-    linear-gradient(90deg, transparent 0 17%, #24153E 17% 27%, transparent 27% 73%, #24153E 73% 83%, transparent 83%),
-    radial-gradient(ellipse at 50% 42%, #24153E 0 54%, transparent 54.5%);
+    linear-gradient(90deg, transparent 0 17%, #f8f7fc 17% 27%, transparent 27% 73%, #f8f7fc 73% 83%, transparent 83%),
+    radial-gradient(ellipse at 50% 42%, #f8f7fc 0 54%, transparent 54.5%);
 }
 
 .alpha-figure::after {
@@ -100,23 +100,23 @@ h1, h2, h3,
   height: 46%;
   border-radius: 42% 42% 38% 38%;
   background:
-    linear-gradient(180deg, transparent 0 56%, #E4D474 56% 59%, transparent 59%),
-    radial-gradient(ellipse at 36% 42%, #E4D474 0 5%, transparent 5.4%),
-    radial-gradient(ellipse at 64% 42%, #E4D474 0 5%, transparent 5.4%),
-    radial-gradient(ellipse at 50% 66%, #E4D474 0 8%, transparent 8.5%);
+    linear-gradient(180deg, transparent 0 56%, #5e548e 56% 59%, transparent 59%),
+    radial-gradient(ellipse at 36% 42%, #5e548e 0 5%, transparent 5.4%),
+    radial-gradient(ellipse at 64% 42%, #5e548e 0 5%, transparent 5.4%),
+    radial-gradient(ellipse at 50% 66%, #5e548e 0 8%, transparent 8.5%);
   opacity: 0.95;
 }
 
 .cover-face {
   background:
-    radial-gradient(ellipse at 57% 46%, #E4D474 0 5%, transparent 5.4%),
-    radial-gradient(ellipse at 34% 45%, #E4D474 0 4.5%, transparent 4.9%),
-    radial-gradient(ellipse at 45% 68%, #24153E 0 7%, transparent 7.4%),
-    radial-gradient(ellipse at 50% 48%, #a09ab8 0 31%, transparent 31.5%),
-    radial-gradient(ellipse at 50% 46%, #E4D474 0 43%, transparent 43.5%),
-    radial-gradient(ellipse at 49% 57%, #24153E 0 46%, transparent 46.5%),
-    linear-gradient(128deg, transparent 0 18%, #E4D474 18% 22%, transparent 22% 100%),
-    repeating-radial-gradient(circle at 50% 50%, rgba(228, 212, 116, 0.92) 0 1px, rgba(36, 21, 62, 0.98) 1px 4px);
+    radial-gradient(ellipse at 57% 46%, #5e548e 0 5%, transparent 5.4%),
+    radial-gradient(ellipse at 34% 45%, #5e548e 0 4.5%, transparent 4.9%),
+    radial-gradient(ellipse at 45% 68%, #f8f7fc 0 7%, transparent 7.4%),
+    radial-gradient(ellipse at 50% 48%, #716a7e 0 31%, transparent 31.5%),
+    radial-gradient(ellipse at 50% 46%, #5e548e 0 43%, transparent 43.5%),
+    radial-gradient(ellipse at 49% 57%, #f8f7fc 0 46%, transparent 46.5%),
+    linear-gradient(128deg, transparent 0 18%, #5e548e 18% 22%, transparent 22% 100%),
+    repeating-radial-gradient(circle at 50% 50%, rgba(109, 40, 217, 0.92) 0 1px, rgba(248, 247, 252, 0.98) 1px 4px);
   filter: contrast(1.75) grayscale(1);
   mix-blend-mode: screen;
   opacity: 0.95;
@@ -127,10 +127,10 @@ h1, h2, h3,
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at 49% 8%, #24153E 0 22%, transparent 22.5%),
-    radial-gradient(ellipse at 61% 20%, #24153E 0 18%, transparent 18.5%),
-    radial-gradient(ellipse at 36% 24%, #24153E 0 13%, transparent 13.5%),
-    linear-gradient(90deg, transparent 0 18%, rgba(36, 21, 62, 0.82) 18% 22%, transparent 22% 100%);
+    radial-gradient(ellipse at 49% 8%, #f8f7fc 0 22%, transparent 22.5%),
+    radial-gradient(ellipse at 61% 20%, #f8f7fc 0 18%, transparent 18.5%),
+    radial-gradient(ellipse at 36% 24%, #f8f7fc 0 13%, transparent 13.5%),
+    linear-gradient(90deg, transparent 0 18%, rgba(248, 247, 252, 0.82) 18% 22%, transparent 22% 100%);
   mix-blend-mode: multiply;
 }
 
@@ -139,10 +139,10 @@ h1, h2, h3,
   position: absolute;
   inset: 9% 23% 4%;
   border-radius: 46% 49% 42% 44%;
-  border: 18px solid rgba(228, 212, 116, 0.16);
+  border: 18px solid rgba(109, 40, 217, 0.16);
   box-shadow:
-    inset 28px -18px 0 rgba(36, 21, 62, 0.92),
-    inset -22px 0 0 rgba(228, 212, 116, 0.18);
+    inset 28px -18px 0 rgba(248, 247, 252, 0.92),
+    inset -22px 0 0 rgba(109, 40, 217, 0.18);
 }
 
 /* ── Glitch animation for hero text ── */
@@ -182,7 +182,7 @@ h1, h2, h3,
 .live-dot { animation: pulse-dot 1.4s ease-in-out infinite; }
 
 /* ── Countdown warning flash ── */
-@keyframes timer-flash { 0%, 100% { color: #E4D474; } 50% { color: #a09ab8; } }
+@keyframes timer-flash { 0%, 100% { color: #5e548e; } 50% { color: #716a7e; } }
 .timer-warn { animation: timer-flash 0.5s ease-in-out infinite; }
 
 /* ── Move card flip reveal ── */
@@ -214,14 +214,14 @@ h1, h2, h3,
 .bal-loss { animation: balance-loss 0.5s ease-in-out 2; }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: oklch(0.99 0.006 300);
+  --foreground: oklch(0.2 0.025 290);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.48 0.22 292);
+  --primary-foreground: oklch(0.99 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
@@ -229,9 +229,9 @@ h1, h2, h3,
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
+  --border: oklch(0.91 0.015 290);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --ring: oklch(0.62 0.2 292);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);

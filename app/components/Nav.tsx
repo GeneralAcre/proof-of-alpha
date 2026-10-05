@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
@@ -24,7 +24,7 @@ export function Nav() {
   }, [walletOpen]);
 
   return (
-    <nav className="sticky top-0 z-20 border-b border-[#a09ab8]/30 bg-[#24153E]">
+    <nav className="sticky top-0 z-20 border-b border-[#ddd6ea]/30 bg-[#f8f7fc]">
 
       {/* ── Main bar ── */}
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -47,7 +47,7 @@ export function Nav() {
             <Link
               key={href}
               href={href}
-              className="font-mono text-[11px] uppercase tracking-[0.18em] text-white transition hover:text-[#E4D474]"
+              className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#231942] transition hover:text-[#5e548e]"
             >
               {label}
             </Link>
@@ -60,11 +60,11 @@ export function Nav() {
           {account ? (
             /* Connected state */
             <>
-              <span className="hidden border border-[#a09ab8]/50 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-[#a09ab8] sm:block">
+              <span className="hidden border border-[#ddd6ea]/50 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-[#716a7e] sm:block">
                 {truncatedAddress}
               </span>
               <button
-                className="border border-[#a09ab8]/50 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-[#a09ab8] transition hover:border-red-400 hover:text-red-400 touch-manipulation"
+                className="border border-[#ddd6ea]/50 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-[#716a7e] transition hover:border-red-400 hover:text-red-400 touch-manipulation"
                 onClick={disconnect}
                 type="button"
               >
@@ -75,7 +75,7 @@ export function Nav() {
             /* Disconnected — connect dropdown */
             <div className="relative" ref={dropdownRef}>
               <button
-                className="border-2 border-[#E4D474] bg-[#E4D474] px-4 py-2 font-mono text-[11px] font-black uppercase tracking-[0.14em] text-[#24153E] transition hover:bg-transparent hover:text-[#E4D474] touch-manipulation"
+                className="border-2 border-[#5e548e] bg-[#5e548e] px-4 py-2 font-mono text-[11px] font-black uppercase tracking-[0.14em] text-white transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation"
                 onClick={() => setWalletOpen((v) => !v)}
                 type="button"
               >
@@ -83,9 +83,9 @@ export function Nav() {
               </button>
 
               {walletOpen && (
-                <div className="absolute right-0 top-full mt-2 w-64 border border-[#a09ab8] bg-[#24153E] shadow-[6px_6px_0_#170b2e]">
-                  <div className="border-b border-[#a09ab8]/40 px-4 py-2.5">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#a09ab8]">
+                <div className="absolute right-0 top-full mt-2 w-64 border border-[#ddd6ea] bg-[#f8f7fc] shadow-[6px_6px_0_#170b2e]">
+                  <div className="border-b border-[#ddd6ea]/40 px-4 py-2.5">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#716a7e]">
                       Select wallet
                     </p>
                   </div>
@@ -95,7 +95,7 @@ export function Nav() {
                         {wallets.map((w) => (
                           <button
                             key={w.name}
-                            className="w-full border border-[#E4D474] bg-[#E4D474] px-4 py-2.5 text-left font-mono text-xs font-black uppercase tracking-[0.12em] text-[#24153E] transition hover:bg-[#ece880] disabled:opacity-50"
+                            className="w-full border border-[#5e548e] bg-[#5e548e] px-4 py-2.5 text-left font-mono text-xs font-black uppercase tracking-[0.12em] text-white transition hover:bg-[#5e548e] disabled:opacity-50"
                             disabled={isConnecting}
                             onClick={() => connect(w)}
                             type="button"
@@ -105,12 +105,12 @@ export function Nav() {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-xs leading-5 text-[#ffffff]">
+                      <p className="text-xs leading-5 text-[#231942]">
                         No wallet detected. Install a Solana wallet and refresh.
                       </p>
                     )}
                     {status && (
-                      <p className="mt-3 font-mono text-[10px] text-[#a09ab8]">{status}</p>
+                      <p className="mt-3 font-mono text-[10px] text-[#716a7e]">{status}</p>
                     )}
                   </div>
                 </div>
@@ -125,9 +125,9 @@ export function Nav() {
             type="button"
             aria-label="Menu"
           >
-            <span className={`block h-px w-5 bg-[#a09ab8] transition-all ${menuOpen ? "translate-y-[3.5px] rotate-45" : ""}`} />
-            <span className={`block h-px w-5 bg-[#a09ab8] transition-all ${menuOpen ? "opacity-0" : ""}`} />
-            <span className={`block h-px w-5 bg-[#a09ab8] transition-all ${menuOpen ? "translate-y-[-3.5px] -rotate-45" : ""}`} />
+            <span className={`block h-px w-5 bg-[#716a7e] transition-all ${menuOpen ? "translate-y-[3.5px] rotate-45" : ""}`} />
+            <span className={`block h-px w-5 bg-[#716a7e] transition-all ${menuOpen ? "opacity-0" : ""}`} />
+            <span className={`block h-px w-5 bg-[#716a7e] transition-all ${menuOpen ? "translate-y-[-3.5px] -rotate-45" : ""}`} />
           </button>
 
         </div>
@@ -135,7 +135,7 @@ export function Nav() {
 
       {/* ── Mobile menu ── */}
       {menuOpen && (
-        <div className="border-t border-[#a09ab8]/30 bg-[#24153E] px-4 pb-4 pt-3 sm:hidden">
+        <div className="border-t border-[#ddd6ea]/30 bg-[#f8f7fc] px-4 pb-4 pt-3 sm:hidden">
           <div className="flex flex-col gap-1">
             {[
               { href: "/home",        label: "Home" },
@@ -148,14 +148,14 @@ export function Nav() {
               <Link
                 key={href}
                 href={href}
-                className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-white transition hover:text-[#E4D474]"
+                className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#231942] transition hover:text-[#5e548e]"
                 onClick={() => setMenuOpen(false)}
               >
                 {label}
               </Link>
             ))}
             {account && (
-              <span className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#a09ab8]">
+              <span className="py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-[#716a7e]">
                 {truncatedAddress}
               </span>
             )}

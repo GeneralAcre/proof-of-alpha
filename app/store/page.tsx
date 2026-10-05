@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import { Nav } from "../components/Nav";
@@ -120,12 +120,12 @@ export default function StorePage() {
   function buttonStyle(pack: Pack): string {
     const state = buyState[pack.id] ?? "idle";
     if (state === "done")
-      return "border-[#E4D474] bg-[#E4D474]/10 text-[#E4D474] cursor-default";
+      return "border-[#5e548e] bg-[#5e548e]/10 text-[#5e548e] cursor-default";
     if (state === "error")
       return "border-red-500 text-red-400 cursor-default";
     if (!account || !treasuryOk || (state !== "idle"))
-      return "border-[#a09ab8]/40 text-[#a09ab8]/40 cursor-not-allowed";
-    return "border-[#E4D474] bg-[#E4D474] text-[#24153E] hover:bg-transparent hover:text-[#E4D474]";
+      return "border-[#ddd6ea]/40 text-[#716a7e]/40 cursor-not-allowed";
+    return "border-[#5e548e] bg-[#5e548e] text-white hover:bg-transparent hover:text-[#5e548e]";
   }
 
   const isActive = (pack: Pack) => {
@@ -134,42 +134,42 @@ export default function StorePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#24153E] text-[#E4D474]">
+    <div className="min-h-screen bg-[#f8f7fc] text-[#5e548e]">
       <Nav />
       <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
 
         {/* Header */}
-        <p className="mb-1 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#a09ab8]">
+        <p className="mb-1 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#716a7e]">
           AURA Store
         </p>
         <h1 className="mb-2 text-4xl font-black uppercase sm:text-5xl">Buy AURA</h1>
-        <p className="mb-8 font-mono text-sm text-[#a09ab8]">
+        <p className="mb-8 font-mono text-sm text-[#716a7e]">
           AURA is spent every time you approach a girl. Buy more to keep playing.
           Payments are real SOL transactions — confirmed on-chain.
         </p>
 
         {/* Treasury warning */}
         {!treasuryOk && (
-          <div className="mb-6 border border-[#a09ab8]/40 bg-[#a09ab8]/5 px-5 py-4">
-            <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[#a09ab8]">
+          <div className="mb-6 border border-[#ddd6ea]/40 bg-[#716a7e]/5 px-5 py-4">
+            <p className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[#716a7e]">
               Store temporarily unavailable
             </p>
-            <p className="mt-1 text-xs text-[#a09ab8]/80">
+            <p className="mt-1 text-xs text-[#716a7e]/80">
               AURA purchases are not available right now. Please check back soon or contact us at proofonchainalpha@gmail.com.
             </p>
           </div>
         )}
 
         {/* Balance */}
-        <div className="mb-8 flex items-center justify-between border border-[#a09ab8] bg-[#2d1a4a] px-5 py-4 shadow-[4px_4px_0_#a09ab8]">
+        <div className="mb-8 flex items-center justify-between border border-[#ddd6ea] bg-white px-5 py-4 shadow-[4px_4px_0_#716a7e]">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#a09ab8]">Your Balance</p>
-            <p className="text-3xl font-black text-[#E4D474]">
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#716a7e]">Your Balance</p>
+            <p className="text-3xl font-black text-[#5e548e]">
               {balance.toLocaleString()} <span className="font-mono text-lg">AURA</span>
             </p>
           </div>
           {!account && (
-            <p className="font-mono text-xs uppercase tracking-[0.14em] text-[#a09ab8]">
+            <p className="font-mono text-xs uppercase tracking-[0.14em] text-[#716a7e]">
               Connect wallet to buy
             </p>
           )}
@@ -184,31 +184,31 @@ export default function StorePage() {
             return (
               <div
                 key={pack.id}
-                className={`relative flex flex-col border bg-[#2d1a4a] p-5 shadow-[4px_4px_0_#a09ab8] transition ${
-                  pack.badge ? "border-[#E4D474]" : "border-[#a09ab8]"
+                className={`relative flex flex-col border bg-white p-5 shadow-[4px_4px_0_#716a7e] transition ${
+                  pack.badge ? "border-[#5e548e]" : "border-[#ddd6ea]"
                 }`}
               >
                 {pack.badge && (
-                  <div className="absolute right-3 top-3 bg-[#E4D474] px-2 py-0.5">
-                    <span className="font-mono text-[9px] font-black uppercase tracking-[0.15em] text-[#24153E]">
+                  <div className="absolute right-3 top-3 bg-[#5e548e] px-2 py-0.5">
+                    <span className="font-mono text-[9px] font-black uppercase tracking-[0.15em] text-[#231942]">
                       {pack.badge}
                     </span>
                   </div>
                 )}
 
-                <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[#a09ab8]">
+                <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[#716a7e]">
                   {pack.name}
                 </p>
-                <p className="mb-1 text-3xl font-black text-[#E4D474]">
+                <p className="mb-1 text-3xl font-black text-[#5e548e]">
                   {pack.aura.toLocaleString()}
                 </p>
-                <p className="mb-3 font-mono text-xs text-[#a09ab8]">AURA</p>
+                <p className="mb-3 font-mono text-xs text-[#716a7e]">AURA</p>
 
-                <p className="mb-4 flex-1 text-xs leading-5 text-[#ffffff]">{pack.desc}</p>
+                <p className="mb-4 flex-1 text-xs leading-5 text-[#231942]">{pack.desc}</p>
 
-                <div className="mb-3 border-t border-[#a09ab8]/40 pt-3">
-                  <p className="font-mono text-sm font-black text-[#E4D474]">{pack.sol} SOL</p>
-                  <p className="font-mono text-[10px] text-[#a09ab8]">Solana</p>
+                <div className="mb-3 border-t border-[#ddd6ea]/40 pt-3">
+                  <p className="font-mono text-sm font-black text-[#5e548e]">{pack.sol} SOL</p>
+                  <p className="font-mono text-[10px] text-[#716a7e]">Solana</p>
                 </div>
 
                 <button
@@ -229,7 +229,7 @@ export default function StorePage() {
                     href={`https://explorer.solana.com/tx/${sig}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-2 block text-center font-mono text-[10px] uppercase tracking-[0.14em] text-[#a09ab8] underline transition hover:text-[#E4D474]"
+                    className="mt-2 block text-center font-mono text-[10px] uppercase tracking-[0.14em] text-[#716a7e] underline transition hover:text-[#5e548e]"
                   >
                     View on Explorer
                   </a>

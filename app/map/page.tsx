@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -11,12 +11,13 @@ type Area = {
   id: string;
   name: string;
   subtitle: string;
-  difficulty: "easy" | "medium" | "hard";
+  difficulty: "easy" | "medium" | "hard" | "god";
   locked: boolean;
   unlockCost: number;
 };
 
 const AREAS: Area[] = [
+  { id: "superteamTH", name: "Superteam TH",     subtitle: "God mode. Bangkok's best builders. Bring your ship log.", difficulty: "god", locked: false, unlockCost: 0 },
   { id: "common",   name: "The Corner Café",   subtitle: "Free seating. No dress code.",            difficulty: "easy",   locked: false, unlockCost: 0   },
   { id: "frost",    name: "The Campus Quad",   subtitle: "Three deadlines, zero patience.",          difficulty: "easy",   locked: false, unlockCost: 0   },
   { id: "darkhall", name: "The Rooftop Bar",   subtitle: "Cocktails at sunset. She knows your type.",difficulty: "medium", locked: false, unlockCost: 0   },
@@ -24,13 +25,12 @@ const AREAS: Area[] = [
   { id: "vault",     name: "The Yacht Club",    subtitle: "Members only. AURA required.",             difficulty: "hard",   locked: true,  unlockCost: 300 },
   { id: "chamber",   name: "The Penthouse Pool",subtitle: "Top floor. Not your crowd.",               difficulty: "hard",   locked: true,  unlockCost: 500 },
   { id: "islandDAO", name: "islandDAO",          subtitle: "The only door is bSOL. No exceptions.",   difficulty: "hard",   locked: true,  unlockCost: 0   },
-  { id: "superteamTH", name: "Superteam TH",     subtitle: "Bangkok builders. Bring your ship log.",  difficulty: "medium", locked: false, unlockCost: 0   },
 ];
 
 const AURA_KEY   = (addr: string) => `poa_aura_${addr}`;
 const UNLOCK_KEY = (addr: string, id: string) => `poa_area_${addr}_${id}`;
 
-const DIFF_LABEL: Record<string, string> = { easy: "FRIENDLY", medium: "OK", hard: "ALPHA" };
+const DIFF_LABEL: Record<string, string> = { easy: "FRIENDLY", medium: "OK", hard: "ALPHA", god: "GOD" };
 
 const CARD_CFG: Record<string, { colSpan: string }> = {
   common:   { colSpan: "col-span-2"               },
@@ -39,8 +39,8 @@ const CARD_CFG: Record<string, { colSpan: string }> = {
   mine:     { colSpan: "col-span-1 sm:col-span-2" },
   vault:    { colSpan: "col-span-1"               },
   chamber:  { colSpan: "col-span-2"               },
-  islandDAO:{ colSpan: "col-span-2 sm:col-span-2" },
-  superteamTH: { colSpan: "col-span-2 sm:col-span-1" },
+  islandDAO:{ colSpan: "col-span-2 sm:col-span-3" },
+  superteamTH: { colSpan: "col-span-2 sm:col-span-3" },
 };
 
 function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
@@ -57,12 +57,12 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
   const canAfford     = aura >= area.unlockCost;
   const isBsolGate    = area.locked && area.unlockCost === 0; // bSOL-only, AURA can't unlock
 
-  const accent = (area.id === "islandDAO" && isUnlocked) ? "#9945FF" : isUnlocked ? "#E4D474" : "#a09ab8";
+  const accent = (area.id === "islandDAO" && isUnlocked) ? "#9945FF" : isUnlocked ? "#5e548e" : "#716a7e";
 
   return (
     <div
-      className={`relative flex flex-col justify-between p-4 pb-6 sm:p-8 border border-[#E4D474]/10 ${cfg.colSpan}`}
-      style={{ backgroundColor: "#24153E", minHeight: "clamp(200px, 30vw, 260px)" }}
+      className={`relative flex flex-col justify-between p-4 pb-6 sm:p-8 border border-[#5e548e]/10 ${cfg.colSpan}`}
+      style={{ backgroundColor: "#f8f7fc", minHeight: "clamp(200px, 30vw, 260px)" }}
     >
       {/* Grid overlay */}
       <svg
@@ -72,7 +72,7 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
       >
         <defs>
           <pattern id={`gp-${area.id}`} width="22" height="22" patternUnits="userSpaceOnUse">
-            <path d="M22 0L0 0 0 22" fill="none" stroke="#E4D474" strokeWidth="0.5" />
+            <path d="M22 0L0 0 0 22" fill="none" stroke="#5e548e" strokeWidth="0.5" />
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill={`url(#gp-${area.id})`} />
@@ -88,7 +88,7 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
             className="border px-2 py-0.5 font-mono text-[10px] font-black uppercase tracking-[0.22em]"
             style={{ borderColor: accent + "55", color: accent }}
           >
-            {area.id === "islandDAO" ? "DAO" : area.id === "superteamTH" ? "TH" : DIFF_LABEL[area.difficulty]}
+            {area.id === "islandDAO" ? "DAO" : area.id === "superteamTH" ? "GOD · TH" : DIFF_LABEL[area.difficulty]}
           </span>
           {(bsolUnlocks || area.id === "islandDAO") && (
             <span className="border border-[#9945FF]/60 bg-[#9945FF]/10 px-2 py-0.5 font-mono text-[9px] font-black uppercase tracking-[0.18em] text-[#9945FF]">
@@ -102,7 +102,7 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
               bSOL only
             </span>
           ) : (
-            <span className="font-mono text-xs uppercase tracking-wide text-[#a09ab8]">
+            <span className="font-mono text-xs uppercase tracking-wide text-[#716a7e]">
               🔒 {area.unlockCost} AURA
             </span>
           )
@@ -120,7 +120,7 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
         >
           {isUnlocked ? area.name : "???"}
         </h3>
-        <p className="mt-2 font-mono text-[11px] sm:text-sm italic leading-4 sm:leading-5 text-[#a09ab8] line-clamp-2">
+        <p className="mt-2 font-mono text-[11px] sm:text-sm italic leading-4 sm:leading-5 text-[#716a7e] line-clamp-2">
           {area.subtitle}
         </p>
       </div>
@@ -130,7 +130,7 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
         {isUnlocked ? (
           !addr ? (
             <button
-              className="border border-[#a09ab8]/50 px-4 py-2 sm:px-6 sm:py-3 font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest text-[#a09ab8] opacity-60 cursor-not-allowed touch-manipulation"
+              className="border border-[#ddd6ea]/50 px-4 py-2 sm:px-6 sm:py-3 font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest text-[#716a7e] opacity-60 cursor-not-allowed touch-manipulation"
               disabled
               type="button"
             >
@@ -138,7 +138,7 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
             </button>
           ) : (
             <button
-              className={`px-4 py-2 sm:px-6 sm:py-3 font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest text-[#24153E] transition hover:opacity-75 touch-manipulation ${area.id === "islandDAO" ? "bg-[#9945FF]" : "bg-[#E4D474]"}`}
+              className={`px-4 py-2 sm:px-6 sm:py-3 font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest text-[#231942] transition hover:opacity-75 touch-manipulation ${area.id === "islandDAO" ? "bg-[#9945FF]" : "bg-[#5e548e]"}`}
               onClick={() => onEnter(area)}
               type="button"
             >
@@ -154,8 +154,8 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
           </Link>
         ) : (
           <button
-            className="border border-[#a09ab8]/50 px-4 py-2 sm:px-6 sm:py-3 font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest transition disabled:opacity-25 touch-manipulation"
-            style={{ color: canAfford ? "#E4D474" : "#a09ab8" }}
+            className="border border-[#ddd6ea]/50 px-4 py-2 sm:px-6 sm:py-3 font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest transition disabled:opacity-25 touch-manipulation"
+            style={{ color: canAfford ? "#5e548e" : "#716a7e" }}
             disabled={!addr || !canAfford}
             onClick={() => onUnlock(area)}
             type="button"
@@ -203,19 +203,19 @@ function MapContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#000F08] text-[#E4D474]">
+    <div className="min-h-screen bg-[#f8f7fc] text-[#5e548e]">
       <Nav />
 
       <main className="px-4 py-10 sm:px-8">
 
         {/* Wallet gate banner */}
         {!addr && (
-          <div className="mb-6 flex items-center justify-between gap-4 border border-[#E4D474]/30 bg-[#E4D474]/5 px-5 py-4">
+          <div className="mb-6 flex items-center justify-between gap-4 border border-[#5e548e]/30 bg-[#5e548e]/5 px-5 py-4">
             <div>
-              <p className="font-black uppercase text-sm text-[#E4D474]">Connect your wallet to play</p>
-              <p className="font-mono text-xs text-[#a09ab8] mt-0.5">You need a Solana wallet to enter any area.</p>
+              <p className="font-black uppercase text-sm text-[#5e548e]">Connect your wallet to play</p>
+              <p className="font-mono text-xs text-[#716a7e] mt-0.5">You need a Solana wallet to enter any area.</p>
             </div>
-            <div className="shrink-0 font-mono text-[10px] uppercase tracking-widest text-[#a09ab8]">
+            <div className="shrink-0 font-mono text-[10px] uppercase tracking-widest text-[#716a7e]">
               Use Connect in the nav
             </div>
           </div>
@@ -226,14 +226,14 @@ function MapContent() {
           <div>
             <button
               onClick={() => router.push(`/play?archetype=${archetype}`)}
-              className="mb-4 bg-[#E4D474] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-[#24153E] transition hover:opacity-80"
+              className="mb-4 bg-[#5e548e] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-white transition hover:opacity-80"
               type="button"
             >
               Back
             </button>
-            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#a09ab8]">Proof of Alpha</p>
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e]">Proof of Alpha</p>
             <h1 className="mt-1 text-5xl font-black uppercase sm:text-6xl">Select Area</h1>
-            <p className="mt-2 font-mono text-sm text-[#a09ab8]">8 areas. 5 open. 2 locked. 1 bSOL exclusive.</p>
+            <p className="mt-2 font-mono text-sm text-[#716a7e]">8 areas. 5 open. 2 locked. 1 bSOL exclusive.</p>
           </div>
           <div className="flex items-center gap-3 shrink-0">
             {bsolHolder && (
@@ -243,9 +243,9 @@ function MapContent() {
               </div>
             )}
             {addr && (
-              <div className="border border-[#a09ab8]/30 px-4 py-2.5 text-right">
-                <p className="font-mono text-xs uppercase tracking-[0.16em] text-[#a09ab8]">Your AURA</p>
-                <p className="mt-0.5 font-mono text-2xl font-black leading-none text-[#E4D474]">{aura}</p>
+              <div className="border border-[#ddd6ea]/30 px-4 py-2.5 text-right">
+                <p className="font-mono text-xs uppercase tracking-[0.16em] text-[#716a7e]">Your AURA</p>
+                <p className="mt-0.5 font-mono text-2xl font-black leading-none text-[#5e548e]">{aura}</p>
               </div>
             )}
           </div>
@@ -267,10 +267,10 @@ function MapContent() {
         </div>
 
         {/* Legend */}
-        <div className="mt-8 flex flex-wrap gap-5 font-mono text-xs uppercase tracking-[0.14em] text-[#a09ab8]">
-          <span><span className="text-[#E4D474]">■</span> Warm — easy approach</span>
-          <span><span className="text-[#E4D474]">■</span> Cold — selective</span>
-          <span><span className="text-[#a09ab8]">■</span> Icy — elite only</span>
+        <div className="mt-8 flex flex-wrap gap-5 font-mono text-xs uppercase tracking-[0.14em] text-[#716a7e]">
+          <span><span className="text-[#5e548e]">■</span> Warm — easy approach</span>
+          <span><span className="text-[#5e548e]">■</span> Cold — selective</span>
+          <span><span className="text-[#716a7e]">■</span> Icy — elite only</span>
           <span><span className="text-[#9945FF]">■</span> DAO — bSOL holders only</span>
         </div>
 
@@ -281,7 +281,7 @@ function MapContent() {
 
 export default function MapPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#000F08]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[#f8f7fc]" />}>
       <MapContent />
     </Suspense>
   );

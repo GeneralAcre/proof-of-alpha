@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
@@ -74,31 +74,31 @@ function LobbyContent() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#24153E] text-[#E4D474]">
+    <div className="min-h-screen bg-[#f8f7fc] text-[#5e548e]">
       <Nav />
       <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
 
         {/* ── HEADER: room code + timer ── */}
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border border-[#a09ab8] bg-[#2d1a4a] px-5 py-4 shadow-[6px_6px_0_#a09ab8]">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border border-[#ddd6ea] bg-white px-5 py-4 shadow-[6px_6px_0_#716a7e]">
           <div>
-            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#a09ab8]">
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e]">
               Room Code — share to invite
             </p>
-            <p className="mt-1 font-mono text-3xl font-black tracking-widest text-[#E4D474]">
+            <p className="mt-1 font-mono text-3xl font-black tracking-widest text-[#5e548e]">
               {roomCode}
             </p>
-            <p className="mt-0.5 font-mono text-xs text-[#a09ab8]">
+            <p className="mt-0.5 font-mono text-xs text-[#716a7e]">
               {mode === "solo" ? "Solo · 0.5x points" : "Multiplayer · Full points"}
             </p>
           </div>
           {!isSolo && (
             <div className="text-right">
-              <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#a09ab8]">
+              <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e]">
                 Starts in
               </p>
               <p
                 className={`mt-1 font-mono text-5xl font-black ${
-                  timeLeft <= 10 ? "timer-warn" : "text-[#E4D474]"
+                  timeLeft <= 10 ? "timer-warn" : "text-[#5e548e]"
                 }`}
               >
                 {String(timeLeft).padStart(2, "0")}
@@ -111,41 +111,41 @@ function LobbyContent() {
           <div className="space-y-6">
 
             {/* ── PLAYER SLOTS ── */}
-            <section className="border border-[#a09ab8] bg-[#2d1a4a] shadow-[4px_4px_0_#a09ab8]">
-              <div className="border-b border-[#a09ab8] px-5 py-3">
-                <p className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#a09ab8]">
+            <section className="border border-[#ddd6ea] bg-white shadow-[4px_4px_0_#716a7e]">
+              <div className="border-b border-[#ddd6ea] px-5 py-3">
+                <p className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#716a7e]">
                   Players — {slots.length}/6
                 </p>
               </div>
               {slots.map((slot, i) => (
                 <div
                   key={i}
-                  className={`flex items-center justify-between gap-4 border-b border-[#a09ab8] px-5 py-3.5 last:border-b-0 ${
-                    slot.isHuman ? "bg-[#E4D474]/5" : ""
+                  className={`flex items-center justify-between gap-4 border-b border-[#ddd6ea] px-5 py-3.5 last:border-b-0 ${
+                    slot.isHuman ? "bg-[#5e548e]/5" : ""
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <span className="w-5 shrink-0 font-mono text-xs text-[#a09ab8]">
+                    <span className="w-5 shrink-0 font-mono text-xs text-[#716a7e]">
                       {i + 1}
                     </span>
                     <div>
-                      <p className={`font-mono text-sm font-black ${slot.isHuman ? "text-[#E4D474]" : "text-[#ffffff]"}`}>
+                      <p className={`font-mono text-sm font-black ${slot.isHuman ? "text-[#5e548e]" : "text-[#231942]"}`}>
                         {slot.addr}
                         {slot.isHuman && (
-                          <span className="ml-2 font-mono text-xs font-normal text-[#a09ab8]">
+                          <span className="ml-2 font-mono text-xs font-normal text-[#716a7e]">
                             (you)
                           </span>
                         )}
                       </p>
-                      <p className="font-mono text-xs text-[#a09ab8]">{slot.archetype}</p>
+                      <p className="font-mono text-xs text-[#716a7e]">{slot.archetype}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="border border-[#a09ab8] px-2 py-0.5 font-mono text-xs uppercase text-[#a09ab8]">
+                    <span className="border border-[#ddd6ea] px-2 py-0.5 font-mono text-xs uppercase text-[#716a7e]">
                       {slot.rank}
                     </span>
                     {!slot.isHuman && (
-                      <span className="font-mono text-xs text-[#a09ab8]">AI</span>
+                      <span className="font-mono text-xs text-[#716a7e]">AI</span>
                     )}
                   </div>
                 </div>
@@ -153,12 +153,12 @@ function LobbyContent() {
             </section>
 
             {/* ── ROUND 1 MODIFIER ── */}
-            <section className="border border-[#a09ab8] bg-[#2d1a4a] p-5 shadow-[4px_4px_0_#a09ab8]">
-              <p className="mb-1 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#a09ab8]">
+            <section className="border border-[#ddd6ea] bg-white p-5 shadow-[4px_4px_0_#716a7e]">
+              <p className="mb-1 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#716a7e]">
                 Round 1 Modifier
               </p>
-              <p className="text-2xl font-black uppercase text-[#E4D474]">{modifier}</p>
-              <p className="mt-1 text-sm text-[#ffffff]">
+              <p className="text-2xl font-black uppercase text-[#5e548e]">{modifier}</p>
+              <p className="mt-1 text-sm text-[#231942]">
                 {modifier === "Standard"    && "Normal rules. No adjustments."}
                 {modifier === "Greed Mode"  && "All bets are doubled this round."}
                 {modifier === "Chaos Mode"  && "Targets are randomized mid-round."}
@@ -171,7 +171,7 @@ function LobbyContent() {
             <div className="flex flex-wrap gap-3">
               {isSolo ? (
                 <button
-                  className="flex-1 border-2 border-[#E4D474] bg-[#E4D474] px-6 py-4 text-lg font-black uppercase text-[#24153E] shadow-[4px_4px_0_#a09ab8] transition hover:bg-transparent hover:text-[#E4D474]"
+                  className="flex-1 border-2 border-[#5e548e] bg-[#5e548e] px-6 py-4 text-lg font-black uppercase text-white shadow-[4px_4px_0_#716a7e] transition hover:bg-transparent hover:text-[#5e548e]"
                   onClick={() => router.push(`/game?mode=${mode}&archetype=${archetypeId}&round=1&room=${roomCode}`)}
                   type="button"
                 >
@@ -181,8 +181,8 @@ function LobbyContent() {
                 <button
                   className={`flex-1 border-2 px-6 py-4 font-black uppercase text-lg transition ${
                     isReady
-                      ? "cursor-default border-[#a09ab8] bg-[#24153E] text-[#a09ab8]"
-                      : "border-[#E4D474] bg-[#E4D474] text-[#24153E] shadow-[4px_4px_0_#a09ab8] hover:bg-transparent hover:text-[#E4D474]"
+                      ? "cursor-default border-[#ddd6ea] bg-[#f8f7fc] text-[#716a7e]"
+                      : "border-[#5e548e] bg-[#5e548e] text-white shadow-[4px_4px_0_#716a7e] hover:bg-transparent hover:text-[#5e548e]"
                   }`}
                   disabled={isReady}
                   onClick={() => setIsReady(true)}
@@ -192,7 +192,7 @@ function LobbyContent() {
                 </button>
               )}
               <Link
-                className="border-2 border-[#a09ab8] px-6 py-4 font-black uppercase text-[#a09ab8] transition hover:border-[#a09ab8] hover:text-[#a09ab8]"
+                className="border-2 border-[#ddd6ea] px-6 py-4 font-black uppercase text-[#716a7e] transition hover:border-[#ddd6ea] hover:text-[#716a7e]"
                 href="/mode-select"
               >
                 Leave
@@ -201,9 +201,9 @@ function LobbyContent() {
           </div>
 
           {/* ── CHAT BOX ── */}
-          <section className="flex flex-col border border-[#a09ab8] bg-[#2d1a4a] shadow-[4px_4px_0_#a09ab8]">
-            <div className="border-b border-[#a09ab8] px-4 py-3">
-              <p className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#a09ab8]">
+          <section className="flex flex-col border border-[#ddd6ea] bg-white shadow-[4px_4px_0_#716a7e]">
+            <div className="border-b border-[#ddd6ea] px-4 py-3">
+              <p className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#716a7e]">
                 Lobby Chat
               </p>
             </div>
@@ -215,13 +215,13 @@ function LobbyContent() {
                 <div key={msg.ts} className="text-sm">
                   <span
                     className={`font-mono font-black ${
-                      msg.from === "System" ? "text-[#a09ab8]" : "text-[#E4D474]"
+                      msg.from === "System" ? "text-[#716a7e]" : "text-[#5e548e]"
                     }`}
                   >
                     {msg.from === "System" ? "" : `${msg.from}: `}
                   </span>
                   <span
-                    className={msg.from === "System" ? "text-[#a09ab8] italic" : "text-[#ffffff]"}
+                    className={msg.from === "System" ? "text-[#716a7e] italic" : "text-[#231942]"}
                   >
                     {msg.text}
                   </span>
@@ -229,11 +229,11 @@ function LobbyContent() {
               ))}
             </div>
             <form
-              className="border-t border-[#a09ab8] flex"
+              className="border-t border-[#ddd6ea] flex"
               onSubmit={sendMessage}
             >
               <input
-                className="flex-1 bg-transparent px-4 py-3 font-mono text-sm text-[#E4D474] placeholder-[#a09ab8] outline-none"
+                className="flex-1 bg-transparent px-4 py-3 font-mono text-sm text-[#5e548e] placeholder-[#716a7e] outline-none"
                 maxLength={120}
                 onChange={(e) => setDraft(e.target.value)}
                 placeholder="Say something..."
@@ -241,7 +241,7 @@ function LobbyContent() {
                 value={draft}
               />
               <button
-                className="border-l border-[#a09ab8] px-4 font-mono text-xs font-black uppercase text-[#a09ab8] transition hover:bg-[#E4D474] hover:text-[#24153E]"
+                className="border-l border-[#ddd6ea] px-4 font-mono text-xs font-black uppercase text-[#716a7e] transition hover:bg-[#5e548e] hover:text-white"
                 type="submit"
               >
                 Send
@@ -256,7 +256,7 @@ function LobbyContent() {
 
 export default function LobbyPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#24153E]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[#f8f7fc]" />}>
       <LobbyContent />
     </Suspense>
   );

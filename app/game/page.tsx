@@ -1,11 +1,11 @@
-﻿"use client";
+"use client";
 
 import { Suspense, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Nav } from "../components/Nav";
 import { useWallet } from "../components/WalletProvider";
-import { generateGirlSet, type Girl } from "../lib/girls";
+import { generateGirlSet, type Difficulty, type Girl } from "../lib/girls";
 import { sfx, initSounds } from "../lib/sounds";
 import { ARCHETYPES, type StatBlock } from "../lib/archetypes";
 import { getCharacterLevel } from "../lib/upgrades";
@@ -37,9 +37,10 @@ type TickerEntry = { id: number; text: string };
 // ─── Difficulty style ─────────────────────────────────────────────────────────
 
 const DIFF_STYLE = {
-  easy:   { label: "FRIENDLY", color: "#E4D474" },
-  medium: { label: "OK",       color: "#E4D474" },
-  hard:   { label: "ALPHA",    color: "#E4D474" },
+  easy:   { label: "FRIENDLY", color: "#5e548e" },
+  medium: { label: "OK",       color: "#5e548e" },
+  hard:   { label: "ALPHA",    color: "#5e548e" },
+  god:    { label: "GOD",      color: "#5e548e" },
 } as const;
 
 // ─── Coach tip system ─────────────────────────────────────────────────────────
@@ -79,9 +80,9 @@ function getCoachTip(girl: Girl, messages: ChatMsg[]): CoachTipData | null {
 
 function CoachHint({ tip }: { tip: CoachTipData }) {
   const colors = {
-    info: { border: "#a09ab8", text: "#ffffff", label: "#a09ab8" },
-    warn: { border: "#a09ab8", text: "#a09ab8", label: "#a09ab8" },
-    good: { border: "#E4D474", text: "#E4D474", label: "#E4D474" },
+    info: { border: "#716a7e", text: "#231942", label: "#716a7e" },
+    warn: { border: "#716a7e", text: "#716a7e", label: "#716a7e" },
+    good: { border: "#5e548e", text: "#5e548e", label: "#5e548e" },
   }[tip.type];
 
   return (
@@ -103,10 +104,10 @@ function CoachHint({ tip }: { tip: CoachTipData }) {
 
 function TickerBar({ entries }: { entries: TickerEntry[] }) {
   return (
-    <div className="border-b border-[#a09ab8]/30 bg-[#160c2c] overflow-hidden">
+    <div className="border-b border-[#ddd6ea]/30 bg-[#f3f0fa] overflow-hidden">
       <div className="flex gap-12 animate-[ticker_30s_linear_infinite] whitespace-nowrap px-4 py-2">
         {[...entries, ...entries].map((e, i) => (
-          <span key={i} className="font-mono text-[10px] text-[#a09ab8] shrink-0">{e.text}</span>
+          <span key={i} className="font-mono text-[10px] text-[#716a7e] shrink-0">{e.text}</span>
         ))}
       </div>
     </div>
@@ -115,13 +116,13 @@ function TickerBar({ entries }: { entries: TickerEntry[] }) {
 
 function AttractionBar({ score }: { score: number }) {
   const pct   = Math.min(100, Math.max(0, ((score + 40) / 80) * 100));
-  const color = score > 10 ? "#E4D474" : score > 0 ? "#E4D474" : score > -10 ? "#a09ab8" : "#a09ab8";
+  const color = score > 10 ? "#5e548e" : score > 0 ? "#5e548e" : score > -10 ? "#716a7e" : "#716a7e";
   return (
     <div className="space-y-1">
-      <div className="flex justify-between font-mono text-[9px] uppercase text-[#a09ab8]">
+      <div className="flex justify-between font-mono text-[9px] uppercase text-[#716a7e]">
         <span>Vibe</span><span>???</span>
       </div>
-      <div className="h-1.5 w-full border border-[#a09ab8] bg-[#24153E]">
+      <div className="h-1.5 w-full border border-[#ddd6ea] bg-[#f8f7fc]">
         <div className="h-full transition-all duration-700" style={{ width: `${pct}%`, backgroundColor: color }} />
       </div>
     </div>
@@ -141,7 +142,7 @@ function GameContent() {
   }, [account, router]);
 
   const archetypeId = params.get("archetype") ?? "alpha";
-  const diffParam = params.get("difficulty") as "easy" | "medium" | "hard" | null;
+  const diffParam = params.get("difficulty") as Difficulty | null;
   const areaId    = params.get("area");
   const isThArea  = areaId === "superteamTH";
 
@@ -398,7 +399,7 @@ function GameContent() {
     const allDone  = attempted.size === girlSet.length;
 
     return (
-      <div className="flex min-h-svh flex-col bg-[#24153E] text-[#E4D474] md:h-svh md:overflow-hidden">
+      <div className="flex min-h-svh flex-col bg-[#f8f7fc] text-[#5e548e] md:h-svh md:overflow-hidden">
         <Nav />
         <TickerBar entries={ticker} />
 
@@ -410,14 +411,14 @@ function GameContent() {
               <div className="flex items-end gap-4 min-w-0">
                 <button
                   onClick={() => router.push(`/map?archetype=${archetypeId}`)}
-                  className="shrink-0 bg-[#E4D474] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-[#24153E] transition hover:opacity-80 touch-manipulation"
+                  className="shrink-0 bg-[#5e548e] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-white transition hover:opacity-80 touch-manipulation"
                   type="button"
                 >
                   Back
                 </button>
                 <div className="min-w-0">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#a09ab8]">
-                    Proof of Alpha · Rizz Mode{isThArea && <span className="text-[#E4D474]"> · Superteam TH</span>}
+                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#716a7e]">
+                    Proof of Alpha · Rizz Mode{isThArea && <span className="text-[#5e548e]"> · Superteam TH</span>}
                   </p>
                   <h1 className="text-3xl font-black uppercase leading-none sm:text-4xl">
                     {allDone ? "All Done" : `Round ${roundNum} of 3`}
@@ -426,15 +427,15 @@ function GameContent() {
               </div>
               <div className="flex shrink-0 items-end gap-2">
                 {streak >= 2 && (
-                  <div className="hidden border border-[#E4D474]/30 bg-[#E4D474]/5 px-3 py-1.5 sm:block">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#E4D474]">
+                  <div className="hidden border border-[#5e548e]/30 bg-[#5e548e]/5 px-3 py-1.5 sm:block">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#5e548e]">
                       {streak}× Streak · {streakMult}× Boost
                     </span>
                   </div>
                 )}
-                <div className="text-right border border-[#a09ab8]/40 px-4 py-1.5">
-                  <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#a09ab8]">AURA</p>
-                  <p className={`font-mono text-2xl font-black leading-none ${sessionAura >= initialAura ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>
+                <div className="text-right border border-[#ddd6ea]/40 px-4 py-1.5">
+                  <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#716a7e]">AURA</p>
+                  <p className={`font-mono text-2xl font-black leading-none ${sessionAura >= initialAura ? "text-[#5e548e]" : "text-[#716a7e]"}`}>
                     {sessionAura}
                   </p>
                 </div>
@@ -466,10 +467,10 @@ function GameContent() {
               return (
                 <div
                   key={g.id}
-                  className={`flex min-h-0 flex-col border border-[#a09ab8]/40 bg-[#2d1a4a] ${done ? "opacity-40" : ""}`}
+                  className={`flex min-h-0 flex-col border border-[#ddd6ea]/40 bg-white ${done ? "opacity-40" : ""}`}
                 >
                   {/* Portrait — stretches to fill the remaining height */}
-                  <div className="relative min-h-40 flex-1 overflow-hidden border-b border-[#a09ab8]/30 bg-[#160c2c]">
+                  <div className="relative min-h-40 flex-1 overflow-hidden border-b border-[#ddd6ea]/30 bg-[#f3f0fa]">
                     <Image
                       alt={g.name}
                       src={g.image}
@@ -477,38 +478,38 @@ function GameContent() {
                       className="object-cover object-top grayscale transition duration-300 hover:grayscale-0"
                       sizes="(max-width: 768px) 100vw, 384px"
                     />
-                    <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#2d1a4a] via-[#2d1a4a]/10 to-transparent" />
-                    <span className="absolute top-0 right-0 font-mono text-[10px] font-black uppercase tracking-[0.18em] border-b border-l border-[#E4D474]/50 bg-[#2d1a4a] px-3 py-1.5 text-[#E4D474]">
+                    <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#ffffff] via-white/10 to-transparent" />
+                    <span className="absolute top-0 right-0 font-mono text-[10px] font-black uppercase tracking-[0.18em] border-b border-l border-[#5e548e]/50 bg-white px-3 py-1.5 text-[#5e548e]">
                       {tier.label}
                     </span>
                     <div className="absolute bottom-0 left-0 right-0 px-4 pb-2">
-                      <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#a09ab8]">Round {i + 1}</p>
-                      <p className="text-3xl font-black uppercase leading-none text-[#E4D474]">{g.name}</p>
+                      <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e]">Round {i + 1}</p>
+                      <p className="text-3xl font-black uppercase leading-none text-[#5e548e]">{g.name}</p>
                     </div>
                   </div>
 
                   {/* Info */}
                   <div className="shrink-0 px-4 pb-3 pt-2">
-                    <p className="font-mono text-xs italic leading-5 text-[#a09ab8] line-clamp-1">
+                    <p className="font-mono text-xs italic leading-5 text-[#716a7e] line-clamp-1">
                       &ldquo;{g.tagline}&rdquo;
                     </p>
 
                     {/* Economy row */}
                     <div className="mt-2 flex gap-2">
-                      <div className="flex-1 border border-[#a09ab8]/30 px-2 py-1.5 text-center">
-                        <p className="font-mono text-[9px] uppercase tracking-wide text-[#a09ab8]">Entry</p>
-                        <p className="font-mono text-sm font-black text-[#a09ab8]">−{g.approachCost}</p>
+                      <div className="flex-1 border border-[#ddd6ea]/30 px-2 py-1.5 text-center">
+                        <p className="font-mono text-[9px] uppercase tracking-wide text-[#716a7e]">Entry</p>
+                        <p className="font-mono text-sm font-black text-[#716a7e]">−{g.approachCost}</p>
                       </div>
-                      <div className="flex-1 border border-[#E4D474]/40 px-2 py-1.5 text-center">
-                        <p className="font-mono text-[9px] uppercase tracking-wide text-[#a09ab8]">Flirt</p>
-                        <p className="font-mono text-sm font-black text-[#E4D474]">
-                          +{flirtPreview}{streakMult > 1 && <span className="ml-0.5 text-[10px] text-[#a09ab8]">×{streakMult}</span>}
+                      <div className="flex-1 border border-[#5e548e]/40 px-2 py-1.5 text-center">
+                        <p className="font-mono text-[9px] uppercase tracking-wide text-[#716a7e]">Flirt</p>
+                        <p className="font-mono text-sm font-black text-[#5e548e]">
+                          +{flirtPreview}{streakMult > 1 && <span className="ml-0.5 text-[10px] text-[#716a7e]">×{streakMult}</span>}
                         </p>
                       </div>
-                      <div className="flex-1 border border-[#a09ab8]/30 px-2 py-1.5 text-center">
-                        <p className="font-mono text-[9px] uppercase tracking-wide text-[#a09ab8]">Flex</p>
-                        <p className="font-mono text-sm font-black text-[#ffffff]">
-                          +{flexPreview}{streakMult > 1 && <span className="ml-0.5 text-[10px] text-[#a09ab8]">×{streakMult}</span>}
+                      <div className="flex-1 border border-[#ddd6ea]/30 px-2 py-1.5 text-center">
+                        <p className="font-mono text-[9px] uppercase tracking-wide text-[#716a7e]">Flex</p>
+                        <p className="font-mono text-sm font-black text-[#231942]">
+                          +{flexPreview}{streakMult > 1 && <span className="ml-0.5 text-[10px] text-[#716a7e]">×{streakMult}</span>}
                         </p>
                       </div>
                     </div>
@@ -516,14 +517,14 @@ function GameContent() {
                     {/* Hints */}
                     <div className="mt-2 space-y-0.5">
                       {g.wins.slice(0, 2).map((w) => (
-                        <p key={w} className="flex items-center gap-1.5 font-mono text-xs text-[#a09ab8] truncate">
-                          <span className="inline-block h-2.5 w-2.5 shrink-0 bg-[#E4D474]" />
+                        <p key={w} className="flex items-center gap-1.5 font-mono text-xs text-[#716a7e] truncate">
+                          <span className="inline-block h-2.5 w-2.5 shrink-0 bg-[#5e548e]" />
                           {w}
                         </p>
                       ))}
                       {g.fails.slice(0, 1).map((f) => (
-                        <p key={f} className="flex items-center gap-1.5 font-mono text-xs text-[#a09ab8] truncate">
-                          <span className="inline-block h-2.5 w-2.5 shrink-0 bg-[#24153E] border border-[#a09ab8]/50" />
+                        <p key={f} className="flex items-center gap-1.5 font-mono text-xs text-[#716a7e] truncate">
+                          <span className="inline-block h-2.5 w-2.5 shrink-0 bg-[#f8f7fc] border border-[#ddd6ea]/50" />
                           {f}
                         </p>
                       ))}
@@ -532,13 +533,13 @@ function GameContent() {
 
                   {/* Approach button / result */}
                   {done ? (
-                    <div className="shrink-0 border-t border-[#a09ab8]/30 py-3 text-center font-mono text-xs font-black uppercase tracking-widest text-[#a09ab8]">
+                    <div className="shrink-0 border-t border-[#ddd6ea]/30 py-3 text-center font-mono text-xs font-black uppercase tracking-widest text-[#716a7e]">
                       Done · {(result?.auraEarned ?? 0) > 0 ? `+${result?.auraEarned}` : "0"} AURA
                     </div>
                   ) : (
                     <button
                       disabled={!canAfford}
-                      className="w-full shrink-0 border-t border-[#a09ab8]/30 py-3 font-mono text-xs font-black uppercase tracking-widest transition-all touch-manipulation bg-[#E4D474] text-[#24153E] hover:bg-[#ffffff] disabled:opacity-25 disabled:cursor-not-allowed disabled:bg-transparent disabled:text-[#a09ab8]"
+                      className="w-full shrink-0 border-t border-[#ddd6ea]/30 py-3 font-mono text-xs font-black uppercase tracking-widest transition-all touch-manipulation bg-[#5e548e] text-white hover:bg-[#eeeaf3] hover:text-[#231942] disabled:opacity-25 disabled:cursor-not-allowed disabled:bg-transparent disabled:text-[#716a7e]"
                       onClick={() => startApproach(g.id)}
                       type="button"
                     >
@@ -553,7 +554,7 @@ function GameContent() {
           {/* Cash out */}
           {allDone && (
             <button
-              className="mt-4 w-full shrink-0 border-2 border-[#E4D474] bg-[#E4D474] py-3 text-lg font-black uppercase text-[#24153E] shadow-[6px_6px_0_#a09ab8] transition hover:bg-transparent hover:text-[#E4D474] touch-manipulation"
+              className="mt-4 w-full shrink-0 border-2 border-[#5e548e] bg-[#5e548e] py-3 text-lg font-black uppercase text-white shadow-[6px_6px_0_#716a7e] transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation"
               onClick={() => {
                 const won = sessionAura > initialAura;
                 router.push(`/end?won=${won}&archetype=${archetypeId}&earned=${sessionAura - initialAura}&elims=0&mode=rizz`);
@@ -571,7 +572,7 @@ function GameContent() {
   // ── CHAT + LOCK ───────────────────────────────────────────────────────────
   if (phase === "chat" || phase === "lock") {
     return (
-      <div className="flex h-svh flex-col bg-[#24153E] text-[#E4D474]">
+      <div className="flex h-svh flex-col bg-[#f8f7fc] text-[#5e548e]">
         <Nav />
         <TickerBar entries={ticker} />
 
@@ -595,7 +596,7 @@ function GameContent() {
                   {DIFF_STYLE[girl.difficulty].label}
                 </span>
               </div>
-              <p className="font-mono text-[9px] uppercase text-[#a09ab8]">{girl.title}</p>
+              <p className="font-mono text-[9px] uppercase text-[#716a7e]">{girl.title}</p>
             </div>
           </div>
 
@@ -603,13 +604,13 @@ function GameContent() {
             <div className="hidden w-28 sm:block">
               <AttractionBar score={totalScore} />
             </div>
-            <div className="border border-[#a09ab8]/50 px-3 py-1.5 text-center min-w-13">
-              <p className="font-mono text-[8px] uppercase text-[#a09ab8]">Msgs</p>
+            <div className="border border-[#ddd6ea]/50 px-3 py-1.5 text-center min-w-13">
+              <p className="font-mono text-[8px] uppercase text-[#716a7e]">Msgs</p>
               <p className="font-mono text-sm font-black">{msgCount}/{MAX_MSGS}</p>
             </div>
-            <div className="border border-[#a09ab8]/50 px-3 py-1.5 text-center min-w-13">
-              <p className="font-mono text-[8px] uppercase text-[#a09ab8]">AURA</p>
-              <p className={`font-mono text-sm font-black ${sessionAura >= initialAura ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>
+            <div className="border border-[#ddd6ea]/50 px-3 py-1.5 text-center min-w-13">
+              <p className="font-mono text-[8px] uppercase text-[#716a7e]">AURA</p>
+              <p className={`font-mono text-sm font-black ${sessionAura >= initialAura ? "text-[#5e548e]" : "text-[#716a7e]"}`}>
                 {sessionAura}
               </p>
             </div>
@@ -620,10 +621,10 @@ function GameContent() {
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {messages.length === 0 && (
             <div className="py-10 text-center space-y-2">
-              <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#a09ab8]">
+              <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e]">
                 {girl.name} is waiting.
               </p>
-              <p className="text-sm italic text-[#a09ab8]">"{girl.tagline}"</p>
+              <p className="text-sm italic text-[#716a7e]">"{girl.tagline}"</p>
               <p className="mt-3 font-mono text-[9px] text-[#170b2e] uppercase">
                 Win threshold {girl.winThreshold}+ pts · Flirt +{Math.round(girl.flirtWin * streakMult)} · Flex +{Math.round(girl.flexWin * streakMult)}
               </p>
@@ -640,8 +641,8 @@ function GameContent() {
               <div
                 className={`max-w-[75%] border px-3 py-2 text-sm leading-6 ${
                   msg.role === "user"
-                    ? "border-[#E4D474] bg-[#E4D474]/10 text-[#E4D474]"
-                    : "border-[#a09ab8]/50 bg-[#2d1a4a] text-[#ffffff]"
+                    ? "border-[#5e548e] bg-[#5e548e]/10 text-[#5e548e]"
+                    : "border-[#ddd6ea]/50 bg-white text-[#231942]"
                 }`}
               >
                 {msg.content}
@@ -664,13 +665,13 @@ function GameContent() {
         {/* Input or closer buttons */}
         {phase === "chat" ? (
           <form
-            className="border-t border-[#a09ab8]/50 flex"
+            className="border-t border-[#ddd6ea]/50 flex"
             onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
           >
             <input
               ref={inputRef}
               autoFocus
-              className="flex-1 bg-transparent px-4 py-3.5 font-mono text-sm text-[#E4D474] placeholder-[#a09ab8] outline-none"
+              className="flex-1 bg-transparent px-4 py-3.5 font-mono text-sm text-[#5e548e] placeholder-[#716a7e] outline-none"
               disabled={isLoading || msgCount >= MAX_MSGS}
               maxLength={200}
               onChange={(e) => setDraft(e.target.value)}
@@ -679,7 +680,7 @@ function GameContent() {
               value={draft}
             />
             <button
-              className="border-l border-[#a09ab8]/50 px-5 py-3.5 font-mono text-xs font-black uppercase text-[#a09ab8] transition hover:bg-[#E4D474] hover:text-[#24153E] disabled:opacity-30 touch-manipulation"
+              className="border-l border-[#ddd6ea]/50 px-5 py-3.5 font-mono text-xs font-black uppercase text-[#716a7e] transition hover:bg-[#5e548e] hover:text-white disabled:opacity-30 touch-manipulation"
               disabled={!draft.trim() || isLoading || msgCount >= MAX_MSGS}
               type="submit"
             >
@@ -687,8 +688,8 @@ function GameContent() {
             </button>
           </form>
         ) : (
-          <div className="border-t-2 border-[#a09ab8]/40 bg-[#160c2c] p-4">
-            <p className="mb-3 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-[#a09ab8]">
+          <div className="border-t-2 border-[#ddd6ea]/40 bg-[#f3f0fa] p-4">
+            <p className="mb-3 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-[#716a7e]">
               Chat over — pick your closer
             </p>
             {(() => {
@@ -698,37 +699,37 @@ function GameContent() {
                 <div className="grid grid-cols-3 gap-2">
                   {/* Flirt */}
                   <button
-                    className="border-2 border-[#E4D474] bg-[#E4D474]/5 px-2 py-4 text-center transition hover:bg-[#E4D474] hover:text-[#24153E] touch-manipulation group"
+                    className="border-2 border-[#5e548e] bg-[#5e548e]/5 px-2 py-4 text-center transition hover:bg-[#5e548e] hover:text-white touch-manipulation group"
                     onClick={() => resolveRound("flirt")}
                     type="button"
                   >
-                    <p className="font-mono text-[8px] uppercase tracking-widest text-[#a09ab8] group-hover:text-[#24153E]">Flirt</p>
-                    <p className="mt-1 font-mono text-lg font-black text-[#E4D474] group-hover:text-[#24153E]">+{Math.round(girl.flirtWin * streakMult)}</p>
-                    <p className="mt-0.5 font-mono text-[10px] font-black" style={{ color: flirtChance >= 60 ? "#E4D474" : flirtChance >= 40 ? "#E4D474" : "#a09ab8" }}>
+                    <p className="font-mono text-[8px] uppercase tracking-widest text-[#716a7e] group-hover:text-[#231942]">Flirt</p>
+                    <p className="mt-1 font-mono text-lg font-black text-[#5e548e] group-hover:text-[#231942]">+{Math.round(girl.flirtWin * streakMult)}</p>
+                    <p className="mt-0.5 font-mono text-[10px] font-black" style={{ color: flirtChance >= 60 ? "#5e548e" : flirtChance >= 40 ? "#5e548e" : "#716a7e" }}>
                       {flirtChance}% WIN
                     </p>
                   </button>
                   {/* Flex */}
                   <button
-                    className="border-2 border-[#E4D474] bg-[#E4D474]/5 px-2 py-4 text-center transition hover:bg-[#E4D474]/20 touch-manipulation"
+                    className="border-2 border-[#5e548e] bg-[#5e548e]/5 px-2 py-4 text-center transition hover:bg-[#5e548e]/20 touch-manipulation"
                     onClick={() => resolveRound("flex")}
                     type="button"
                   >
-                    <p className="font-mono text-[8px] uppercase tracking-widest text-[#a09ab8]">Flex</p>
-                    <p className="mt-1 font-mono text-lg font-black text-[#E4D474]">+{Math.round(girl.flexWin * streakMult)}</p>
-                    <p className="mt-0.5 font-mono text-[10px] font-black" style={{ color: flexChance >= 60 ? "#E4D474" : flexChance >= 40 ? "#E4D474" : "#a09ab8" }}>
+                    <p className="font-mono text-[8px] uppercase tracking-widest text-[#716a7e]">Flex</p>
+                    <p className="mt-1 font-mono text-lg font-black text-[#5e548e]">+{Math.round(girl.flexWin * streakMult)}</p>
+                    <p className="mt-0.5 font-mono text-[10px] font-black" style={{ color: flexChance >= 60 ? "#5e548e" : flexChance >= 40 ? "#5e548e" : "#716a7e" }}>
                       {flexChance}% WIN
                     </p>
                   </button>
                   {/* Leave */}
                   <button
-                    className="border-2 border-[#a09ab8]/40 bg-[#a09ab8]/5 px-2 py-4 text-center transition hover:bg-[#a09ab8]/15 touch-manipulation"
+                    className="border-2 border-[#ddd6ea]/40 bg-[#716a7e]/5 px-2 py-4 text-center transition hover:bg-[#716a7e]/15 touch-manipulation"
                     onClick={() => resolveRound("leave")}
                     type="button"
                   >
-                    <p className="font-mono text-[8px] uppercase tracking-widest text-[#a09ab8]">Leave</p>
-                    <p className="mt-1 font-mono text-lg font-black text-[#a09ab8]">+{Math.round(girl.approachCost * 0.5)}</p>
-                    <p className="mt-0.5 font-mono text-[10px] text-[#a09ab8]">Safe exit</p>
+                    <p className="font-mono text-[8px] uppercase tracking-widest text-[#716a7e]">Leave</p>
+                    <p className="mt-1 font-mono text-lg font-black text-[#716a7e]">+{Math.round(girl.approachCost * 0.5)}</p>
+                    <p className="mt-0.5 font-mono text-[10px] text-[#716a7e]">Safe exit</p>
                   </button>
                 </div>
               );
@@ -748,7 +749,7 @@ function GameContent() {
     // ── LOSS SCREEN ──────────────────────────────────────────────────────────
     if (isMiss) {
       return (
-        <div className="relative flex h-svh flex-col overflow-hidden bg-[#000F08]">
+        <div className="relative flex h-svh flex-col overflow-hidden bg-[#f8f7fc]">
           {/* Loss background image */}
           <Image
             src="/loss-alpha.png"
@@ -760,7 +761,7 @@ function GameContent() {
           />
 
           {/* Dark overlay */}
-          <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#000F08] via-[#000F08]/70 to-[#000F08]/20" />
+          <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#f8f7fc] via-[#f8f7fc]/70 to-[#f8f7fc]/20" />
 
           {/* Content */}
           <div className="relative z-10 flex h-full flex-col">
@@ -769,13 +770,13 @@ function GameContent() {
             <div className="flex flex-1 flex-col items-center justify-end px-6 pb-12 text-center sm:justify-center sm:pb-0">
 
               {/* Status label */}
-              <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-[#a09ab8]">
+              <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-[#716a7e]">
                 Not Interested
               </p>
 
               {/* Big headline */}
               <h1
-                className="mt-2 font-black uppercase leading-[0.82] tracking-tight text-white"
+                className="mt-2 font-black uppercase leading-[0.82] tracking-tight text-[#231942]"
                 style={{ fontSize: "clamp(3rem, 12vw, 8rem)" }}
               >
                 She
@@ -785,13 +786,13 @@ function GameContent() {
 
               {/* Her verdict */}
               {isLoading ? (
-                <p className="mt-6 font-mono text-sm text-[#a09ab8] animate-pulse">Waiting…</p>
+                <p className="mt-6 font-mono text-sm text-[#716a7e] animate-pulse">Waiting…</p>
               ) : (
-                <div className="mt-6 max-w-md border-l-2 border-[#a09ab8]/60 pl-4 text-left">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#a09ab8]/70">
+                <div className="mt-6 max-w-md border-l-2 border-[#ddd6ea]/60 pl-4 text-left">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#716a7e]/70">
                     {girl.name} said:
                   </p>
-                  <p className="mt-1 text-base leading-7 font-semibold text-[#ffffff]">
+                  <p className="mt-1 text-base leading-7 font-semibold text-[#231942]">
                     &ldquo;{verdict || "..."}&rdquo;
                   </p>
                 </div>
@@ -799,10 +800,10 @@ function GameContent() {
 
               {/* Stats row */}
               {!isLoading && (
-                <div className="mt-6 flex gap-5 font-mono text-xs text-[#a09ab8]">
-                  <span>Odds: <span className="text-white">{lastWinChance}%</span></span>
-                  <span>Score: <span className="text-white">{totalScore > 0 ? `+${totalScore}` : totalScore}</span></span>
-                  <span>AURA: <span className="text-[#a09ab8]">+0</span></span>
+                <div className="mt-6 flex gap-5 font-mono text-xs text-[#716a7e]">
+                  <span>Odds: <span className="text-[#231942]">{lastWinChance}%</span></span>
+                  <span>Score: <span className="text-[#231942]">{totalScore > 0 ? `+${totalScore}` : totalScore}</span></span>
+                  <span>AURA: <span className="text-[#716a7e]">+0</span></span>
                 </div>
               )}
 
@@ -810,12 +811,12 @@ function GameContent() {
               {!isLoading && (
                 <>
                   {awardStatus === "error" && (
-                    <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.15em] text-[#a09ab8]">
+                    <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.15em] text-[#716a7e]">
                       On-chain sync failed.{" "}
                       <button
                         type="button"
                         onClick={() => pendingAwardRef.current && void runAward(pendingAwardRef.current)}
-                        className="text-[#E4D474] underline"
+                        className="text-[#5e548e] underline"
                       >
                         Retry
                       </button>
@@ -823,7 +824,7 @@ function GameContent() {
                   )}
                   <button
                     disabled={awardStatus === "pending"}
-                    className="mt-8 w-full max-w-sm border-2 border-white bg-white py-4 font-black uppercase tracking-widest text-[#000F08] shadow-[6px_6px_0_rgba(0,0,0,0.5)] transition hover:bg-transparent hover:text-white touch-manipulation disabled:opacity-50 disabled:cursor-wait"
+                    className="mt-8 w-full max-w-sm border-2 border-white bg-white py-4 font-black uppercase tracking-widest text-[#f8f7fc] shadow-[6px_6px_0_rgba(0,0,0,0.5)] transition hover:bg-transparent hover:text-[#231942] touch-manipulation disabled:opacity-50 disabled:cursor-wait"
                     onClick={nextRound}
                     type="button"
                   >
@@ -844,7 +845,7 @@ function GameContent() {
 
     // ── WIN / LEAVE SCREEN ───────────────────────────────────────────────────
     return (
-      <div className="flex h-svh flex-col bg-[#24153E] text-[#E4D474]">
+      <div className="flex h-svh flex-col bg-[#f8f7fc] text-[#5e548e]">
         <Nav />
         <TickerBar entries={ticker} />
 
@@ -858,22 +859,22 @@ function GameContent() {
             </div>
             <div className="text-left">
               <p className="font-black uppercase" style={{ color: girl.accentColor }}>{girl.name}</p>
-              <p className="font-mono text-[9px] uppercase text-[#a09ab8]">{girl.title}</p>
+              <p className="font-mono text-[9px] uppercase text-[#716a7e]">{girl.title}</p>
             </div>
           </div>
 
           {/* Verdict */}
-          <div className={`w-full max-w-lg border-2 p-6 shadow-[8px_8px_0_#160c2c] mb-6 ${
-            isWin ? "border-[#E4D474] bg-[#E4D474]/5" : "border-[#a09ab8]"
+          <div className={`w-full max-w-lg border-2 p-6 shadow-[8px_8px_0_#f3f0fa] mb-6 ${
+            isWin ? "border-[#5e548e] bg-[#5e548e]/5" : "border-[#ddd6ea]"
           }`}>
             {isLoading ? (
-              <p className="font-mono text-sm text-[#a09ab8] animate-pulse">Waiting for her reaction…</p>
+              <p className="font-mono text-sm text-[#716a7e] animate-pulse">Waiting for her reaction…</p>
             ) : (
               <>
-                <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-[#a09ab8]">
+                <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-[#716a7e]">
                   {girl.name} says:
                 </p>
-                <p className="text-lg font-bold leading-7 text-[#E4D474]">"{verdict || "..."}"</p>
+                <p className="text-lg font-bold leading-7 text-[#5e548e]">"{verdict || "..."}"</p>
               </>
             )}
           </div>
@@ -881,36 +882,36 @@ function GameContent() {
           {/* AURA result */}
           {!isLoading && (
             <div className="mb-6">
-              {isLeave && <p className="mb-2 font-mono text-xs uppercase tracking-widest text-[#a09ab8]">Safe exit</p>}
-              {isWin   && <p className="mb-2 font-mono text-xs uppercase tracking-widest text-[#E4D474]">Win — {lastWinChance}% chance</p>}
-              <p className={`text-6xl font-black tabular-nums ${auraEarned > 0 ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>
+              {isLeave && <p className="mb-2 font-mono text-xs uppercase tracking-widest text-[#716a7e]">Safe exit</p>}
+              {isWin   && <p className="mb-2 font-mono text-xs uppercase tracking-widest text-[#5e548e]">Win — {lastWinChance}% chance</p>}
+              <p className={`text-6xl font-black tabular-nums ${auraEarned > 0 ? "text-[#5e548e]" : "text-[#716a7e]"}`}>
                 {auraEarned > 0 ? `+${auraEarned}` : "0"}
               </p>
-              <p className="mt-1 font-mono text-xs uppercase tracking-widest text-[#a09ab8]">AURA</p>
-              <p className="mt-3 font-mono text-sm text-[#a09ab8]">
-                Balance: <span className={`font-black ${sessionAura >= initialAura ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>{sessionAura}</span>
+              <p className="mt-1 font-mono text-xs uppercase tracking-widest text-[#716a7e]">AURA</p>
+              <p className="mt-3 font-mono text-sm text-[#716a7e]">
+                Balance: <span className={`font-black ${sessionAura >= initialAura ? "text-[#5e548e]" : "text-[#716a7e]"}`}>{sessionAura}</span>
               </p>
             </div>
           )}
 
           {!isLoading && (
-            <div className="mb-6 flex gap-4 font-mono text-xs text-[#a09ab8]">
-              <span>Closer: <span className="uppercase text-[#E4D474]">{selectedCloser}</span></span>
-              <span>Score: <span className="text-[#E4D474]">{totalScore > 0 ? `+${totalScore}` : totalScore}</span></span>
-              {!isLeave && <span>Odds: <span className="text-[#E4D474]">{lastWinChance}%</span></span>}
-              {streak > 1 && <span>Streak: <span className="text-[#E4D474]">{streak}×</span></span>}
+            <div className="mb-6 flex gap-4 font-mono text-xs text-[#716a7e]">
+              <span>Closer: <span className="uppercase text-[#5e548e]">{selectedCloser}</span></span>
+              <span>Score: <span className="text-[#5e548e]">{totalScore > 0 ? `+${totalScore}` : totalScore}</span></span>
+              {!isLeave && <span>Odds: <span className="text-[#5e548e]">{lastWinChance}%</span></span>}
+              {streak > 1 && <span>Streak: <span className="text-[#5e548e]">{streak}×</span></span>}
             </div>
           )}
 
           {!isLoading && (
             <>
               {awardStatus === "error" && (
-                <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.15em] text-[#a09ab8]">
+                <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.15em] text-[#716a7e]">
                   On-chain sync failed.{" "}
                   <button
                     type="button"
                     onClick={() => pendingAwardRef.current && void runAward(pendingAwardRef.current)}
-                    className="text-[#E4D474] underline"
+                    className="text-[#5e548e] underline"
                   >
                     Retry
                   </button>
@@ -918,7 +919,7 @@ function GameContent() {
               )}
               <button
                 disabled={awardStatus === "pending"}
-                className="w-full max-w-lg border-2 border-[#E4D474] bg-[#E4D474] py-4 font-black uppercase tracking-widest text-[#24153E] shadow-[6px_6px_0_#a09ab8] transition hover:bg-transparent hover:text-[#E4D474] touch-manipulation disabled:opacity-50 disabled:cursor-wait"
+                className="w-full max-w-lg border-2 border-[#5e548e] bg-[#5e548e] py-4 font-black uppercase tracking-widest text-white shadow-[6px_6px_0_#716a7e] transition hover:bg-transparent hover:text-[#5e548e] touch-manipulation disabled:opacity-50 disabled:cursor-wait"
                 onClick={nextRound}
                 type="button"
               >
@@ -940,7 +941,7 @@ function GameContent() {
 
 export default function GamePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#24153E]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[#f8f7fc]" />}>
       <GameContent />
     </Suspense>
   );
