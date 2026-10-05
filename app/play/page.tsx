@@ -65,12 +65,12 @@ function PlayContent() {
               </h2>
 
               <p className="mt-4 font-mono text-xs leading-6 text-[#a09ab8]">
-                Approach AI girls across 7 venues. 4-message chat. Pick your closer. Win AURA on-chain.
+                Approach AI girls across 8 venues. 4-message chat. Pick your closer. Win AURA on-chain.
               </p>
 
               <ul className="mt-6 space-y-2.5">
                 {[
-                  "7 venues · 15 girl archetypes",
+                  "8 venues · 15 girl archetypes",
                   "Flirt / Flex / Leave closers",
                   "On-chain AURA rewards",
                 ].map((line) => (

@@ -142,6 +142,8 @@ function GameContent() {
 
   const archetypeId = params.get("archetype") ?? "alpha";
   const diffParam = params.get("difficulty") as "easy" | "medium" | "hard" | null;
+  const areaId    = params.get("area");
+  const isThArea  = areaId === "superteamTH";
 
   const [charStats, setCharStats] = useState<StatBlock>(() => {
     const arch = ARCHETYPES.find((a) => a.id === archetypeId);
@@ -155,7 +157,7 @@ function GameContent() {
     if (arch) setCharStats(arch.levels[Math.max(0, level - 1)]);
   }, [archetypeId, account]);
 
-  const [girlSet] = useState<Girl[]>(() => generateGirlSet(diffParam ?? undefined));
+  const [girlSet] = useState<Girl[]>(() => generateGirlSet(diffParam ?? undefined, isThArea ? "th" : "default"));
 
   const [phase,          setPhase]          = useState<Phase>("lobby");
   const [girlQueue,      setGirlQueue]      = useState<string[]>(() => girlSet.map((g) => g.id));
@@ -396,56 +398,51 @@ function GameContent() {
     const allDone  = attempted.size === girlSet.length;
 
     return (
-      <div className="min-h-screen bg-[#24153E] text-[#E4D474] flex flex-col">
+      <div className="flex min-h-svh flex-col bg-[#24153E] text-[#E4D474] md:h-svh md:overflow-hidden">
         <Nav />
         <TickerBar entries={ticker} />
 
-        {/* Fixed back button — desktop only (enough left whitespace) */}
-        <button
-          onClick={() => router.push(`/map?archetype=${archetypeId}`)}
-          className="fixed left-4 top-24 z-50 bg-[#E4D474] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-[#24153E] transition hover:opacity-80 hidden lg:block"
-          type="button"
-        >
-          Back
-        </button>
-
-        <main className="flex-1 mx-auto w-full max-w-2xl px-4 py-8 sm:px-6">
+        <main className="mx-auto flex w-full max-w-6xl min-h-0 flex-1 flex-col px-4 py-4 sm:px-6">
 
           {/* Header */}
-          <div className="mb-8">
-            {/* Inline back button — mobile only */}
-            <button
-              onClick={() => router.push(`/map?archetype=${archetypeId}`)}
-              className="mb-4 bg-[#E4D474] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-[#24153E] transition hover:opacity-80 lg:hidden"
-              type="button"
-            >
-              Back
-            </button>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#a09ab8]">
-              Proof of Alpha · Rizz Mode
-            </p>
-            <div className="mt-1 flex items-end justify-between gap-4">
-              <h1 className="text-4xl font-black uppercase sm:text-5xl">
-                {allDone ? "All Done" : `Round ${roundNum} of 3`}
-              </h1>
-              <div className="shrink-0 text-right border border-[#a09ab8]/40 px-4 py-2">
-                <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#a09ab8]">AURA</p>
-                <p className={`font-mono text-2xl font-black leading-none ${sessionAura >= initialAura ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>
-                  {sessionAura}
-                </p>
+          <div className="mb-4 shrink-0">
+            <div className="flex items-end justify-between gap-4">
+              <div className="flex items-end gap-4 min-w-0">
+                <button
+                  onClick={() => router.push(`/map?archetype=${archetypeId}`)}
+                  className="shrink-0 bg-[#E4D474] px-5 py-2 font-mono text-xs font-black uppercase tracking-widest text-[#24153E] transition hover:opacity-80 touch-manipulation"
+                  type="button"
+                >
+                  Back
+                </button>
+                <div className="min-w-0">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#a09ab8]">
+                    Proof of Alpha · Rizz Mode{isThArea && <span className="text-[#E4D474]"> · Superteam TH</span>}
+                  </p>
+                  <h1 className="text-3xl font-black uppercase leading-none sm:text-4xl">
+                    {allDone ? "All Done" : `Round ${roundNum} of 3`}
+                  </h1>
+                </div>
+              </div>
+              <div className="flex shrink-0 items-end gap-2">
+                {streak >= 2 && (
+                  <div className="hidden border border-[#E4D474]/30 bg-[#E4D474]/5 px-3 py-1.5 sm:block">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#E4D474]">
+                      {streak}× Streak · {streakMult}× Boost
+                    </span>
+                  </div>
+                )}
+                <div className="text-right border border-[#a09ab8]/40 px-4 py-1.5">
+                  <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#a09ab8]">AURA</p>
+                  <p className={`font-mono text-2xl font-black leading-none ${sessionAura >= initialAura ? "text-[#E4D474]" : "text-[#a09ab8]"}`}>
+                    {sessionAura}
+                  </p>
+                </div>
               </div>
             </div>
 
-            {streak >= 2 && (
-              <div className="mt-3 inline-flex items-center gap-2 border border-[#E4D474]/30 bg-[#E4D474]/5 px-3 py-1.5">
-                <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#E4D474]">
-                  {streak}× Win Streak · {streakMult}× Boost
-                </span>
-              </div>
-            )}
-
             {/* Round progress */}
-            <div className="mt-4 flex gap-1.5">
+            <div className="mt-3 flex gap-1.5">
               {girlSet.map((g) => (
                 <div
                   key={g.id}
@@ -456,8 +453,8 @@ function GameContent() {
             </div>
           </div>
 
-          {/* Girl cards */}
-          <div className="space-y-4">
+          {/* Girl cards — one row on md+ */}
+          <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 md:grid-cols-3">
             {girlSet.map((g, i) => {
               const done         = attempted.has(g.id);
               const result       = results.find((r) => r.girlId === g.id);
@@ -466,107 +463,88 @@ function GameContent() {
               const flirtPreview = Math.round(g.flirtWin * streakMult);
               const flexPreview  = Math.round(g.flexWin * streakMult);
 
-              if (done) {
-                return (
-                  <div key={g.id} className="flex items-center gap-4 border border-[#1f1040] bg-[#1f1040] px-5 py-4 opacity-40">
-                    <div className="relative h-10 w-10 shrink-0 overflow-hidden border border-[#170b2e] grayscale">
-                      <Image alt={g.name} src={g.image} fill className="object-cover object-top" sizes="40px" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-black uppercase text-[#a09ab8] text-sm">{g.name}</p>
-                    </div>
-                    <div className="shrink-0 text-right">
-                      <p className="font-mono text-sm font-black text-[#a09ab8]">
-                        {(result?.auraEarned ?? 0) > 0 ? `+${result?.auraEarned}` : "0"} AURA
-                      </p>
-                      <p className="font-mono text-[9px] uppercase text-[#170b2e]">Done</p>
+              return (
+                <div
+                  key={g.id}
+                  className={`flex min-h-0 flex-col border border-[#a09ab8]/40 bg-[#2d1a4a] ${done ? "opacity-40" : ""}`}
+                >
+                  {/* Portrait — stretches to fill the remaining height */}
+                  <div className="relative min-h-40 flex-1 overflow-hidden border-b border-[#a09ab8]/30 bg-[#160c2c]">
+                    <Image
+                      alt={g.name}
+                      src={g.image}
+                      fill
+                      className="object-cover object-top grayscale transition duration-300 hover:grayscale-0"
+                      sizes="(max-width: 768px) 100vw, 384px"
+                    />
+                    <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#2d1a4a] via-[#2d1a4a]/10 to-transparent" />
+                    <span className="absolute top-0 right-0 font-mono text-[10px] font-black uppercase tracking-[0.18em] border-b border-l border-[#E4D474]/50 bg-[#2d1a4a] px-3 py-1.5 text-[#E4D474]">
+                      {tier.label}
+                    </span>
+                    <div className="absolute bottom-0 left-0 right-0 px-4 pb-2">
+                      <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#a09ab8]">Round {i + 1}</p>
+                      <p className="text-3xl font-black uppercase leading-none text-[#E4D474]">{g.name}</p>
                     </div>
                   </div>
-                );
-              }
 
-              return (
-                <div key={g.id} className="border border-[#a09ab8]/40 bg-[#2d1a4a]">
-                  <div className="flex items-stretch">
+                  {/* Info */}
+                  <div className="shrink-0 px-4 pb-3 pt-2">
+                    <p className="font-mono text-xs italic leading-5 text-[#a09ab8] line-clamp-1">
+                      &ldquo;{g.tagline}&rdquo;
+                    </p>
 
-                    {/* Portrait */}
-                    <div className="relative w-28 sm:w-36 shrink-0 overflow-hidden bg-[#160c2c] border-r border-[#a09ab8]/30">
-                      <Image
-                        alt={g.name}
-                        src={g.image}
-                        fill
-                        className="object-cover object-top grayscale transition duration-300 hover:grayscale-0"
-                        sizes="(max-width: 640px) 112px, 144px"
-                      />
-                      <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#2d1a4a]/70 to-transparent" />
-                    </div>
-
-                    {/* Info */}
-                    <div className="flex-1 p-4 flex flex-col justify-between min-w-0 relative">
-                      {/* Difficulty badge — top-right corner of the purple box */}
-                      <span className="absolute top-0 right-0 font-mono text-[10px] font-black uppercase tracking-[0.18em] border-b border-l border-[#E4D474]/50 bg-[#2d1a4a] px-3 py-1.5 text-[#E4D474]">
-                        {tier.label}
-                      </span>
-                      <div>
-                        {/* Name + round */}
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-mono text-sm uppercase tracking-[0.2em] text-[#a09ab8]">Round {i + 1}</span>
-                        </div>
-                        <p className="text-3xl font-black uppercase text-[#E4D474] leading-none">{g.name}</p>
-
-                        {/* Tagline */}
-                        <p className="mt-2 font-mono text-sm italic text-[#a09ab8] leading-5">
-                          "{g.tagline}"
+                    {/* Economy row */}
+                    <div className="mt-2 flex gap-2">
+                      <div className="flex-1 border border-[#a09ab8]/30 px-2 py-1.5 text-center">
+                        <p className="font-mono text-[9px] uppercase tracking-wide text-[#a09ab8]">Entry</p>
+                        <p className="font-mono text-sm font-black text-[#a09ab8]">−{g.approachCost}</p>
+                      </div>
+                      <div className="flex-1 border border-[#E4D474]/40 px-2 py-1.5 text-center">
+                        <p className="font-mono text-[9px] uppercase tracking-wide text-[#a09ab8]">Flirt</p>
+                        <p className="font-mono text-sm font-black text-[#E4D474]">
+                          +{flirtPreview}{streakMult > 1 && <span className="ml-0.5 text-[10px] text-[#a09ab8]">×{streakMult}</span>}
                         </p>
                       </div>
-
-                      {/* Economy row */}
-                      <div className="mt-4 flex gap-2 border-t border-[#a09ab8]/20 pt-3">
-                        <div className="flex-1 border border-[#a09ab8]/30 px-3 py-2 text-center">
-                          <p className="font-mono text-[9px] uppercase tracking-wide text-[#a09ab8]">Entry</p>
-                          <p className="font-mono text-base font-black text-[#a09ab8]">−{g.approachCost}</p>
-                        </div>
-                        <div className="flex-1 border border-[#E4D474]/40 px-3 py-2 text-center">
-                          <p className="font-mono text-[9px] uppercase tracking-wide text-[#a09ab8]">Flirt</p>
-                          <p className="font-mono text-base font-black text-[#E4D474]">
-                            +{flirtPreview}{streakMult > 1 && <span className="ml-0.5 text-xs text-[#a09ab8]">×{streakMult}</span>}
-                          </p>
-                        </div>
-                        <div className="flex-1 border border-[#a09ab8]/30 px-3 py-2 text-center">
-                          <p className="font-mono text-[9px] uppercase tracking-wide text-[#a09ab8]">Flex</p>
-                          <p className="font-mono text-base font-black text-[#ffffff]">
-                            +{flexPreview}{streakMult > 1 && <span className="ml-0.5 text-xs text-[#a09ab8]">×{streakMult}</span>}
-                          </p>
-                        </div>
+                      <div className="flex-1 border border-[#a09ab8]/30 px-2 py-1.5 text-center">
+                        <p className="font-mono text-[9px] uppercase tracking-wide text-[#a09ab8]">Flex</p>
+                        <p className="font-mono text-sm font-black text-[#ffffff]">
+                          +{flexPreview}{streakMult > 1 && <span className="ml-0.5 text-[10px] text-[#a09ab8]">×{streakMult}</span>}
+                        </p>
                       </div>
+                    </div>
 
-                      {/* Hints */}
-                      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
-                        {g.wins.slice(0, 2).map((w) => (
-                          <span key={w} className="inline-flex items-center gap-1.5 font-mono text-sm text-[#a09ab8]">
-                            <span className="inline-block h-3 w-3 shrink-0 bg-[#E4D474]" />
-                            {w}
-                          </span>
-                        ))}
-                        {g.fails.slice(0, 1).map((f) => (
-                          <span key={f} className="inline-flex items-center gap-1.5 font-mono text-sm text-[#a09ab8]">
-                            <span className="inline-block h-3 w-3 shrink-0 bg-[#24153E] border border-[#a09ab8]/50" />
-                            {f}
-                          </span>
-                        ))}
-                      </div>
+                    {/* Hints */}
+                    <div className="mt-2 space-y-0.5">
+                      {g.wins.slice(0, 2).map((w) => (
+                        <p key={w} className="flex items-center gap-1.5 font-mono text-xs text-[#a09ab8] truncate">
+                          <span className="inline-block h-2.5 w-2.5 shrink-0 bg-[#E4D474]" />
+                          {w}
+                        </p>
+                      ))}
+                      {g.fails.slice(0, 1).map((f) => (
+                        <p key={f} className="flex items-center gap-1.5 font-mono text-xs text-[#a09ab8] truncate">
+                          <span className="inline-block h-2.5 w-2.5 shrink-0 bg-[#24153E] border border-[#a09ab8]/50" />
+                          {f}
+                        </p>
+                      ))}
                     </div>
                   </div>
 
-                  {/* Approach button — full width below */}
-                  <button
-                    disabled={!canAfford}
-                    className="w-full border-t border-[#a09ab8]/30 py-3.5 font-mono text-xs font-black uppercase tracking-widest transition-all touch-manipulation bg-[#E4D474] text-[#24153E] hover:bg-[#ffffff] disabled:opacity-25 disabled:cursor-not-allowed disabled:bg-transparent disabled:text-[#a09ab8]"
-                    onClick={() => startApproach(g.id)}
-                    type="button"
-                  >
-                    {canAfford ? `Approach ${g.name} — ${g.approachCost} AURA` : `Need ${g.approachCost} AURA`}
-                  </button>
+                  {/* Approach button / result */}
+                  {done ? (
+                    <div className="shrink-0 border-t border-[#a09ab8]/30 py-3 text-center font-mono text-xs font-black uppercase tracking-widest text-[#a09ab8]">
+                      Done · {(result?.auraEarned ?? 0) > 0 ? `+${result?.auraEarned}` : "0"} AURA
+                    </div>
+                  ) : (
+                    <button
+                      disabled={!canAfford}
+                      className="w-full shrink-0 border-t border-[#a09ab8]/30 py-3 font-mono text-xs font-black uppercase tracking-widest transition-all touch-manipulation bg-[#E4D474] text-[#24153E] hover:bg-[#ffffff] disabled:opacity-25 disabled:cursor-not-allowed disabled:bg-transparent disabled:text-[#a09ab8]"
+                      onClick={() => startApproach(g.id)}
+                      type="button"
+                    >
+                      {canAfford ? `Approach ${g.name} — ${g.approachCost} AURA` : `Need ${g.approachCost} AURA`}
+                    </button>
+                  )}
                 </div>
               );
             })}
@@ -575,7 +553,7 @@ function GameContent() {
           {/* Cash out */}
           {allDone && (
             <button
-              className="mt-6 w-full border-2 border-[#E4D474] bg-[#E4D474] py-4 text-lg font-black uppercase text-[#24153E] shadow-[6px_6px_0_#a09ab8] transition hover:bg-transparent hover:text-[#E4D474] touch-manipulation"
+              className="mt-4 w-full shrink-0 border-2 border-[#E4D474] bg-[#E4D474] py-3 text-lg font-black uppercase text-[#24153E] shadow-[6px_6px_0_#a09ab8] transition hover:bg-transparent hover:text-[#E4D474] touch-manipulation"
               onClick={() => {
                 const won = sessionAura > initialAura;
                 router.push(`/end?won=${won}&archetype=${archetypeId}&earned=${sessionAura - initialAura}&elims=0&mode=rizz`);
