@@ -91,10 +91,10 @@ function Storyboard({ onDone }: { onDone: () => void }) {
       {/* Skip button */}
       <button
         onClick={onDone}
-        className="absolute right-5 top-5 z-20 sm:right-8 sm:top-7 font-mono text-[10px] uppercase tracking-[0.25em] text-[#5e548e] transition"
+        className="absolute right-4 top-4 z-20 inline-flex items-center gap-2 border-2 border-[#5e548e] bg-[#5e548e] px-5 py-2.5 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#f8f7fc] shadow-[4px_4px_0_rgba(94,84,142,0.3)] transition hover:bg-[#f8f7fc] hover:text-[#5e548e] touch-manipulation sm:right-8 sm:top-6 sm:text-sm"
         type="button"
       >
-        Skip
+        Skip <span aria-hidden>→</span>
       </button>
 
       {/* Main layout — stacked on mobile, side-by-side on desktop */}
