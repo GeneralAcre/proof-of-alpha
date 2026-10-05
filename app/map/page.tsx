@@ -24,6 +24,7 @@ const AREAS: Area[] = [
   { id: "vault",     name: "The Yacht Club",    subtitle: "Members only. AURA required.",             difficulty: "hard",   locked: true,  unlockCost: 300 },
   { id: "chamber",   name: "The Penthouse Pool",subtitle: "Top floor. Not your crowd.",               difficulty: "hard",   locked: true,  unlockCost: 500 },
   { id: "islandDAO", name: "islandDAO",          subtitle: "The only door is bSOL. No exceptions.",   difficulty: "hard",   locked: true,  unlockCost: 0   },
+  { id: "superteamTH", name: "Superteam TH",     subtitle: "Bangkok builders. Bring your ship log.",  difficulty: "medium", locked: false, unlockCost: 0   },
 ];
 
 const AURA_KEY   = (addr: string) => `poa_aura_${addr}`;
@@ -38,7 +39,8 @@ const CARD_CFG: Record<string, { colSpan: string }> = {
   mine:     { colSpan: "col-span-1 sm:col-span-2" },
   vault:    { colSpan: "col-span-1"               },
   chamber:  { colSpan: "col-span-2"               },
-  islandDAO:{ colSpan: "col-span-2 sm:col-span-3" },
+  islandDAO:{ colSpan: "col-span-2 sm:col-span-2" },
+  superteamTH: { colSpan: "col-span-2 sm:col-span-1" },
 };
 
 function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
@@ -86,7 +88,7 @@ function AreaCard({ area, aura, addr, bsolHolder, onEnter, onUnlock }: {
             className="border px-2 py-0.5 font-mono text-[10px] font-black uppercase tracking-[0.22em]"
             style={{ borderColor: accent + "55", color: accent }}
           >
-            {area.id === "islandDAO" ? "DAO" : DIFF_LABEL[area.difficulty]}
+            {area.id === "islandDAO" ? "DAO" : area.id === "superteamTH" ? "TH" : DIFF_LABEL[area.difficulty]}
           </span>
           {(bsolUnlocks || area.id === "islandDAO") && (
             <span className="border border-[#9945FF]/60 bg-[#9945FF]/10 px-2 py-0.5 font-mono text-[9px] font-black uppercase tracking-[0.18em] text-[#9945FF]">
@@ -188,7 +190,7 @@ function MapContent() {
   }, [addr, rev]);
 
   function handleEnter(area: Area) {
-    router.push(`/game?mode=solo&archetype=${archetype}&difficulty=${area.difficulty}`);
+    router.push(`/game?mode=solo&archetype=${archetype}&difficulty=${area.difficulty}&area=${area.id}`);
   }
 
   function handleUnlock(area: Area) {
@@ -231,7 +233,7 @@ function MapContent() {
             </button>
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#a09ab8]">Proof of Alpha</p>
             <h1 className="mt-1 text-5xl font-black uppercase sm:text-6xl">Select Area</h1>
-            <p className="mt-2 font-mono text-sm text-[#a09ab8]">7 areas. 4 open. 2 locked. 1 bSOL exclusive.</p>
+            <p className="mt-2 font-mono text-sm text-[#a09ab8]">8 areas. 5 open. 2 locked. 1 bSOL exclusive.</p>
           </div>
           <div className="flex items-center gap-3 shrink-0">
             {bsolHolder && (

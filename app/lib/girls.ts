@@ -369,6 +369,20 @@ const GIRL_NAMES = [
   "Hana", "Mei", "Kira", "Tara", "Riya", "Ines", "Lila", "Wren", "Freya", "Skye",
 ];
 
+// Common Thai nicknames — used in the Superteam TH area
+const THAI_GIRL_NAMES = [
+  "Ploy", "Fah", "Mint", "Praew", "Ying", "Pim", "Kwan", "Bow", "Fern", "Aom",
+  "Noon", "Nam", "Pear", "Mook", "Kaew", "Pang", "Gift", "Nan", "Dao", "Chompoo",
+  "Fon", "Nok", "Tarn", "Jaja", "Kratae", "Namwan", "Bam", "Oil", "Jubjang", "Kanom",
+];
+
+export type NameRegion = "default" | "th";
+
+const NAME_POOLS: Record<NameRegion, readonly string[]> = {
+  default: GIRL_NAMES,
+  th:      THAI_GIRL_NAMES,
+};
+
 const ACCENT_COLORS: Record<Difficulty, string[]> = {
   easy:   ["#e9d5ff", "#c4b5fd", "#ddd6fe", "#f0e6ff", "#bfdbfe", "#ffffff"],
   medium: ["#a78bfa", "#818cf8", "#c084fc", "#93c5fd", "#E4D474", "#a09ab8"],
@@ -379,12 +393,13 @@ function pickRandom<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-export function generateGirlSet(filterDifficulty?: Difficulty): Girl[] {
+export function generateGirlSet(filterDifficulty?: Difficulty, region: NameRegion = "default"): Girl[] {
   const usedNames = new Set<string>();
+  const namePool  = NAME_POOLS[region];
 
   const toGirl = (arch: GirlArchetype): Girl => {
     let name: string;
-    do { name = pickRandom(GIRL_NAMES); } while (usedNames.has(name));
+    do { name = pickRandom(namePool); } while (usedNames.has(name));
     usedNames.add(name);
     return {
       id: arch.id,
