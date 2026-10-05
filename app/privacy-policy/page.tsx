@@ -91,13 +91,13 @@ Twitter/X: @created_alpha`,
 
 export default function PrivacyPolicyPage() {
   return (
-    <main className="min-h-screen bg-[#0d0820]">
+    <main className="min-h-screen bg-[#f8f7fc]">
 
       {/* Back button — outside content box, left edge */}
       <div className="px-6 pt-8">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 border-2 border-[#E4D474] bg-[#E4D474] px-5 py-2.5 font-mono text-xs font-black uppercase tracking-[0.18em] text-[#24153E] shadow-[3px_3px_0_rgba(0,0,0,0.4)] transition hover:bg-transparent hover:text-[#E4D474]"
+          className="rounded-full inline-flex items-center gap-2 border border-[#5e548e] bg-[#5e548e] px-5 py-2.5 font-mono text-xs font-black uppercase tracking-[0.18em] text-white shadow-sm transition hover:bg-transparent hover:text-[#5e548e]"
         >
           <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M8 1L3 6l5 5" strokeLinecap="round" strokeLinejoin="round" />
@@ -109,20 +109,20 @@ export default function PrivacyPolicyPage() {
       <div className="mx-auto max-w-3xl px-6 py-12">
 
         {/* Header */}
-        <div className="mb-12 border-b border-[#a09ab8]/20 pb-8">
-          <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.25em] text-[#a09ab8]/60">
+        <div className="mb-12 border-b border-[#ddd6ea]/20 pb-8">
+          <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.25em] text-[#716a7e]/60">
             Legal
           </p>
-          <h1 className="font-mono text-3xl font-black uppercase tracking-[0.15em] text-[#E4D474]">
+          <h1 className="font-mono text-3xl font-black uppercase tracking-[0.15em] text-[#5e548e]">
             Privacy Policy
           </h1>
-          <p className="mt-3 font-mono text-xs text-[#a09ab8]/70">
+          <p className="mt-3 font-mono text-xs text-[#716a7e]/70">
             Effective Date: June 18, 2026 &nbsp;·&nbsp; Last Updated: June 18, 2026
           </p>
         </div>
 
         {/* Intro */}
-        <p className="mb-10 font-mono text-sm leading-7 text-[#ffffff]/70">
+        <p className="mb-10 font-mono text-sm leading-7 text-[#231942]/70">
           This Privacy Policy describes how Proof of Alpha collects, uses, and protects information
           in connection with your use of our application. By using the App, you agree to the
           practices described below.
@@ -132,10 +132,10 @@ export default function PrivacyPolicyPage() {
         <div className="space-y-10">
           {SECTIONS.map(({ title, body }) => (
             <section key={title}>
-              <h2 className="mb-3 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#E4D474]">
+              <h2 className="mb-3 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#5e548e]">
                 {title}
               </h2>
-              <div className="font-mono text-sm leading-7 text-[#ffffff]/70 whitespace-pre-line">
+              <div className="font-mono text-sm leading-7 text-[#231942]/70 whitespace-pre-line">
                 {body}
               </div>
             </section>

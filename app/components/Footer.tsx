@@ -33,33 +33,33 @@ export function Footer() {
   }
 
   return (
-    <footer className="border-t border-[#a09ab8]/20 bg-[#160c2c]">
+    <footer className="border-t border-[#ddd6ea]/20 bg-[#f3f0fa]">
 
       {/* ── Top grid ── */}
       <div className="mx-auto max-w-7xl grid grid-cols-2 gap-10 px-6 py-12 lg:grid-cols-4 lg:gap-8">
 
         {/* Contact */}
         <div className="col-span-2 lg:col-span-1">
-          <p className="mb-5 font-mono text-xs font-black uppercase tracking-[0.22em] text-[#a09ab8]">
+          <p className="mb-5 font-mono text-xs font-black uppercase tracking-[0.22em] text-[#716a7e]">
             Contact &amp; Support
           </p>
           <form onSubmit={handleSend} className="space-y-3">
             <input
-              className="w-full border-b border-[#a09ab8]/30 bg-transparent pb-2 font-mono text-xs text-[#E4D474] placeholder-[#a09ab8]/40 outline-none focus:border-[#E4D474] transition"
+              className="w-full border-b border-[#ddd6ea]/30 bg-transparent pb-2 font-mono text-xs text-[#5e548e] placeholder-[#716a7e]/40 outline-none focus:border-[#5e548e] transition"
               placeholder="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               type="text"
             />
             <input
-              className="w-full border-b border-[#a09ab8]/30 bg-transparent pb-2 font-mono text-xs text-[#E4D474] placeholder-[#a09ab8]/40 outline-none focus:border-[#E4D474] transition"
+              className="w-full border-b border-[#ddd6ea]/30 bg-transparent pb-2 font-mono text-xs text-[#5e548e] placeholder-[#716a7e]/40 outline-none focus:border-[#5e548e] transition"
               placeholder="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               type="email"
             />
             <textarea
-              className="w-full border-b border-[#a09ab8]/30 bg-transparent pb-2 font-mono text-xs text-[#E4D474] placeholder-[#a09ab8]/40 outline-none focus:border-[#E4D474] transition resize-none"
+              className="w-full border-b border-[#ddd6ea]/30 bg-transparent pb-2 font-mono text-xs text-[#5e548e] placeholder-[#716a7e]/40 outline-none focus:border-[#5e548e] transition resize-none"
               placeholder="message"
               rows={3}
               value={message}
@@ -67,7 +67,7 @@ export function Footer() {
             />
             <button
               type="submit"
-              className="mt-2 w-full border border-[#E4D474] bg-[#E4D474] py-3 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#160c2c] transition hover:bg-transparent hover:text-[#E4D474]"
+              className="rounded-xl mt-2 w-full border border-[#5e548e] bg-[#5e548e] py-3 font-mono text-xs font-black uppercase tracking-[0.2em] text-[#f3f0fa] transition hover:bg-transparent hover:text-[#5e548e]"
             >
               {sent ? "Sent!" : "Send"}
             </button>
@@ -76,7 +76,7 @@ export function Footer() {
 
         {/* Navigation */}
         <div>
-          <p className="mb-5 font-mono text-xs font-black uppercase tracking-[0.22em] text-[#a09ab8]">
+          <p className="mb-5 font-mono text-xs font-black uppercase tracking-[0.22em] text-[#716a7e]">
             Navigation
           </p>
           <ul className="space-y-3">
@@ -84,7 +84,7 @@ export function Footer() {
               <li key={href}>
                 <Link
                   href={href}
-                  className="font-mono text-sm text-[#ffffff]/70 transition hover:text-[#E4D474]"
+                  className="font-mono text-sm text-[#231942]/70 transition hover:text-[#5e548e]"
                 >
                   {label}
                 </Link>
@@ -95,17 +95,17 @@ export function Footer() {
 
         {/* Legal */}
         <div>
-          <p className="mb-5 font-mono text-xs font-black uppercase tracking-[0.22em] text-[#a09ab8]">
+          <p className="mb-5 font-mono text-xs font-black uppercase tracking-[0.22em] text-[#716a7e]">
             Legal
           </p>
           <ul className="space-y-3">
             <li>
-              <Link href="/privacy-policy" className="font-mono text-sm text-[#ffffff]/70 transition hover:text-[#E4D474]">
+              <Link href="/privacy-policy" className="font-mono text-sm text-[#231942]/70 transition hover:text-[#5e548e]">
                 Privacy Policy
               </Link>
             </li>
             <li>
-              <Link href="/terms" className="font-mono text-sm text-[#ffffff]/70 transition hover:text-[#E4D474]">
+              <Link href="/terms" className="font-mono text-sm text-[#231942]/70 transition hover:text-[#5e548e]">
                 Terms of Service
               </Link>
             </li>
@@ -114,7 +114,7 @@ export function Footer() {
 
         {/* Social */}
         <div>
-          <p className="mb-5 font-mono text-xs font-black uppercase tracking-[0.22em] text-[#a09ab8]">
+          <p className="mb-5 font-mono text-xs font-black uppercase tracking-[0.22em] text-[#716a7e]">
             Social
           </p>
           <div className="flex gap-3">
@@ -122,7 +122,7 @@ export function Footer() {
               href="https://x.com/created_alpha"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-16 w-16 items-center justify-center border border-[#a09ab8]/30 text-[#a09ab8] transition hover:border-[#E4D474] hover:text-[#E4D474]"
+              className="rounded-lg flex h-16 w-16 items-center justify-center border border-[#ddd6ea]/30 text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e]"
               aria-label="Twitter / X"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -133,7 +133,7 @@ export function Footer() {
               href="https://github.com/GeneralAcre/proof-of-alpha"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-16 w-16 items-center justify-center border border-[#a09ab8]/30 text-[#a09ab8] transition hover:border-[#E4D474] hover:text-[#E4D474]"
+              className="rounded-lg flex h-16 w-16 items-center justify-center border border-[#ddd6ea]/30 text-[#716a7e] transition hover:border-[#5e548e] hover:text-[#5e548e]"
               aria-label="GitHub"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -145,13 +145,13 @@ export function Footer() {
       </div>
 
       {/* ── Bottom bar ── */}
-      <div className="border-t border-[#a09ab8]/15 bg-[#0d0820]">
+      <div className="border-t border-[#ddd6ea]/15 bg-[#f8f7fc]">
         <div className="mx-auto max-w-7xl px-6 py-6 text-center space-y-4">
-          <p className="font-mono text-xs text-[#a09ab8]/60 leading-6 max-w-2xl mx-auto">
+          <p className="font-mono text-xs text-[#716a7e]/60 leading-6 max-w-2xl mx-auto">
             Proof of Alpha is a fully on-chain dating-practice game on Solana — chat, flirt, and build your rizz to earn AURA and climb the leaderboard.
           </p>
-          <div className="inline-flex items-center gap-3 border border-[#a09ab8]/20 px-6 py-2.5">
-            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#a09ab8]/50">Powered by</span>
+          <div className="rounded-xl inline-flex items-center gap-3 border border-[#ddd6ea]/20 px-6 py-2.5">
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#716a7e]/50">Powered by</span>
             <Image src="/solanaWordMark.png" alt="Solana" width={80} height={14} className="object-contain" />
           </div>
         </div>

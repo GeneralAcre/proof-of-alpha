@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect } from "react";
 import type { Wallet, WalletAccount } from "@wallet-standard/base";
@@ -28,11 +28,11 @@ export function SolanaWalletConnect({ onAccountChange }: SolanaWalletConnectProp
 
   return (
     <div>
-      <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#E4D474]">Connect wallet</p>
+      <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#5e548e]">Connect wallet</p>
 
       {account ? (
         <div className="mt-5 grid gap-3">
-          <div className="rounded-lg border border-[#a09ab8] bg-[#24153E]/70 p-4 font-mono text-sm text-[#ffffff]">
+          <div className="rounded-xl border border-[#ddd6ea] bg-[#f8f7fc]/70 p-4 font-mono text-sm text-[#231942]">
             wallet: {selectedWallet?.name}
             <br />
             address: {truncatedAddress}
@@ -40,7 +40,7 @@ export function SolanaWalletConnect({ onAccountChange }: SolanaWalletConnectProp
             cluster: solana:mainnet
           </div>
           <button
-            className="rounded-lg border border-[#a09ab8] px-4 py-3 text-sm font-black uppercase text-[#E4D474] transition hover:bg-[#E4D474] hover:text-[#24153E]"
+            className="rounded-full border border-[#ddd6ea] px-4 py-3 text-sm font-black uppercase text-[#5e548e] transition hover:bg-[#5e548e] hover:text-white"
             onClick={disconnect}
             type="button"
           >
@@ -52,14 +52,14 @@ export function SolanaWalletConnect({ onAccountChange }: SolanaWalletConnectProp
           {wallets.length > 0 ? (
             wallets.map((wallet) => (
               <button
-                className="rounded-lg border border-[#E4D474] bg-[#E4D474] px-4 py-3 text-left text-sm font-black uppercase text-[#24153E] transition hover:bg-[#ece880] disabled:opacity-60"
+                className="rounded-xl border border-[#5e548e] bg-[#5e548e] px-4 py-3 text-left text-sm font-black uppercase text-white transition hover:bg-[#5e548e] disabled:opacity-60"
                 disabled={isConnecting}
                 key={wallet.name}
                 onClick={() => connect(wallet)}
                 type="button"
               >
                 {displayName(wallet)}
-                <span className="block text-xs font-semibold normal-case text-[#24153E]">
+                <span className="block text-xs font-semibold normal-case text-[#231942]">
                   {isMobileWallet(wallet)
                     ? "Connect through Mobile Wallet Adapter"
                     : "Wallet Standard compatible"}
@@ -67,11 +67,11 @@ export function SolanaWalletConnect({ onAccountChange }: SolanaWalletConnectProp
               </button>
             ))
           ) : (
-            <div className="rounded-lg border border-[#a09ab8] bg-[#24153E]/70 p-4 text-sm leading-6 text-[#ffffff]">
+            <div className="rounded-xl border border-[#ddd6ea] bg-[#f8f7fc]/70 p-4 text-sm leading-6 text-[#231942]">
               No wallet detected. Solana Mobile web support requires Android Chrome with a Mobile
               Wallet Adapter wallet installed.
               <a
-                className="mt-3 block font-black uppercase text-[#E4D474] underline underline-offset-4"
+                className="mt-3 block font-black uppercase text-[#5e548e] underline underline-offset-4"
                 href="https://solanamobile.com/wallets"
               >
                 Find a Solana Mobile wallet
@@ -81,7 +81,7 @@ export function SolanaWalletConnect({ onAccountChange }: SolanaWalletConnectProp
         </div>
       )}
 
-      <div className="mt-5 rounded-lg border border-[#a09ab8] bg-[#24153E]/70 p-4 font-mono text-sm text-[#ffffff]">
+      <div className="mt-5 rounded-lg border border-[#ddd6ea] bg-[#f8f7fc]/70 p-4 font-mono text-sm text-[#231942]">
         {status}
       </div>
     </div>

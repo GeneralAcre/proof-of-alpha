@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -46,26 +46,26 @@ export default function LeaderboardPage() {
   const myGuild   = guilds.find((g) => g.members.includes(addr ?? ""));
 
   return (
-    <div className="min-h-screen bg-[#24153E] text-[#E4D474]">
+    <div className="min-h-screen bg-[#f8f7fc] text-[#5e548e]">
       <Nav />
       <main className="mx-auto max-w-5xl px-4 py-10 sm:px-8">
 
         {/* Header */}
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
-            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#a09ab8]">Proof of Alpha</p>
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e]">Proof of Alpha</p>
             <h1 className="mt-1 text-5xl font-black uppercase sm:text-6xl">Leaderboard</h1>
           </div>
           {supabaseReady && (
-            <div className="shrink-0 flex items-center gap-2 border border-[#a09ab8]/30 px-3 py-2">
-              <span className="h-2 w-2 rounded-full bg-[#E4D474] animate-pulse" />
-              <span className="font-mono text-[10px] uppercase tracking-widest text-[#a09ab8]">Live</span>
+            <div className="shrink-0 flex items-center gap-2 border border-[#ddd6ea]/30 px-3 py-2">
+              <span className="h-2 w-2 rounded-full bg-[#5e548e] animate-pulse" />
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[#716a7e]">Live</span>
             </div>
           )}
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-[#a09ab8]/30 mb-6">
+        <div className="flex border-b border-[#ddd6ea]/30 mb-6">
           {([
             { key: "points", label: "Players"  },
             { key: "streak", label: "Streaks"  },
@@ -75,8 +75,8 @@ export default function LeaderboardPage() {
               key={key}
               className={`px-5 py-2.5 font-mono text-xs uppercase tracking-[0.16em] border-b-2 transition -mb-px ${
                 tab === key
-                  ? "border-[#E4D474] text-[#E4D474]"
-                  : "border-transparent text-[#a09ab8] hover:text-[#E4D474]"
+                  ? "border-[#5e548e] text-[#5e548e]"
+                  : "border-transparent text-[#716a7e] hover:text-[#5e548e]"
               }`}
               onClick={() => setTab(key)}
               type="button"
@@ -88,10 +88,10 @@ export default function LeaderboardPage() {
 
         {/* ── Players / Streaks ── */}
         {tab !== "gangs" && (
-          <div className="border border-[#a09ab8]/30 bg-[#2d1a4a]">
+          <div className="border border-[#ddd6ea]/30 bg-white">
 
             {/* Column headers */}
-            <div className="grid grid-cols-[36px_1fr_64px_80px] gap-4 px-4 py-2.5 border-b border-[#a09ab8]/20 font-mono text-[10px] uppercase tracking-[0.14em] text-[#a09ab8]">
+            <div className="grid grid-cols-[36px_1fr_64px_80px] gap-4 px-4 py-2.5 border-b border-[#ddd6ea]/20 font-mono text-[10px] uppercase tracking-[0.14em] text-[#716a7e]">
               <span>#</span>
               <span>Player</span>
               <span className="text-right">Matches</span>
@@ -100,14 +100,14 @@ export default function LeaderboardPage() {
 
             {loading && (
               <div className="py-14 text-center">
-                <p className="font-mono text-xs uppercase tracking-widest text-[#a09ab8] animate-pulse">Loading…</p>
+                <p className="font-mono text-xs uppercase tracking-widest text-[#716a7e] animate-pulse">Loading…</p>
               </div>
             )}
 
             {!loading && sortedPlayers.length === 0 && (
               <div className="py-16 text-center">
-                <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#a09ab8]">No matches recorded yet</p>
-                <p className="mt-2 text-sm text-[#ffffff]">Play a game to claim the top spot.</p>
+                <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#716a7e]">No matches recorded yet</p>
+                <p className="mt-2 text-sm text-[#231942]">Play a game to claim the top spot.</p>
               </div>
             )}
 
@@ -118,32 +118,32 @@ export default function LeaderboardPage() {
                 <Link
                   key={p.address}
                   href={`/profile/${p.address}`}
-                  className={`grid grid-cols-[36px_1fr_64px_80px] items-center gap-4 px-4 py-3 border-b border-[#a09ab8]/10 last:border-0 transition hover:bg-[#E4D474]/5 ${isMe ? "bg-[#E4D474]/5" : ""}`}
+                  className={`grid grid-cols-[36px_1fr_64px_80px] items-center gap-4 px-4 py-3 border-b border-[#ddd6ea]/10 last:border-0 transition hover:bg-[#5e548e]/5 ${isMe ? "bg-[#5e548e]/5" : ""}`}
                 >
                   <span className="font-mono text-sm font-black" style={{
-                    color: i === 0 ? "#E4D474" : i === 1 ? "#aaa" : i === 2 ? "#a09ab8" : "#a09ab8"
+                    color: i === 0 ? "#5e548e" : i === 1 ? "#716a7e" : i === 2 ? "#716a7e" : "#716a7e"
                   }}>
                     {i + 1}
                   </span>
 
                   <div className="flex items-center gap-2 min-w-0">
                     <div className="flex h-7 w-7 shrink-0 items-center justify-center border font-mono text-[9px] font-black"
-                      style={{ borderColor: isMe ? "#E4D474" : "#a09ab8", color: isMe ? "#E4D474" : "#a09ab8" }}>
+                      style={{ borderColor: isMe ? "#5e548e" : "#716a7e", color: isMe ? "#5e548e" : "#716a7e" }}>
                       {p.address.slice(0, 2).toUpperCase()}
                     </div>
                     <div className="min-w-0">
-                      <p className="font-mono text-xs font-black truncate" style={{ color: isMe ? "#E4D474" : "#ffffff" }}>
+                      <p className="font-mono text-xs font-black truncate" style={{ color: isMe ? "#5e548e" : "#231942" }}>
                         {isMe ? truncatedAddress : truncAddr(p.address)}
-                        {isMe && <span className="ml-1.5 font-mono text-[8px] border border-[#E4D474]/40 px-1">YOU</span>}
+                        {isMe && <span className="ml-1.5 font-mono text-[8px] border border-[#5e548e]/40 px-1">YOU</span>}
                       </p>
                       {g && (
-                        <p className="font-mono text-[9px] text-[#a09ab8] truncate">[{g.tag}] {g.name}</p>
+                        <p className="font-mono text-[9px] text-[#716a7e] truncate">[{g.tag}] {g.name}</p>
                       )}
                     </div>
                   </div>
 
-                  <span className="text-right font-mono text-sm text-[#a09ab8]">{p.matches_played}</span>
-                  <span className="text-right font-mono text-sm font-black text-[#E4D474]">
+                  <span className="text-right font-mono text-sm text-[#716a7e]">{p.matches_played}</span>
+                  <span className="text-right font-mono text-sm font-black text-[#5e548e]">
                     {tab === "streak" ? `${p.best_streak}×` : p.aura.toLocaleString()}
                   </span>
                 </Link>
@@ -152,23 +152,23 @@ export default function LeaderboardPage() {
 
             {/* Your row pinned at bottom if you're not in top 50 */}
             {!loading && addr && myRank === -1 && (
-              <div className="border-t border-[#a09ab8]/30">
-                <div className="px-4 py-2 bg-[#160c2c]">
-                  <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#a09ab8]">Your position</p>
+              <div className="border-t border-[#ddd6ea]/30">
+                <div className="px-4 py-2 bg-[#f3f0fa]">
+                  <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#716a7e]">Your position</p>
                 </div>
-                <div className="grid grid-cols-[36px_1fr_64px_80px] items-center gap-4 px-4 py-3 bg-[#E4D474]/5">
-                  <span className="font-mono text-xs text-[#a09ab8]">—</span>
+                <div className="grid grid-cols-[36px_1fr_64px_80px] items-center gap-4 px-4 py-3 bg-[#5e548e]/5">
+                  <span className="font-mono text-xs text-[#716a7e]">—</span>
                   <div className="flex items-center gap-2 min-w-0">
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center border border-[#E4D474]/40 font-mono text-[9px] font-black text-[#E4D474]">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center border border-[#5e548e]/40 font-mono text-[9px] font-black text-[#5e548e]">
                       {addr.slice(0, 2).toUpperCase()}
                     </div>
                     <div className="min-w-0">
-                      <p className="font-mono text-xs font-black text-[#E4D474] truncate">{truncatedAddress}</p>
-                      {myGuild && <p className="font-mono text-[9px] text-[#a09ab8]">[{myGuild.tag}] {myGuild.name}</p>}
+                      <p className="font-mono text-xs font-black text-[#5e548e] truncate">{truncatedAddress}</p>
+                      {myGuild && <p className="font-mono text-[9px] text-[#716a7e]">[{myGuild.tag}] {myGuild.name}</p>}
                     </div>
                   </div>
-                  <span className="text-right font-mono text-sm text-[#a09ab8]">{myRow?.matches_played ?? 0}</span>
-                  <span className="text-right font-mono text-sm font-black text-[#a09ab8]">
+                  <span className="text-right font-mono text-sm text-[#716a7e]">{myRow?.matches_played ?? 0}</span>
+                  <span className="text-right font-mono text-sm font-black text-[#716a7e]">
                     {tab === "streak" ? `${myRow?.best_streak ?? 0}×` : (myRow?.aura ?? 0).toLocaleString()}
                   </span>
                 </div>
@@ -179,8 +179,8 @@ export default function LeaderboardPage() {
 
         {/* ── Gangs ── */}
         {tab === "gangs" && (
-          <div className="border border-[#a09ab8]/30 bg-[#2d1a4a]">
-            <div className="grid grid-cols-[36px_1fr_64px_90px] gap-4 px-4 py-2.5 border-b border-[#a09ab8]/20 font-mono text-[10px] uppercase tracking-[0.14em] text-[#a09ab8]">
+          <div className="border border-[#ddd6ea]/30 bg-white">
+            <div className="grid grid-cols-[36px_1fr_64px_90px] gap-4 px-4 py-2.5 border-b border-[#ddd6ea]/20 font-mono text-[10px] uppercase tracking-[0.14em] text-[#716a7e]">
               <span>#</span>
               <span>Gang</span>
               <span className="text-right">Members</span>
@@ -193,38 +193,38 @@ export default function LeaderboardPage() {
               return (
                 <div
                   key={g.id}
-                  className={`grid grid-cols-[36px_1fr_64px_90px] items-center gap-4 px-4 py-3 border-b border-[#a09ab8]/10 last:border-0 ${isMe ? "bg-[#E4D474]/5" : ""}`}
+                  className={`grid grid-cols-[36px_1fr_64px_90px] items-center gap-4 px-4 py-3 border-b border-[#ddd6ea]/10 last:border-0 ${isMe ? "bg-[#5e548e]/5" : ""}`}
                 >
                   <span className="font-mono text-sm font-black" style={{
-                    color: i === 0 ? "#E4D474" : i === 1 ? "#aaa" : i === 2 ? "#a09ab8" : "#a09ab8"
+                    color: i === 0 ? "#5e548e" : i === 1 ? "#716a7e" : i === 2 ? "#716a7e" : "#716a7e"
                   }}>
                     {i + 1}
                   </span>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-[9px] font-black border px-1.5 py-px shrink-0"
-                        style={{ borderColor: isMe ? "#E4D474" : "#a09ab8", color: isMe ? "#E4D474" : "#a09ab8" }}>
+                        style={{ borderColor: isMe ? "#5e548e" : "#716a7e", color: isMe ? "#5e548e" : "#716a7e" }}>
                         [{g.tag}]
                       </span>
                       <Link
                         href={`/guilds/${g.id}`}
                         className="font-black uppercase text-sm truncate hover:underline"
-                        style={{ color: isMe ? "#E4D474" : "#ffffff" }}
+                        style={{ color: isMe ? "#5e548e" : "#231942" }}
                       >
                         {g.name}
                       </Link>
-                      {isMe && <span className="font-mono text-[8px] text-[#E4D474] border border-[#E4D474]/40 px-1 shrink-0">YOU</span>}
+                      {isMe && <span className="font-mono text-[8px] text-[#5e548e] border border-[#5e548e]/40 px-1 shrink-0">YOU</span>}
                     </div>
-                    <p className="font-mono text-[9px] text-[#a09ab8] truncate mt-0.5">"{g.motto}"</p>
+                    <p className="font-mono text-[9px] text-[#716a7e] truncate mt-0.5">"{g.motto}"</p>
                   </div>
-                  <span className="text-right font-mono text-sm text-[#a09ab8]">{g.members.length}</span>
-                  <span className="text-right font-mono text-sm font-black text-[#E4D474]">{aura.toLocaleString()}</span>
+                  <span className="text-right font-mono text-sm text-[#716a7e]">{g.members.length}</span>
+                  <span className="text-right font-mono text-sm font-black text-[#5e548e]">{aura.toLocaleString()}</span>
                 </div>
               );
             })}
 
-            <div className="border-t border-[#a09ab8]/20 px-4 py-3 text-center">
-              <Link href="/guilds" className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#a09ab8] hover:text-[#E4D474] transition">
+            <div className="border-t border-[#ddd6ea]/20 px-4 py-3 text-center">
+              <Link href="/guilds" className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#716a7e] hover:text-[#5e548e] transition">
                 {myGuild ? "View your gang" : "Create or join a gang"}
               </Link>
             </div>
